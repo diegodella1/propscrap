@@ -1,0 +1,17 @@
+[Unit]
+Description=Cloudflared tunnel for Propscrap
+After=network-online.target propscrap-web.service
+Wants=network-online.target propscrap-web.service
+
+[Service]
+Type=simple
+User=diego
+WorkingDirectory=/home/diego/Documents/propscrap
+ExecStart=/home/diego/Documents/propscrap/scripts/start_propscrap_tunnel.sh
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/cloudflared-propscrap.log
+StandardError=append:/var/log/cloudflared-propscrap.log
+
+[Install]
+WantedBy=multi-user.target

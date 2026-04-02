@@ -1,0 +1,17 @@
+[Unit]
+Description=Propscrap API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=diego
+WorkingDirectory=/home/diego/Documents/propscrap/apps/api
+ExecStart=/home/diego/Documents/propscrap/scripts/start_propscrap_api.sh
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/propscrap-api.log
+StandardError=append:/var/log/propscrap-api.log
+
+[Install]
+WantedBy=multi-user.target

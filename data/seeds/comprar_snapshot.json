@@ -1,0 +1,15 @@
+[
+  {
+    "external_id": "demo-001",
+    "title": "Adquisición de licencias y soporte de software de gestión documental",
+    "organization": "Ministerio de Salud",
+    "jurisdiction": "Nación"
+  },
+  {
+    "external_id": "demo-002",
+    "title": "Servicio de mantenimiento y mesa de ayuda para infraestructura IT",
+    "organization": "ANSES",
+    "jurisdiction": "Nación"
+  }
+]
+

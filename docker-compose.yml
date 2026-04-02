@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: licitaciones-ia-postgres
+    environment:
+      POSTGRES_DB: licitaciones_ia
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "54329:5432"
+    volumes:
+      - licitaciones_ia_pgdata:/var/lib/postgresql/data
+
+volumes:
+  licitaciones_ia_pgdata:
+

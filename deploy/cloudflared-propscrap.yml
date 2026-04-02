@@ -1,0 +1,8 @@
+protocol: http2
+tunnel: d7d9afcb-ad33-4b94-85f4-f977d113714a
+credentials-file: /home/diego/.cloudflared/d7d9afcb-ad33-4b94-85f4-f977d113714a.json
+
+ingress:
+  - hostname: propscrap.diegodella.ar
+    service: http://127.0.0.1:3000
+  - service: http_status:404

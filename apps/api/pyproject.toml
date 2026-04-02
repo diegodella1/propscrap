@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "licitaciones-ia-api"
+version = "0.1.0"
+description = "FastAPI backend for Licitaciones IA"
+requires-python = ">=3.11"
+dependencies = [
+  "alembic==1.14.1",
+  "beautifulsoup4==4.12.3",
+  "fastapi==0.115.12",
+  "httpx==0.28.1",
+  "lxml==5.3.1",
+  "pymupdf==1.25.5",
+  "psycopg[binary]==3.2.6",
+  "pydantic==2.11.3",
+  "pydantic-settings==2.8.1",
+  "python-dateutil==2.9.0.post0",
+  "sqlalchemy==2.0.40",
+  "uvicorn[standard]==0.34.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

@@ -1,0 +1,19 @@
+[Unit]
+Description=TikTok Scrap Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=diego
+WorkingDirectory=/home/diego/Documents/tiktokscrap
+EnvironmentFile=/home/diego/Documents/tiktokscrap/.env
+Environment=PORT=3457
+ExecStart=/home/diego/Documents/tiktokscrap/venv/bin/python /home/diego/Documents/tiktokscrap/app.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/tiktokscrap.log
+StandardError=append:/var/log/tiktokscrap.log
+
+[Install]
+WantedBy=multi-user.target

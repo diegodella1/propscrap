@@ -1,0 +1,17 @@
+[Unit]
+Description=Propscrap Scheduler
+After=network-online.target propscrap-api.service
+Wants=network-online.target propscrap-api.service
+
+[Service]
+Type=simple
+User=diego
+WorkingDirectory=/home/diego/Documents/propscrap/apps/api
+ExecStart=/home/diego/Documents/propscrap/scripts/start_propscrap_scheduler.sh
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/propscrap-scheduler.log
+StandardError=append:/var/log/propscrap-scheduler.log
+
+[Install]
+WantedBy=multi-user.target
