@@ -35,7 +35,7 @@ const VARIANT_COPY: Record<
     pendingLabel: "Ingresando cliente…",
     hint: ["Oportunidades", "Seguimiento", "Empresa"],
     demoEmail: "manager@licitacionesia.local",
-    demoPassword: "Admin1234",
+    demoPassword: "Manager1234",
     invalidRoleMessage: "Esta entrada es para clientes. Usá el acceso de superadmin.",
   },
   superadmin: {
