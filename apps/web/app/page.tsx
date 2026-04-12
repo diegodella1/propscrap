@@ -46,20 +46,20 @@ export default async function LandingPage() {
           <span className="eyebrow">Plataforma para proveedores del Estado</span>
           <h1>
             {isLoggedIn
-              ? "Un sistema de trabajo claro para licitaciones públicas."
-              : "Encontrá, evaluá y seguí licitaciones sin trabajar a ciegas."}
+              ? "La operación comercial de licitaciones, en una sola vista."
+              : "La infraestructura operativa para empresas que venden al Estado."}
           </h1>
           <p className="hero-lead">
             {isLoggedIn
-              ? "EasyTaciones concentra fuentes, oportunidades y próximas acciones para que el equipo decida con criterio y llegue a tiempo."
-              : "EasyTaciones toma un proceso manual, disperso y difícil de sostener y lo convierte en un sistema de trabajo. La empresa entra por CUIT, se completa un perfil inicial y el equipo empieza a operar con contexto."}
+              ? "EasyTaciones concentra discovery, scoring, seguimiento y próximas acciones para que el equipo decida con contexto y ejecute sin dispersión."
+              : "EasyTaciones reemplaza portales, PDFs, planillas y memoria informal por un sistema claro. La empresa entra por CUIT, se arma el perfil comercial y el equipo trabaja con prioridades, fechas y alertas."}
           </p>
           <div className="hero-actions">
             <Link href="/contact" className="button-primary">
-              Solicitar Demo
+              Hablar con Ventas
             </Link>
             <Link href={currentUser ? "/dashboard" : "/signup"} className="button-secondary">
-              {currentUser ? "Ir al Workspace" : "Registrar Empresa por CUIT"}
+              {currentUser ? "Abrir Workspace" : "Registrar Empresa"}
             </Link>
             <Link href="/about" className="button-secondary">
               Ver Cómo Funciona
@@ -103,9 +103,9 @@ export default async function LandingPage() {
 
         <div className="hero-board hero-board-premium">
           <div className="board-frame refined-board">
-            <div className="board-topline">
-              <span className="mini-pill">{isLoggedIn ? "Alta por CUIT" : "Demo guiada"}</span>
-              <span className="mini-pill mini-pill-warm">{isLoggedIn ? "Seguimiento sin caos" : "Operacion sin desorden"}</span>
+          <div className="board-topline">
+              <span className="mini-pill">{isLoggedIn ? "Workspace activo" : "Entrada por CUIT"}</span>
+              <span className="mini-pill mini-pill-warm">{isLoggedIn ? "Seguimiento trazable" : "Operación ordenada"}</span>
             </div>
 
             <ExecutiveControlIllustration />
@@ -113,12 +113,12 @@ export default async function LandingPage() {
             <div className="board-score">
               <div>
                 <small>{isLoggedIn ? "Resultado operativo" : "Propuesta de valor"}</small>
-                <strong>{isLoggedIn ? "Menos dispersión. Más criterio. Mejor ejecución." : "La empresa entra por CUIT. El equipo trabaja con criterio."}</strong>
+                <strong>{isLoggedIn ? "Menos ruido. Más foco. Mejor ejecución." : "La empresa entra por CUIT. El equipo opera con criterio."}</strong>
               </div>
               <p>
                 {isLoggedIn
-                  ? "La operación deja de vivir entre tabs, PDFs y planillas y pasa a una superficie única con prioridad, fecha y estado."
-                  : "La propuesta no es ver más portales. Es tener una lectura común de qué apareció, qué importa y qué hay que seguir."}
+                  ? "La operación deja de vivir entre tabs, PDFs y planillas y pasa a una superficie única con prioridad, fecha, estado y próxima acción."
+                  : "La propuesta no es mostrar más portales. Es bajar desorden y darle al equipo una lectura común de qué apareció, qué importa y qué hay que seguir."}
               </p>
             </div>
 
@@ -174,18 +174,18 @@ export default async function LandingPage() {
       <section className="ops-proof-grid landing-proof-grid">
         <article className="proof-card">
           <span className="section-kicker">Problema</span>
-          <h2>Buscar no es operar</h2>
+          <h2>Buscar no es operar.</h2>
           <p>Portales, pliegos y planillas rompen continuidad y criterio comercial.</p>
         </article>
         <article className="proof-card">
           <span className="section-kicker">Solución</span>
-          <h2>Una sola vista operativa</h2>
+          <h2>Una sola superficie operativa.</h2>
           <p>Fuentes, oportunidades y seguimiento entran en la misma lógica.</p>
         </article>
         <article className="proof-card">
           <span className="section-kicker">Resultado</span>
-          <h2>Menos pérdida por timing</h2>
-          <p>Menos pérdida por timing y más claridad sobre qué mover hoy.</p>
+          <h2>Menos pérdida por timing.</h2>
+          <p>Más claridad sobre qué mover hoy y qué sostener en seguimiento.</p>
         </article>
       </section>
 

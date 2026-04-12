@@ -6967,3 +6967,388 @@ textarea:disabled {
     padding: 16px !important;
   }
 }
+
+/* Design pass: enterprise blue system, square geometry, calmer hierarchy */
+
+:root {
+  --bg: #f3f7fb;
+  --bg-strong: #0f172a;
+  --bg-soft: #eaf0f7;
+  --panel: #ffffff;
+  --panel-strong: #0f172a;
+  --panel-alt: #eef3f8;
+  --text: #0f172a;
+  --text-inverse: #f8fafc;
+  --muted: #475569;
+  --line: rgba(15, 23, 42, 0.1);
+  --line-strong: rgba(248, 250, 252, 0.14);
+  --accent: #0b5cad;
+  --accent-soft: #dbeafe;
+  --accent-deep: #0f3f75;
+  --signal: #0f172a;
+  --signal-soft: #dbe7f3;
+  --warning: #9a6700;
+  --warning-soft: #fef3c7;
+  --danger: #b42318;
+  --danger-soft: #fee4e2;
+  --success: #166534;
+  --success-soft: #dcfce7;
+  --calm: #1d4ed8;
+  --calm-soft: #dbeafe;
+  --shadow: none;
+  --shadow-tight: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(243, 247, 251, 0.98) 24%, #edf3f9 100%),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px) !important;
+  background-size: auto, 24px 24px, 24px 24px !important;
+  color: var(--text) !important;
+}
+
+body::before {
+  opacity: 0.08 !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 18%),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px) !important;
+}
+
+body,
+.page-shell,
+.panel,
+.table-panel,
+.table-panel-upgraded,
+.dispatch-panel,
+.content-panel,
+.filters,
+.detail-note-card,
+.source-card,
+.pipeline-card,
+.auth-form-card,
+.contact-request-card,
+.proof-card,
+.experience-card,
+.editorial-callout,
+.board-frame,
+.site-header,
+.button-primary,
+.button-secondary,
+.badge,
+.source-chip,
+.score-chip,
+.mini-pill,
+.filter-pill,
+input,
+select,
+textarea,
+.dashboard-executive-band article,
+.hero-inline-metrics article,
+.decision-row,
+.alert-row,
+.table-wrap table,
+.table-wrap th,
+.table-wrap td,
+.profile-summary-bar,
+.results-ribbon,
+.admin-anchor-nav a,
+.admin-quick-list article,
+.admin-status-list article,
+.admin-job-card,
+.admin-overview-card,
+.admin-disclosure {
+  border-radius: 0 !important;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 100;
+  padding: 10px 14px;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #0f172a;
+}
+
+.skip-link:focus-visible {
+  top: 16px;
+}
+
+.site-header {
+  top: 0 !important;
+  margin-bottom: 48px !important;
+  padding: 18px 20px !important;
+  background: rgba(248, 250, 252, 0.96) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  border-left: 4px solid #0b5cad !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(15, 23, 42, 0.16) !important;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+}
+
+.brand-lockup strong {
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+}
+
+.brand-lockup small {
+  color: #64748b !important;
+}
+
+.site-nav a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid transparent;
+  color: #334155 !important;
+  font-weight: 600;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.site-nav a[data-active="true"] {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #0f172a !important;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  background: #e8f1fb !important;
+  border-color: rgba(11, 92, 173, 0.2) !important;
+  color: #0f3f75 !important;
+}
+
+.button-primary,
+.button-secondary {
+  padding: 0 16px !important;
+  border: 1px solid transparent !important;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease !important;
+}
+
+.button-primary {
+  background: #0b5cad !important;
+  color: #f8fafc !important;
+  border-color: #0b5cad !important;
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #0a4f95 !important;
+  border-color: #0a4f95 !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+.button-secondary {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible,
+.linkish:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: #0b5cad !important;
+  color: #0f172a !important;
+  outline: 2px solid rgba(11, 92, 173, 0.16) !important;
+  outline-offset: 0 !important;
+}
+
+.linkish {
+  color: #0b5cad !important;
+  text-decoration: underline;
+  text-underline-offset: 0.14em;
+}
+
+.hero h1,
+.landing-hero h1,
+.results-header h2,
+.section-heading h2,
+.site-footer h2 {
+  text-wrap: balance;
+}
+
+.landing-masterhead {
+  align-items: start !important;
+  gap: 28px !important;
+  padding: 0 0 12px !important;
+}
+
+.landing-masterhead .hero-copy {
+  gap: 20px !important;
+  padding-top: 8px !important;
+}
+
+.landing-masterhead .hero-lead,
+.hero p,
+.landing-hero p {
+  max-width: 66ch !important;
+  color: #334155 !important;
+  font-size: 1.04rem !important;
+}
+
+.landing-hero h1 {
+  max-width: 12.5ch !important;
+  font-size: clamp(3rem, 5.3vw, 5.4rem) !important;
+  line-height: 0.94 !important;
+}
+
+.hero-board,
+.landing-masterhead .board-frame,
+.dashboard-hero-board {
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
+}
+
+.landing-masterhead .board-frame {
+  padding: 18px !important;
+}
+
+.board-topline,
+.decision-row-head,
+.hero-actions,
+.results-header {
+  gap: 10px !important;
+}
+
+.section-kicker,
+.eyebrow {
+  background: #edf4fb !important;
+  color: #0f3f75 !important;
+  border-color: rgba(11, 92, 173, 0.16) !important;
+  font-weight: 700 !important;
+}
+
+.hero-inline-metrics article,
+.dashboard-executive-band article,
+.admin-overview-card,
+.proof-card,
+.experience-card {
+  border-top: 3px solid #0b5cad !important;
+}
+
+.dashboard-executive-band strong,
+.hero-inline-metrics strong,
+.board-score strong,
+.proof-card h2,
+.experience-card h3,
+.admin-overview-card h3 {
+  letter-spacing: -0.03em;
+}
+
+.table-wrap table {
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+.table-wrap th {
+  color: #334155 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+.table-wrap td {
+  color: #0f172a !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+}
+
+.table-wrap table tbody tr:hover {
+  background: #f8fbff !important;
+}
+
+.auth-layout,
+.auth-layout-upgraded {
+  align-items: start !important;
+  gap: 20px !important;
+}
+
+.auth-layout::before {
+  display: none !important;
+}
+
+.auth-form-card,
+.signup-companion,
+.login-companion {
+  border-top: 4px solid #0b5cad !important;
+}
+
+.decision-row,
+.alert-row,
+.pipeline-card,
+.opportunity-list-card,
+.admin-disclosure,
+.admin-anchor-nav a,
+.admin-quick-list article,
+.admin-status-list article {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease !important;
+}
+
+.decision-row:hover,
+.alert-row:hover,
+.pipeline-card:hover,
+.opportunity-list-card:hover,
+.admin-disclosure:hover,
+.admin-anchor-nav a:hover,
+.admin-quick-list article:hover,
+.admin-status-list article:hover {
+  background: #f8fbff !important;
+  border-color: rgba(11, 92, 173, 0.18) !important;
+}
+
+.site-footer {
+  margin-top: 56px;
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-top: 4px solid #0b5cad !important;
+}
+
+.site-footer p,
+.site-footer a,
+.site-footer strong {
+  color: rgba(248, 250, 252, 0.88) !important;
+}
+
+.site-footer .section-kicker {
+  background: rgba(11, 92, 173, 0.14) !important;
+  color: #bfdbfe !important;
+  border-color: rgba(191, 219, 254, 0.18) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .site-header {
+    top: 0 !important;
+    padding: 16px !important;
+  }
+
+  .landing-masterhead {
+    gap: 20px !important;
+  }
+
+  .landing-hero h1 {
+    max-width: 100% !important;
+    font-size: clamp(2.4rem, 10vw, 4rem) !important;
+  }
+}

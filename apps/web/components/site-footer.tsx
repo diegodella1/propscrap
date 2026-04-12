@@ -6,10 +6,10 @@ export function SiteFooter() {
       <div className="site-footer-grid">
         <div className="footer-brand-block">
           <span className="section-kicker" translate="no">EasyTaciones</span>
-          <h2>Una plataforma seria para descubrir, evaluar y seguir licitaciones.</h2>
+          <h2>Discovery, evaluación y seguimiento en una sola herramienta.</h2>
           <p>
-            EasyTaciones ordena fuentes, oportunidades y seguimiento en un solo sistema de trabajo para equipos que
-            necesitan criterio, trazabilidad y timing.
+            EasyTaciones convierte un proceso manual y disperso en una operación clara: fuentes gobernadas, empresa
+            registrada por CUIT, oportunidades priorizadas y alertas accionables.
           </p>
           <div className="footer-metrics">
             <span>Alta por CUIT</span>
@@ -22,7 +22,7 @@ export function SiteFooter() {
           <strong>Producto</strong>
           <Link href="/">Inicio</Link>
           <Link href="/about">Cómo Funciona</Link>
-          <Link href="/contact">Solicitar Demo</Link>
+          <Link href="/contact">Ventas</Link>
           <Link href="/signup">Registrar Empresa</Link>
         </div>
 

@@ -33,7 +33,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="es">
       <body className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}>
-        {children}
+        <a href="#main-content" className="skip-link">
+          Ir al contenido principal
+        </a>
+        <div id="main-content">{children}</div>
         <SiteFooter />
       </body>
     </html>

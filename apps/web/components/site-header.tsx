@@ -9,6 +9,7 @@ type Props = {
 export function SiteHeader({ section, currentUserName, currentUserRole }: Props) {
   const isCompanyAdmin = currentUserRole === "manager";
   const isPlatformAdmin = currentUserRole === "admin";
+  const isAuthenticated = Boolean(currentUserName);
 
   return (
     <header className="site-header">
@@ -16,7 +17,7 @@ export function SiteHeader({ section, currentUserName, currentUserRole }: Props)
         <span className="brand-mark">ET</span>
         <span>
           <strong translate="no">EasyTaciones</strong>
-          <small>Inteligencia operativa para licitaciones</small>
+          <small>Infraestructura operativa para ventas al Estado</small>
         </span>
       </Link>
 
@@ -28,13 +29,13 @@ export function SiteHeader({ section, currentUserName, currentUserRole }: Props)
           <Link href="/about" data-active={section === "about"}>
             Cómo funciona
           </Link>
-          {!currentUserName ? (
+          {!isAuthenticated ? (
             <>
               <Link href="/signup" data-active={section === "auth"}>
-                Registro por CUIT
+                Alta por CUIT
               </Link>
               <Link href="/contact" data-active={section === "contact"}>
-                Demo
+                Ventas
               </Link>
             </>
           ) : (
@@ -63,13 +64,13 @@ export function SiteHeader({ section, currentUserName, currentUserRole }: Props)
         </nav>
 
         <div className="site-auth-actions">
-          {currentUserName ? (
-            <span className="mini-pill">
+          {isAuthenticated ? (
+            <span className="mini-pill" aria-label={`Sesión activa: ${currentUserName}`}>
               {isPlatformAdmin ? "Superadmin" : isCompanyAdmin ? "Manager" : "Usuario"} · {currentUserName}
             </span>
           ) : null}
 
-          {currentUserName ? (
+          {isAuthenticated ? (
             <>
               <Link
                 href="/mi-cuenta"
@@ -88,7 +89,7 @@ export function SiteHeader({ section, currentUserName, currentUserRole }: Props)
                 Ingresar
               </Link>
               <Link href="/contact" className="button-primary site-auth-button">
-                Solicitar Demo
+                Hablar con Ventas
               </Link>
             </>
           )}
