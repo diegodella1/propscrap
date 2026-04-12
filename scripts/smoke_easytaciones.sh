@@ -10,8 +10,65 @@ COOKIE_USER="$(mktemp)"
 COOKIE_ADMIN="$(mktemp)"
 EMAIL="qa.$(date +%s)@example.com"
 PASS="Admin1234!"
+SOURCE_ID=""
+SOURCE_SLUG=""
+PYTHON_BIN="${PYTHON_BIN:-apps/api/.venv/bin/python}"
 
 cleanup() {
+  if [[ -x "$PYTHON_BIN" ]]; then
+    PYTHONPATH="apps/api${PYTHONPATH:+:$PYTHONPATH}" \
+    SMOKE_EMAIL="$EMAIL" \
+    SMOKE_SOURCE_ID="$SOURCE_ID" \
+    SMOKE_SOURCE_SLUG="$SOURCE_SLUG" \
+    "$PYTHON_BIN" - <<'PY' >/dev/null 2>&1 || true
+from sqlalchemy import delete, select
+
+from app.db.session import SessionLocal
+from app.models import Alert, CompanyProfile, DocumentText, Source, SourceRun, Tender, TenderDocument, TenderEnrichment, TenderMatch, TenderState, User
+
+email = __import__("os").environ.get("SMOKE_EMAIL", "")
+source_id_raw = __import__("os").environ.get("SMOKE_SOURCE_ID", "")
+source_slug = __import__("os").environ.get("SMOKE_SOURCE_SLUG", "")
+source_id = int(source_id_raw) if source_id_raw.isdigit() else None
+
+db = SessionLocal()
+try:
+    if source_id is not None:
+        tender_ids = db.execute(select(Tender.id).where(Tender.source_id == source_id)).scalars().all()
+        if tender_ids:
+            db.execute(delete(Alert).where(Alert.tender_id.in_(tender_ids)))
+            db.execute(delete(TenderState).where(TenderState.tender_id.in_(tender_ids)))
+            document_ids = db.execute(select(TenderDocument.id).where(TenderDocument.tender_id.in_(tender_ids))).scalars().all()
+            if document_ids:
+                db.execute(delete(DocumentText).where(DocumentText.tender_document_id.in_(document_ids)))
+                db.execute(delete(TenderDocument).where(TenderDocument.id.in_(document_ids)))
+            db.execute(delete(TenderEnrichment).where(TenderEnrichment.tender_id.in_(tender_ids)))
+            db.execute(delete(TenderMatch).where(TenderMatch.tender_id.in_(tender_ids)))
+            db.execute(delete(Tender).where(Tender.id.in_(tender_ids)))
+        db.execute(delete(SourceRun).where(SourceRun.source_id == source_id))
+        db.execute(delete(Source).where(Source.id == source_id))
+    elif source_slug:
+        db.execute(delete(Source).where(Source.slug == source_slug))
+
+    if email:
+        user = db.execute(select(User).where(User.email == email)).scalar_one_or_none()
+        if user is not None:
+            company_profile_id = user.company_profile_id
+            db.execute(delete(Alert).where(Alert.user_id == user.id))
+            db.execute(delete(TenderState).where(TenderState.user_id == user.id))
+            db.execute(delete(User).where(User.id == user.id))
+            if company_profile_id is not None:
+                remaining = db.execute(
+                    select(User.id).where(User.company_profile_id == company_profile_id)
+                ).scalars().first()
+                if remaining is None:
+                    db.execute(delete(TenderMatch).where(TenderMatch.company_profile_id == company_profile_id))
+                    db.execute(delete(CompanyProfile).where(CompanyProfile.id == company_profile_id))
+    db.commit()
+finally:
+    db.close()
+PY
+  fi
   rm -f "$COOKIE_USER" "$COOKIE_ADMIN"
 }
 trap cleanup EXIT
@@ -134,6 +191,7 @@ for path in /users /admin/sources /admin/automation /source-runs /alerts /admin/
 done
 
 SLUG="qa-source-$(date +%s)"
+SOURCE_SLUG="$SLUG"
 CREATE_CODE="$(retry_curl -sS -o /tmp/smoke_create_source.json -w '%{http_code}' -b "$COOKIE_ADMIN" \
   -H 'Content-Type: application/json' \
   -d "{\"name\":\"QA Source\",\"slug\":\"$SLUG\",\"source_type\":\"portal\",\"scraping_mode\":\"html\",\"connector_slug\":\"\",\"base_url\":\"https://example.com\",\"config_json\":{\"note\":\"smoke\"},\"is_active\":false}" \
