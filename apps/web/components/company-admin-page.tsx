@@ -1,15 +1,17 @@
 import Link from "next/link";
 
+import { CompanyAlertSettingsForm } from "./company-alert-settings-form";
 import { SiteHeader } from "./site-header";
 import { UserEditorList } from "./user-editor-list";
-import type { User } from "../lib/api";
+import type { CompanyProfile, User } from "../lib/api";
 
 type Props = {
   currentUserName: string;
+  companyProfile: CompanyProfile;
   users: User[];
 };
 
-export function CompanyAdminPage({ currentUserName, users }: Props) {
+export function CompanyAdminPage({ currentUserName, companyProfile, users }: Props) {
   return (
     <main className="page-shell workspace-shell">
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="manager" />
@@ -84,6 +86,9 @@ export function CompanyAdminPage({ currentUserName, users }: Props) {
                 <Link href="/company-profile" className="button-primary">
                   Editar perfil comercial
                 </Link>
+                <Link href="/mi-cuenta" className="button-secondary">
+                  Mis canales
+                </Link>
                 <Link href="/dashboard" className="button-secondary">
                   Ver oportunidades
                 </Link>
@@ -115,6 +120,17 @@ export function CompanyAdminPage({ currentUserName, users }: Props) {
           </section>
 
           <section className="admin-section-stack">
+            <article className="panel table-panel table-panel-upgraded">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Alertas</span>
+                  <h2>Reglas default de la empresa</h2>
+                </div>
+                <p>Definí score mínimo para nuevas licitaciones y recordatorios sobre oportunidades guardadas.</p>
+              </div>
+              <CompanyAlertSettingsForm profile={companyProfile} />
+            </article>
+
             <article className="panel table-panel table-panel-upgraded">
               <div className="results-header">
                 <div>

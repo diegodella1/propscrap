@@ -46,6 +46,48 @@ DEFAULT_BUYERS = [
     "Instituto de Obra Social",
     "Ministerio de Defensa",
 ]
+DEFAULT_COMPANY_ALERT_PREFERENCES = {
+    "min_score": 60,
+    "receive_relevant": True,
+    "receive_deadlines": True,
+    "deadline_only_for_saved": True,
+    "deadline_offsets_hours": [168, 72, 24],
+}
+
+
+def normalize_company_alert_preferences(payload: dict | None) -> dict:
+    if payload is None:
+        return DEFAULT_COMPANY_ALERT_PREFERENCES.copy()
+    if not isinstance(payload, dict):
+        return DEFAULT_COMPANY_ALERT_PREFERENCES.copy()
+
+    try:
+        min_score = int(payload.get("min_score", DEFAULT_COMPANY_ALERT_PREFERENCES["min_score"]))
+    except (TypeError, ValueError):
+        min_score = DEFAULT_COMPANY_ALERT_PREFERENCES["min_score"]
+    min_score = max(0, min(100, min_score))
+
+    raw_offsets = payload.get("deadline_offsets_hours", DEFAULT_COMPANY_ALERT_PREFERENCES["deadline_offsets_hours"])
+    normalized_offsets: list[int] = []
+    if isinstance(raw_offsets, list):
+        for value in raw_offsets:
+            try:
+                hours = int(value)
+            except (TypeError, ValueError):
+                continue
+            if hours <= 0:
+                continue
+            if hours not in normalized_offsets:
+                normalized_offsets.append(hours)
+    normalized_offsets.sort(reverse=True)
+
+    return {
+        "min_score": min_score,
+        "receive_relevant": bool(payload.get("receive_relevant", True)),
+        "receive_deadlines": bool(payload.get("receive_deadlines", True)),
+        "deadline_only_for_saved": bool(payload.get("deadline_only_for_saved", True)),
+        "deadline_offsets_hours": normalized_offsets or DEFAULT_COMPANY_ALERT_PREFERENCES["deadline_offsets_hours"].copy(),
+    }
 
 
 def ensure_demo_company_profile(db: Session) -> CompanyProfile:
@@ -68,7 +110,7 @@ def ensure_demo_company_profile(db: Session) -> CompanyProfile:
         preferred_buyers=DEFAULT_BUYERS.copy(),
         min_amount=Decimal("1000000"),
         max_amount=Decimal("100000000"),
-        alert_preferences_json={"min_score": 60},
+        alert_preferences_json=DEFAULT_COMPANY_ALERT_PREFERENCES.copy(),
     )
     db.add(profile)
     db.flush()
@@ -118,7 +160,7 @@ def ensure_user_company_profile(db: Session, user: User) -> CompanyProfile:
         preferred_buyers=DEFAULT_BUYERS.copy(),
         min_amount=Decimal("1000000"),
         max_amount=Decimal("100000000"),
-        alert_preferences_json={"min_score": 60},
+        alert_preferences_json=DEFAULT_COMPANY_ALERT_PREFERENCES.copy(),
     )
     db.add(profile)
     db.flush()
@@ -180,7 +222,7 @@ def update_company_profile(
     profile.preferred_buyers = preferred_buyers or []
     profile.min_amount = Decimal(min_amount) if min_amount else None
     profile.max_amount = Decimal(max_amount) if max_amount else None
-    profile.alert_preferences_json = alert_preferences_json or {}
+    profile.alert_preferences_json = normalize_company_alert_preferences(alert_preferences_json)
     profile.tax_status_json = tax_status_json or profile.tax_status_json or {}
     db.add(profile)
     db.flush()
@@ -208,7 +250,7 @@ def apply_company_lookup_result(
             preferred_buyers=DEFAULT_BUYERS.copy(),
             min_amount=Decimal("1000000"),
             max_amount=Decimal("100000000"),
-            alert_preferences_json={"min_score": 60},
+            alert_preferences_json=DEFAULT_COMPANY_ALERT_PREFERENCES.copy(),
             tax_status_json=company_result.tax_status_json,
             company_data_source=company_result.company_data_source,
             company_data_updated_at=company_result.company_data_updated_at,

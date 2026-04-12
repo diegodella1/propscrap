@@ -253,7 +253,13 @@ export type CompanyProfile = {
   preferred_buyers: string[] | null;
   min_amount: string | null;
   max_amount: string | null;
-  alert_preferences_json: { min_score?: number } | null;
+  alert_preferences_json: {
+    min_score?: number;
+    receive_relevant?: boolean;
+    receive_deadlines?: boolean;
+    deadline_only_for_saved?: boolean;
+    deadline_offsets_hours?: number[];
+  } | null;
   tax_status_json: Record<string, unknown> | null;
   company_data_source: string | null;
   company_data_updated_at: string | null;
