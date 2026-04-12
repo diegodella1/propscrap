@@ -6,8 +6,8 @@ Wants=network-online.target propscrap-web.service
 [Service]
 Type=simple
 User=diego
-WorkingDirectory=/home/diego/Documents/propscrap
-ExecStart=/home/diego/Documents/propscrap/scripts/start_propscrap_tunnel.sh
+WorkingDirectory=/home/diego/Documents/prop/propscrap
+ExecStart=/home/diego/Documents/prop/propscrap/scripts/start_propscrap_tunnel.sh
 Restart=always
 RestartSec=5
 StandardOutput=append:/var/log/cloudflared-propscrap.log

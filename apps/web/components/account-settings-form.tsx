@@ -15,9 +15,11 @@ function alertPriorityFromMinScore(value: number | undefined) {
 export function AccountSettingsForm({ user }: { user: User }) {
   const [form, setForm] = useState({
     full_name: user.full_name,
+    cuit: user.cuit ?? "",
     company_name: user.company_name ?? "",
     whatsapp_number: user.whatsapp_number ?? "",
     whatsapp_opt_in: user.whatsapp_opt_in,
+    email_opt_in: user.alert_preferences_json?.channels?.includes("email") ?? false,
     alert_priority: alertPriorityFromMinScore(user.alert_preferences_json?.min_score),
     receive_relevant: user.alert_preferences_json?.receive_relevant ?? true,
     receive_deadlines: user.alert_preferences_json?.receive_deadlines ?? true,
@@ -48,32 +50,72 @@ export function AccountSettingsForm({ user }: { user: User }) {
   }
 
   return (
-    <div className="auth-form-card">
+    <div className="auth-form-card auth-form-card-upgraded">
+      <div className="signup-form-header">
+        <span className="section-kicker">Preferencias personales</span>
+        <h2>Canal e intensidad de alertas</h2>
+        <p>Definí cómo te avisa la plataforma y con qué nivel de filtro.</p>
+      </div>
+      <div className="signup-stage-strip">
+        <span className="mini-pill">Identidad</span>
+        <span className="mini-pill">Canal</span>
+        <span className="mini-pill">Prioridad</span>
+        <span className="mini-pill">Recordatorios</span>
+      </div>
       <div className="field">
         <label htmlFor="account-name">Tu nombre</label>
         <input
           id="account-name"
+          name="full_name"
           value={form.full_name}
           onChange={(event) => updateField("full_name", event.target.value)}
+          autoComplete="name"
         />
       </div>
       <div className="field">
         <label htmlFor="account-company">Empresa</label>
         <input
           id="account-company"
+          name="company_name"
           value={form.company_name}
           onChange={(event) => updateField("company_name", event.target.value)}
+          autoComplete="organization"
+        />
+      </div>
+      <div className="field">
+        <label htmlFor="account-cuit">CUIT</label>
+        <input
+          id="account-cuit"
+          name="cuit"
+          value={form.cuit}
+          onChange={(event) => updateField("cuit", event.target.value)}
+          autoComplete="off"
+          inputMode="numeric"
+          placeholder="30712345678…"
         />
       </div>
       <div className="field">
         <label htmlFor="account-whatsapp">Tu WhatsApp</label>
         <input
           id="account-whatsapp"
+          name="whatsapp_number"
+          type="tel"
           value={form.whatsapp_number}
           onChange={(event) => updateField("whatsapp_number", event.target.value)}
-          placeholder="+5491123456789"
+          autoComplete="tel"
+          inputMode="tel"
+          placeholder="+5491123456789…"
         />
       </div>
+
+      <label className="checkbox-row">
+        <input
+          type="checkbox"
+          checked={form.email_opt_in}
+          onChange={(event) => updateField("email_opt_in", event.target.checked)}
+        />
+        <span>Quiero recibir alertas por email</span>
+      </label>
 
       <label className="checkbox-row">
         <input
@@ -118,10 +160,17 @@ export function AccountSettingsForm({ user }: { user: User }) {
       </label>
 
       <button type="button" onClick={save} disabled={isPending} className="button-primary button-block">
-        {isPending ? "Guardando..." : "Guardar preferencias"}
+        {isPending ? "Guardando…" : "Guardar preferencias"}
       </button>
 
-      {message ? <p className="form-message form-message-block">{message}</p> : null}
+      <div className="signup-confidence-bar">
+        <span>Identidad</span>
+        <span>Canal</span>
+        <span>Ruido útil</span>
+        <span>Seguimiento</span>
+      </div>
+
+      {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>
   );
 }

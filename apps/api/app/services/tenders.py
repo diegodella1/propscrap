@@ -55,3 +55,28 @@ def get_tender_detail(db: Session, tender_id: int) -> Tender | None:
         )
         .where(Tender.id == tender_id)
     ).scalar_one_or_none()
+
+
+def list_saved_tenders(db: Session, *, user_id: int, limit: int = 100) -> tuple[list[Tender], int]:
+    tracked_states = ("saved", "evaluating", "presenting")
+    query = (
+        select(Tender)
+        .join(TenderState, TenderState.tender_id == Tender.id)
+        .options(
+            joinedload(Tender.source),
+            selectinload(Tender.matches),
+            selectinload(Tender.states),
+            selectinload(Tender.alerts),
+        )
+        .where(TenderState.user_id == user_id, TenderState.state.in_(tracked_states))
+        .order_by(TenderState.updated_at.desc(), Tender.id.desc())
+    )
+    count_query = (
+        select(func.count())
+        .select_from(Tender)
+        .join(TenderState, TenderState.tender_id == Tender.id)
+        .where(TenderState.user_id == user_id, TenderState.state.in_(tracked_states))
+    )
+    items = db.execute(query.limit(limit)).unique().scalars().all()
+    total = db.execute(count_query).scalar_one()
+    return items, total

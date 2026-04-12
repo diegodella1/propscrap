@@ -52,9 +52,15 @@ def run_automation_cycle(db: Session) -> dict:
 
     try:
         for source in active_sources:
-            if source.slug not in CONNECTORS:
+            connector_key = source.connector_slug or source.slug
+            if connector_key not in CONNECTORS:
                 skipped_sources.append(
-                    {"source_id": source.id, "slug": source.slug, "reason": "connector_not_implemented"}
+                    {
+                        "source_id": source.id,
+                        "slug": source.slug,
+                        "connector_slug": source.connector_slug,
+                        "reason": "connector_not_implemented",
+                    }
                 )
                 continue
             ingested_sources.append(ingest_source(db, source.slug))

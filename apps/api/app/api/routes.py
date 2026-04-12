@@ -9,7 +9,7 @@ from app.db.session import get_db
 from app.config import get_settings
 from app.errors import AuthenticationError, ConflictError, NotFoundError, ValidationError
 from app.jobs.dispatch_alerts import run_alert_dispatch
-from app.schemas.auth import AuthResponse, LoginRequest, MeUpdateRequest, SignupRequest
+from app.schemas.auth import AuthResponse, CompanyLookupRead, LoginRequest, MeUpdateRequest, SignupRequest
 from app.jobs.generate_alerts import run_alert_generation
 from app.jobs.enrich_tender import enrich_pending_tenders, enrich_tender
 from app.jobs.ingest_source import ingest_source
@@ -21,12 +21,14 @@ from app.schemas.admin import (
     AutomationSettingsRead,
     AutomationSettingsUpdateRequest,
     CompanyProfileAdminRead,
+    PublicPlatformSettingsRead,
     CompanyProfileUpdateRequest,
     SourceAdminRead,
     SourceCreateRequest,
     SourceUpdateRequest,
     UserRead,
     UserUpdateRequest,
+    WhatsappOutboxMessageRead,
 )
 from app.schemas.tender import (
     SourceRead,
@@ -44,11 +46,13 @@ from app.services.company_profiles import (
     get_company_profile_for_user,
     update_company_profile,
 )
+from app.services.company_registry import lookup_company_by_cuit
 from app.services.llm_enrichment import DEFAULT_MASTER_PROMPT
 from app.services.runtime_settings import get_automation_settings, update_automation_settings
 from app.services.source_registry import CONNECTORS
-from app.services.tenders import get_tender_detail, list_tenders
+from app.services.tenders import get_tender_detail, list_saved_tenders, list_tenders
 from app.services.users import ensure_demo_user, update_user
+from app.services.whatsapp import read_whatsapp_outbox
 from app.services.workflow import upsert_tender_state
 
 router = APIRouter(prefix="/api/v1")
@@ -94,6 +98,7 @@ def signup(payload: SignupRequest, response: Response, db: Session = Depends(get
         full_name=payload.full_name,
         email=payload.email,
         password=payload.password,
+        cuit=payload.cuit,
         company_name=payload.company_name,
     )
     db.commit()
@@ -133,6 +138,7 @@ def patch_me(
         current_user,
         full_name=payload.full_name,
         company_name=payload.company_name,
+        cuit=payload.cuit,
         whatsapp_number=payload.whatsapp_number,
         whatsapp_opt_in=payload.whatsapp_opt_in,
         whatsapp_verified=bool(final_whatsapp_number and final_whatsapp_opt_in),
@@ -141,12 +147,30 @@ def patch_me(
             payload.receive_relevant,
             payload.receive_deadlines,
             payload.whatsapp_opt_in,
+            payload.email_opt_in,
             current_user.alert_preferences_json,
         ),
     )
     db.commit()
     db.refresh(user)
     return UserRead.model_validate(user)
+
+
+@router.get("/company-lookup/cuit/{cuit}", response_model=CompanyLookupRead)
+def get_company_lookup(cuit: str) -> CompanyLookupRead:
+    result = lookup_company_by_cuit(cuit)
+    return CompanyLookupRead.model_validate(
+        {
+            "cuit": result.cuit,
+            "company_name": result.company_name,
+            "legal_name": result.legal_name,
+            "tax_status_json": result.tax_status_json,
+            "company_data_source": result.company_data_source,
+            "company_data_updated_at": result.company_data_updated_at,
+            "jurisdictions": result.jurisdictions,
+            "sectors": result.sectors,
+        }
+    )
 
 
 @router.get("/me/company-profile", response_model=CompanyProfileAdminRead)
@@ -160,6 +184,22 @@ def get_my_company_profile(
     return _serialize_company_profile(profile)
 
 
+@router.post("/me/company-profile/rematch")
+def rematch_my_company_profile(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    profile = get_company_profile_for_user(db, current_user)
+    result = match_all_tenders(db, profile_id=profile.id)
+    db.commit()
+    return {
+        "status": "ok",
+        "profile_id": profile.id,
+        "matched_tenders": result["matched_tenders"],
+        "profiles_processed": result["profiles_processed"],
+    }
+
+
 @router.put("/me/company-profile", response_model=CompanyProfileAdminRead)
 def put_my_company_profile(
     payload: CompanyProfileUpdateRequest,
@@ -170,7 +210,9 @@ def put_my_company_profile(
     profile = update_company_profile(
         db,
         profile,
+        cuit=current_user.cuit,
         company_name=payload.company_name,
+        legal_name=payload.legal_name,
         company_description=payload.company_description,
         sectors=payload.sectors,
         include_keywords=payload.include_keywords,
@@ -180,6 +222,7 @@ def put_my_company_profile(
         min_amount=payload.min_amount,
         max_amount=payload.max_amount,
         alert_preferences_json=payload.alert_preferences_json,
+        tax_status_json=payload.tax_status_json,
     )
     current_user.company_name = profile.company_name
     db.add(current_user)
@@ -207,11 +250,25 @@ def get_tenders(
 
 
 @router.get("/tenders/{tender_id}", response_model=TenderDetailRead)
-def get_tender(tender_id: int, db: Session = Depends(get_db)) -> TenderDetailRead:
+def get_tender(
+    tender_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+) -> TenderDetailRead:
     item = get_tender_detail(db, tender_id)
     if item is None:
         raise HTTPException(status_code=404, detail=f"Tender not found: {tender_id}")
     return TenderDetailRead.model_validate(item)
+
+
+@router.get("/saved-tenders", response_model=TenderListResponse)
+def get_saved_tenders(
+    limit: int = Query(default=100, le=200),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> TenderListResponse:
+    items, total = list_saved_tenders(db, user_id=current_user.id, limit=limit)
+    return TenderListResponse(items=[TenderRead.model_validate(item) for item in items], total=total)
 
 
 @router.get("/sources", response_model=list[SourceRead])
@@ -233,10 +290,13 @@ def get_admin_sources(
                 "name": row.name,
                 "slug": row.slug,
                 "source_type": row.source_type,
+                "scraping_mode": row.scraping_mode,
+                "connector_slug": row.connector_slug,
                 "base_url": row.base_url,
+                "config_json": row.config_json,
                 "is_active": row.is_active,
                 "last_run_at": row.last_run_at,
-                "connector_available": row.slug in CONNECTORS,
+                "connector_available": (row.connector_slug or row.slug) in CONNECTORS,
             }
         )
         for row in rows
@@ -258,7 +318,10 @@ def create_source(
         name=payload.name.strip(),
         slug=slug,
         source_type=payload.source_type.strip(),
+        scraping_mode=payload.scraping_mode.strip().lower(),
+        connector_slug=payload.connector_slug.strip().lower() if payload.connector_slug else None,
         base_url=payload.base_url.strip(),
+        config_json=payload.config_json,
         is_active=payload.is_active,
     )
     db.add(source)
@@ -270,10 +333,13 @@ def create_source(
             "name": source.name,
             "slug": source.slug,
             "source_type": source.source_type,
+            "scraping_mode": source.scraping_mode,
+            "connector_slug": source.connector_slug,
             "base_url": source.base_url,
+            "config_json": source.config_json,
             "is_active": source.is_active,
             "last_run_at": source.last_run_at,
-            "connector_available": source.slug in CONNECTORS,
+            "connector_available": (source.connector_slug or source.slug) in CONNECTORS,
         }
     )
 
@@ -299,8 +365,15 @@ def update_source(
         source.slug = slug
     if payload.source_type is not None:
         source.source_type = payload.source_type.strip()
+    if payload.scraping_mode is not None:
+        source.scraping_mode = payload.scraping_mode.strip().lower()
+    if payload.connector_slug is not None:
+        connector_slug = payload.connector_slug.strip().lower()
+        source.connector_slug = connector_slug or None
     if payload.base_url is not None:
         source.base_url = payload.base_url.strip()
+    if payload.config_json is not None:
+        source.config_json = payload.config_json
     if payload.is_active is not None:
         source.is_active = payload.is_active
 
@@ -312,16 +385,22 @@ def update_source(
             "name": source.name,
             "slug": source.slug,
             "source_type": source.source_type,
+            "scraping_mode": source.scraping_mode,
+            "connector_slug": source.connector_slug,
             "base_url": source.base_url,
+            "config_json": source.config_json,
             "is_active": source.is_active,
             "last_run_at": source.last_run_at,
-            "connector_available": source.slug in CONNECTORS,
+            "connector_available": (source.connector_slug or source.slug) in CONNECTORS,
         }
     )
 
 
 @router.get("/company-profiles")
-def get_company_profiles(db: Session = Depends(get_db)) -> list[dict]:
+def get_company_profiles(
+    db: Session = Depends(get_db),
+    _: User = Depends(require_company_admin),
+) -> list[dict]:
     rows = db.execute(select(CompanyProfile).order_by(CompanyProfile.id.asc())).scalars().all()
     return [
         {
@@ -360,7 +439,9 @@ def put_company_profile(
     profile = update_company_profile(
         db,
         profile,
+        cuit=payload.cuit,
         company_name=payload.company_name,
+        legal_name=payload.legal_name,
         company_description=payload.company_description,
         sectors=payload.sectors,
         include_keywords=payload.include_keywords,
@@ -370,6 +451,7 @@ def put_company_profile(
         min_amount=payload.min_amount,
         max_amount=payload.max_amount,
         alert_preferences_json=payload.alert_preferences_json,
+        tax_status_json=payload.tax_status_json,
     )
     db.commit()
     db.refresh(profile)
@@ -410,6 +492,7 @@ def patch_user(
         user,
         full_name=payload.full_name,
         company_name=payload.company_name,
+        cuit=payload.cuit,
         role=payload.role,
         is_active=payload.is_active,
         whatsapp_number=payload.whatsapp_number,
@@ -453,6 +536,23 @@ def get_admin_automation(
     return _serialize_automation_settings(settings_row)
 
 
+@router.get("/public/platform-settings", response_model=PublicPlatformSettingsRead)
+def get_public_platform_settings(
+    db: Session = Depends(get_db),
+) -> PublicPlatformSettingsRead:
+    settings_row = get_automation_settings(db)
+    db.commit()
+    db.refresh(settings_row)
+    return PublicPlatformSettingsRead.model_validate(
+        {
+            "contact_email": settings_row.contact_email,
+            "contact_whatsapp_number": settings_row.contact_whatsapp_number,
+            "contact_telegram_handle": settings_row.contact_telegram_handle,
+            "demo_booking_url": settings_row.demo_booking_url,
+        }
+    )
+
+
 @router.patch("/admin/automation", response_model=AutomationSettingsRead)
 def patch_admin_automation(
     payload: AutomationSettingsUpdateRequest,
@@ -468,6 +568,13 @@ def patch_admin_automation(
         openai_api_key=payload.openai_api_key,
         openai_model=payload.openai_model,
         llm_master_prompt=payload.llm_master_prompt,
+        contact_email=payload.contact_email,
+        contact_whatsapp_number=payload.contact_whatsapp_number,
+        contact_telegram_handle=payload.contact_telegram_handle,
+        demo_booking_url=payload.demo_booking_url,
+        resend_api_key=payload.resend_api_key,
+        resend_from_email=payload.resend_from_email,
+        email_delivery_enabled=payload.email_delivery_enabled,
     )
     db.commit()
     db.refresh(settings_row)
@@ -553,16 +660,25 @@ def dispatch_alerts_job(
     return run_alert_dispatch(db)
 
 
+@router.get("/admin/alerts/outbox", response_model=list[WhatsappOutboxMessageRead])
+def get_whatsapp_alert_outbox(
+    limit: int = Query(default=50, ge=1, le=200),
+    _: User = Depends(require_platform_admin),
+) -> list[WhatsappOutboxMessageRead]:
+    return [WhatsappOutboxMessageRead.model_validate(item) for item in read_whatsapp_outbox(limit=limit)]
+
+
 @router.post("/tenders/{tender_id}/state")
 def update_tender_state(
     tender_id: int,
     payload: TenderStateUpdateRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
-    user = ensure_demo_user(db)
-    if payload.user_id and payload.user_id != user.id:
+    user = current_user
+    if current_user.role == "admin" and payload.user_id and payload.user_id != user.id:
         row = db.execute(select(User).where(User.id == payload.user_id)).scalar_one_or_none()
-        if row:
+        if row is not None:
             user = row
     state = upsert_tender_state(
         db,
@@ -592,6 +708,7 @@ def _build_me_alert_preferences(
     receive_relevant: bool | None,
     receive_deadlines: bool | None,
     whatsapp_opt_in: bool | None,
+    email_opt_in: bool | None,
     existing: dict | None,
 ) -> dict:
     priority_map = {
@@ -601,6 +718,9 @@ def _build_me_alert_preferences(
     }
     preferences = dict(existing or {})
     channels = ["dashboard"]
+    wants_email = email_opt_in if email_opt_in is not None else "email" in (preferences.get("channels") or [])
+    if wants_email:
+        channels.append("email")
     wants_whatsapp = whatsapp_opt_in if whatsapp_opt_in is not None else "whatsapp" in (preferences.get("channels") or [])
     if wants_whatsapp:
         channels.append("whatsapp")
@@ -621,7 +741,9 @@ def _serialize_company_profile(profile: CompanyProfile) -> CompanyProfileAdminRe
     return CompanyProfileAdminRead.model_validate(
         {
             "id": profile.id,
+            "cuit": profile.cuit,
             "company_name": profile.company_name,
+            "legal_name": profile.legal_name,
             "company_description": profile.company_description,
             "sectors": profile.sectors,
             "include_keywords": profile.include_keywords,
@@ -631,6 +753,9 @@ def _serialize_company_profile(profile: CompanyProfile) -> CompanyProfileAdminRe
             "min_amount": str(profile.min_amount) if profile.min_amount is not None else None,
             "max_amount": str(profile.max_amount) if profile.max_amount is not None else None,
             "alert_preferences_json": profile.alert_preferences_json,
+            "tax_status_json": profile.tax_status_json,
+            "company_data_source": profile.company_data_source,
+            "company_data_updated_at": profile.company_data_updated_at,
         }
     )
 
@@ -644,8 +769,15 @@ def _serialize_automation_settings(settings_row) -> AutomationSettingsRead:
             "is_enabled": settings_row.is_enabled,
             "ingestion_interval_hours": settings_row.ingestion_interval_hours,
             "openai_api_key_configured": bool(settings_row.openai_api_key_override or settings.openai_api_key),
+            "resend_api_key_configured": bool(settings_row.resend_api_key_override),
+            "email_delivery_enabled": settings_row.email_delivery_enabled,
             "openai_model": active_model,
             "llm_master_prompt": active_prompt,
+            "contact_email": settings_row.contact_email,
+            "contact_whatsapp_number": settings_row.contact_whatsapp_number,
+            "contact_telegram_handle": settings_row.contact_telegram_handle,
+            "demo_booking_url": settings_row.demo_booking_url,
+            "resend_from_email": settings_row.resend_from_email,
             "last_run_started_at": settings_row.last_run_started_at,
             "last_run_finished_at": settings_row.last_run_finished_at,
             "last_success_at": settings_row.last_success_at,

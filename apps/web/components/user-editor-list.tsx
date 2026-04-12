@@ -71,8 +71,10 @@ export function UserEditorList({
       const response = await fetch(`${API_BASE_URL}/api/v1/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           full_name: user.full_name,
+          cuit: user.cuit,
           role: user.role,
           is_active: user.is_active,
           whatsapp_number: user.whatsapp_number,
@@ -105,136 +107,164 @@ export function UserEditorList({
         const draft = drafts[user.id];
         return (
           <article key={user.id} className="source-card">
-            <div className="source-edit-grid">
-              <div className="field">
-                <label htmlFor={`user-name-${user.id}`}>Nombre</label>
-                <input
-                  id={`user-name-${user.id}`}
-                  value={draft.full_name}
-                  onChange={(event) => updateDraft(user.id, { full_name: event.target.value })}
-                />
-              </div>
-              <div className="field">
-                <label htmlFor={`user-email-${user.id}`}>Email</label>
-                <input id={`user-email-${user.id}`} value={draft.email} disabled />
-              </div>
-            </div>
-
-            <div className="source-edit-grid">
-              <div className="field">
-                <label htmlFor={`user-role-${user.id}`}>Rol</label>
-                <select
-                  id={`user-role-${user.id}`}
-                  value={draft.role}
-                  onChange={(event) => updateDraft(user.id, { role: event.target.value })}
-                >
-                  <option value="analyst">Analista</option>
-                  <option value="manager">Manager</option>
-                  {canManagePlatformRoles ? <option value="admin">Admin</option> : null}
-                </select>
-              </div>
-              <div className="field">
-                <label>Estado</label>
-                <div className="meta">
-                  <span className={`badge ${draft.is_active ? "tone-success" : "tone-muted"}`}>
-                    {draft.is_active ? "Activo" : "Inactivo"}
-                  </span>
-                  <span className="badge tone-calm">{formatRoleLabel(draft.role)}</span>
-                  <span className={`badge ${draft.whatsapp_verified ? "tone-success" : "tone-warning"}`}>
-                    {draft.whatsapp_verified ? "WhatsApp verificado" : "WhatsApp sin verificar"}
-                  </span>
+            <details className="admin-disclosure" open={user.id === users[0]?.id}>
+              <summary className="admin-disclosure-summary">
+                <div className="source-card-header">
+                  <div>
+                    <strong>{draft.full_name}</strong>
+                    <p>{draft.email}</p>
+                  </div>
+                  <div className="meta">
+                    <span className={`badge ${draft.is_active ? "tone-success" : "tone-muted"}`}>
+                      {draft.is_active ? "Activo" : "Inactivo"}
+                    </span>
+                    <span className="badge tone-calm">{formatRoleLabel(draft.role)}</span>
+                    <span className={`badge ${draft.whatsapp_verified ? "tone-success" : "tone-warning"}`}>
+                      {draft.whatsapp_verified ? "WhatsApp verificado" : "WhatsApp sin verificar"}
+                    </span>
+                  </div>
                 </div>
+              </summary>
+
+              <div className="admin-disclosure-panel">
+                <div className="source-edit-grid source-edit-grid-compact">
+                  <div className="field">
+                    <label htmlFor={`user-name-${user.id}`}>Nombre</label>
+                    <input
+                      id={`user-name-${user.id}`}
+                      name={`user-name-${user.id}`}
+                      value={draft.full_name}
+                      onChange={(event) => updateDraft(user.id, { full_name: event.target.value })}
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`user-email-${user.id}`}>Email</label>
+                    <input
+                      id={`user-email-${user.id}`}
+                      name={`user-email-${user.id}`}
+                      type="email"
+                      value={draft.email}
+                      disabled
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`user-cuit-${user.id}`}>CUIT</label>
+                    <input
+                      id={`user-cuit-${user.id}`}
+                      name={`user-cuit-${user.id}`}
+                      value={draft.cuit ?? ""}
+                      onChange={(event) => updateDraft(user.id, { cuit: event.target.value })}
+                      placeholder="30712345678…"
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`user-role-${user.id}`}>Rol</label>
+                    <select
+                      id={`user-role-${user.id}`}
+                      value={draft.role}
+                      onChange={(event) => updateDraft(user.id, { role: event.target.value })}
+                    >
+                      <option value="analyst">Analista</option>
+                      <option value="manager">Manager</option>
+                      {canManagePlatformRoles ? <option value="admin">Admin</option> : null}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`user-whatsapp-${user.id}`}>WhatsApp</label>
+                    <input
+                      id={`user-whatsapp-${user.id}`}
+                      name={`user-whatsapp-${user.id}`}
+                      type="tel"
+                      value={draft.whatsapp_number ?? ""}
+                      onChange={(event) => updateDraft(user.id, { whatsapp_number: event.target.value })}
+                      placeholder="+5491123456789…"
+                    />
+                  </div>
+                  <div className="field">
+                    <label htmlFor={`user-min-score-${user.id}`}>Min score</label>
+                    <input
+                      id={`user-min-score-${user.id}`}
+                      name={`user-min-score-${user.id}`}
+                      value={draft.min_score}
+                      onChange={(event) => updateDraft(user.id, { min_score: event.target.value })}
+                      placeholder="60…"
+                    />
+                  </div>
+                </div>
+
+                <div className="field">
+                  <label htmlFor={`user-channels-${user.id}`}>Canales</label>
+                  <input
+                    id={`user-channels-${user.id}`}
+                    value={draft.channels_csv}
+                    onChange={(event) => updateDraft(user.id, { channels_csv: event.target.value })}
+                    placeholder="dashboard, email, whatsapp…"
+                  />
+                </div>
+
+                <div className="admin-toggle-grid">
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.is_active}
+                      onChange={(event) => updateDraft(user.id, { is_active: event.target.checked })}
+                    />
+                    <span>Usuario habilitado</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.whatsapp_opt_in}
+                      onChange={(event) => updateDraft(user.id, { whatsapp_opt_in: event.target.checked })}
+                    />
+                    <span>Opt-in WhatsApp</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.whatsapp_verified}
+                      onChange={(event) => updateDraft(user.id, { whatsapp_verified: event.target.checked })}
+                    />
+                    <span>Número verificado</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.receive_relevant}
+                      onChange={(event) => updateDraft(user.id, { receive_relevant: event.target.checked })}
+                    />
+                    <span>Nuevas relevantes</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.receive_deadlines}
+                      onChange={(event) => updateDraft(user.id, { receive_deadlines: event.target.checked })}
+                    />
+                    <span>Deadlines</span>
+                  </label>
+                </div>
+
+                <div className="source-edit-actions">
+                  <button
+                    type="button"
+                    onClick={() => saveUser(user.id)}
+                    disabled={isPending}
+                    className="button-secondary"
+                  >
+                    Guardar usuario
+                  </button>
+                </div>
+
+                {messages[user.id] ? (
+                  <p className="form-message form-message-block" aria-live="polite">{messages[user.id]}</p>
+                ) : null}
               </div>
-            </div>
-
-            <div className="source-edit-grid">
-              <div className="field">
-                <label htmlFor={`user-whatsapp-${user.id}`}>WhatsApp</label>
-                <input
-                  id={`user-whatsapp-${user.id}`}
-                  value={draft.whatsapp_number ?? ""}
-                  onChange={(event) => updateDraft(user.id, { whatsapp_number: event.target.value })}
-                  placeholder="+5491123456789"
-                />
-              </div>
-              <div className="field">
-                <label htmlFor={`user-min-score-${user.id}`}>Min score alertas</label>
-                <input
-                  id={`user-min-score-${user.id}`}
-                  value={draft.min_score}
-                  onChange={(event) => updateDraft(user.id, { min_score: event.target.value })}
-                  placeholder="60"
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <label htmlFor={`user-channels-${user.id}`}>Canales</label>
-              <input
-                id={`user-channels-${user.id}`}
-                value={draft.channels_csv}
-                onChange={(event) => updateDraft(user.id, { channels_csv: event.target.value })}
-                placeholder="dashboard, whatsapp"
-              />
-            </div>
-
-            <div className="source-edit-actions">
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={draft.is_active}
-                  onChange={(event) => updateDraft(user.id, { is_active: event.target.checked })}
-                />
-                <span>Usuario habilitado</span>
-              </label>
-
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={draft.whatsapp_opt_in}
-                  onChange={(event) => updateDraft(user.id, { whatsapp_opt_in: event.target.checked })}
-                />
-                <span>Opt-in para WhatsApp</span>
-              </label>
-
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={draft.whatsapp_verified}
-                  onChange={(event) => updateDraft(user.id, { whatsapp_verified: event.target.checked })}
-                />
-                <span>Número verificado</span>
-              </label>
-
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={draft.receive_relevant}
-                  onChange={(event) => updateDraft(user.id, { receive_relevant: event.target.checked })}
-                />
-                <span>Alertas de nuevas relevantes</span>
-              </label>
-
-              <label className="checkbox-row">
-                <input
-                  type="checkbox"
-                  checked={draft.receive_deadlines}
-                  onChange={(event) => updateDraft(user.id, { receive_deadlines: event.target.checked })}
-                />
-                <span>Alertas de deadlines</span>
-              </label>
-
-              <button
-                type="button"
-                onClick={() => saveUser(user.id)}
-                disabled={isPending}
-                className="button-secondary"
-              >
-                Guardar usuario
-              </button>
-            </div>
-
-            {messages[user.id] ? <p className="form-message form-message-block">{messages[user.id]}</p> : null}
+            </details>
           </article>
         );
       })}

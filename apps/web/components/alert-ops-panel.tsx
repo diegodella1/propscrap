@@ -13,6 +13,7 @@ export function AlertOpsPanel() {
       setMessage("");
       const response = await fetch(`${API_BASE_URL}${path}`, {
         method: "POST",
+        credentials: "include",
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
@@ -27,10 +28,25 @@ export function AlertOpsPanel() {
     <div className="source-form">
       <div className="results-header">
         <div>
-          <span className="section-kicker">Alerting</span>
-          <h2>Generar y despachar</h2>
+          <span className="section-kicker">Jobs</span>
+          <h2>Enriquecer, generar y despachar</h2>
         </div>
-        <p>Primero genera alerts por usuario y después despacha los pendientes de WhatsApp.</p>
+        <p>El orden recomendado es simple: enrichment, generación de alertas y después dispatch.</p>
+      </div>
+
+      <div className="admin-job-stack">
+        <article className="admin-job-card">
+          <strong>1. Enrichment</strong>
+          <p>Completa resumen, requisitos y señales antes de alertar.</p>
+        </article>
+        <article className="admin-job-card">
+          <strong>2. Generación</strong>
+          <p>Construye alertas por usuario según perfil y preferencias.</p>
+        </article>
+        <article className="admin-job-card">
+          <strong>3. Dispatch</strong>
+          <p>Envía lo pendiente al canal configurado.</p>
+        </article>
       </div>
 
       <div className="hero-actions">
@@ -60,7 +76,7 @@ export function AlertOpsPanel() {
         </button>
       </div>
 
-      {message ? <p className="form-message form-message-block">{message}</p> : null}
+      {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>
   );
 }

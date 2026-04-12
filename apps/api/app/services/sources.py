@@ -9,13 +9,25 @@ from app.models.tender import Source, SourceRun
 
 
 def ensure_source(
-    db: Session, *, slug: str, name: str, source_type: str, base_url: str, is_active: bool = True
+    db: Session,
+    *,
+    slug: str,
+    name: str,
+    source_type: str,
+    base_url: str,
+    is_active: bool = True,
+    scraping_mode: str = "coded",
+    connector_slug: str | None = None,
+    config_json: dict | None = None,
 ) -> Source:
     existing = db.execute(select(Source).where(Source.slug == slug)).scalar_one_or_none()
     if existing:
         existing.name = name
         existing.source_type = source_type
+        existing.scraping_mode = scraping_mode
+        existing.connector_slug = connector_slug
         existing.base_url = base_url
+        existing.config_json = config_json
         existing.is_active = is_active
         return existing
 
@@ -23,7 +35,10 @@ def ensure_source(
         slug=slug,
         name=name,
         source_type=source_type,
+        scraping_mode=scraping_mode,
+        connector_slug=connector_slug,
         base_url=base_url,
+        config_json=config_json,
         is_active=is_active,
     )
     db.add(source)
@@ -52,4 +67,3 @@ def finish_source_run(
     run.items_new = items_new
     run.error_message = error_message
     return run
-

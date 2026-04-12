@@ -7,7 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.services.auth import hash_password
-from app.services.company_profiles import ensure_user_company_profile
+from app.services.company_profiles import apply_company_lookup_result, ensure_user_company_profile
+from app.services.company_registry import lookup_company_by_cuit, validate_cuit
 from app.errors import ValidationError
 from app.models.tender import User
 
@@ -17,7 +18,7 @@ DEFAULT_ALERT_PREFERENCES = {
     "receive_relevant": True,
     "receive_deadlines": True,
 }
-ALLOWED_ALERT_CHANNELS = {"dashboard", "whatsapp"}
+ALLOWED_ALERT_CHANNELS = {"dashboard", "whatsapp", "email"}
 PHONE_PATTERN = re.compile(r"^\+[1-9]\d{7,14}$")
 
 
@@ -104,6 +105,7 @@ def update_user(
     *,
     full_name: str | None = None,
     company_name: str | None = None,
+    cuit: str | None = None,
     role: str | None = None,
     is_active: bool | None = None,
     whatsapp_number: str | None = None,
@@ -117,6 +119,13 @@ def update_user(
         user.full_name = full_name.strip()
     if company_name is not None:
         user.company_name = company_name.strip() if company_name.strip() else None
+    if cuit is not None:
+        normalized_cuit = validate_cuit(cuit) if cuit.strip() else None
+        if normalized_cuit:
+            company_result = lookup_company_by_cuit(normalized_cuit)
+            apply_company_lookup_result(db, user=user, company_result=company_result)
+        else:
+            user.cuit = None
     if role is not None:
         user.role = role.strip()
     if is_active is not None:
@@ -183,9 +192,10 @@ def normalize_alert_preferences(payload: dict | None) -> dict:
 
 
 def get_user_alert_preferences(user: User, *, default_min_score: float = 60) -> dict:
+    raw_preferences = user.alert_preferences_json if isinstance(user.alert_preferences_json, dict) else {}
     _ensure_user_defaults(user)
     preferences = normalize_alert_preferences(user.alert_preferences_json)
-    if preferences["min_score"] is None:
+    if "min_score" not in raw_preferences or raw_preferences.get("min_score") is None:
         preferences["min_score"] = int(default_min_score)
     return preferences
 

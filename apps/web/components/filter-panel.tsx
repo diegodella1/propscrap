@@ -17,7 +17,7 @@ export function FilterPanel({
     <form className="panel filters dashboard-filter-panel">
       <div className="section-heading">
         <span className="section-kicker">Filtros</span>
-        <h2>Refiná la cola de decisión</h2>
+        <h2>Acotar resultados</h2>
       </div>
 
       <div className="filter-preset-row">
@@ -68,8 +68,13 @@ export function FilterPanel({
         Aplicar filtros
       </button>
 
+      <div className="filter-legend">
+        <span>60+</span>
+        <p>Usalo como punto de partida para una revisión inicial.</p>
+      </div>
+
       <p className="muted filter-tip">
-        Para una lectura ejecutiva, empezá por `60+` y después recortá por fuente o jurisdicción.
+        Empezá por `60+` y después acotá por fuente o jurisdicción.
       </p>
     </form>
   );

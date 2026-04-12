@@ -10,6 +10,12 @@ type Props = {
   searchParams: Promise<{ onboarding?: string }>;
 };
 
+function alertPriorityLabel(minScore: number | undefined) {
+  if ((minScore ?? 60) >= 75) return "Alta";
+  if ((minScore ?? 60) <= 0) return "Todas";
+  return "Media o alta";
+}
+
 export default async function AccountPage({ searchParams }: Props) {
   const params = await searchParams;
   const currentUser = await getCurrentUserFromSession();
@@ -18,59 +24,84 @@ export default async function AccountPage({ searchParams }: Props) {
   }
 
   const onboarding = params.onboarding === "1";
-  const adminHref = currentUser.role === "admin" ? "/admin/platform" : currentUser.role === "manager" ? "/admin/company" : null;
-  const adminLabel = currentUser.role === "admin" ? "Abrir admin de plataforma" : currentUser.role === "manager" ? "Abrir admin de empresa" : null;
+  const adminHref =
+    currentUser.role === "admin" ? "/admin/platform" : currentUser.role === "manager" ? "/admin/company" : null;
+  const adminLabel =
+    currentUser.role === "admin"
+      ? "Abrir plataforma"
+      : currentUser.role === "manager"
+        ? "Abrir equipo"
+        : null;
 
   return (
     <main className="page-shell">
-      <SiteHeader section="account" currentUserName={currentUser.full_name} />
+      <SiteHeader
+        section="account"
+        currentUserName={currentUser.full_name}
+        currentUserRole={currentUser.role}
+      />
 
-      <section className="hero hero-app about-hero">
+      <section className="hero hero-app about-hero account-hero">
         <div>
           <span className="eyebrow">Mi cuenta</span>
-          <h1>Tu contacto y tus alertas, en una sola pantalla.</h1>
+          <h1>Preferencias personales.</h1>
         </div>
         <p>
           {onboarding
-            ? "Tu cuenta ya está lista. Dejá tu WhatsApp y elegí qué querés recibir."
-            : "Acá podés cambiar tu contacto, tu empresa y la forma en que querés enterarte de nuevas oportunidades."}
+            ? "Configurá canal de alertas y datos personales antes de empezar."
+            : "Ajustá canal, identidad y preferencias de alertas."}
         </p>
       </section>
 
-      <section className="auth-layout">
+      <section className="dashboard-executive-band account-summary-band">
+        <article>
+          <span>Canal principal</span>
+          <strong>{currentUser.whatsapp_opt_in ? "WhatsApp" : "Dashboard"}</strong>
+        </article>
+        <article>
+          <span>Prioridad</span>
+          <strong>{alertPriorityLabel(currentUser.alert_preferences_json?.min_score)}</strong>
+        </article>
+        <article>
+          <span>Empresa</span>
+          <strong>{currentUser.company_name ?? "Sin empresa"}</strong>
+        </article>
+        <article>
+          <span>Rol</span>
+          <strong>{currentUser.role}</strong>
+        </article>
+      </section>
+
+      <section className="auth-layout auth-layout-upgraded account-shell">
         <article className="panel dispatch-panel">
           {onboarding ? (
             <div className="detail-note-card">
-              <span className="section-kicker">Paso recomendado</span>
-              <p>Si completás tu WhatsApp ahora, las alertas te pueden llegar sin depender de abrir el dashboard.</p>
+              <span className="section-kicker">Recomendado</span>
+              <p>Cargá WhatsApp si querés recibir alertas fuera del dashboard.</p>
             </div>
           ) : null}
           <AccountSettingsForm user={currentUser} />
         </article>
 
-        <article className="panel dispatch-panel">
+        <article className="panel dispatch-panel onboarding-companion">
           <span className="section-kicker">Resumen</span>
-          <h2>Qué vas a recibir</h2>
-          <div className="source-stack">
-            <article className="source-card">
-              <strong>WhatsApp</strong>
-              <p>{currentUser.whatsapp_number ?? "Todavía no cargaste un número."}</p>
+          <h2>Configuración actual</h2>
+
+          <div className="onboarding-proof-list">
+            <article>
+              <strong>Canal</strong>
+              <p>{currentUser.whatsapp_number ?? "Todavía no cargaste un número para WhatsApp."}</p>
             </article>
-            <article className="source-card">
+            <article>
               <strong>Empresa</strong>
-              <p>{currentUser.company_name ?? "Todavía no cargaste tu empresa."}</p>
+              <p>{currentUser.company_name ?? "Todavía no vinculaste una empresa visible."}</p>
             </article>
-            <article className="source-card">
-              <strong>Prioridad</strong>
-              <p>
-                {(currentUser.alert_preferences_json?.min_score ?? 60) >= 75
-                  ? "Solo alta prioridad"
-                  : (currentUser.alert_preferences_json?.min_score ?? 60) <= 0
-                    ? "Todas"
-                    : "Media o alta"}
-              </p>
+            <article>
+              <strong>Filtro de alertas</strong>
+              <p>{alertPriorityLabel(currentUser.alert_preferences_json?.min_score)}</p>
             </article>
           </div>
+
           <div className="hero-actions">
             <Link href="/company-profile" className="button-primary">
               Editar perfil comercial

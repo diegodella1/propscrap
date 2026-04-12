@@ -27,7 +27,9 @@ export function CompanyProfileForm({
   matchUrl: string;
 }) {
   const [form, setForm] = useState({
+    cuit: profile.cuit ?? "",
     company_name: profile.company_name,
+    legal_name: profile.legal_name ?? "",
     company_description: profile.company_description,
     sectors: toCsv(profile.sectors),
     include_keywords: toCsv(profile.include_keywords),
@@ -62,7 +64,9 @@ export function CompanyProfileForm({
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
+          cuit: form.cuit || null,
           company_name: form.company_name,
+          legal_name: form.legal_name || null,
           company_description: form.company_description,
           sectors: fromCsv(form.sectors),
           include_keywords: fromCsv(form.include_keywords),
@@ -72,6 +76,7 @@ export function CompanyProfileForm({
           min_amount: form.min_amount || null,
           max_amount: form.max_amount || null,
           alert_preferences_json: { min_score: Number(form.min_score || 60) },
+          tax_status_json: profile.tax_status_json,
         }),
       });
 
@@ -98,6 +103,11 @@ export function CompanyProfileForm({
   return (
     <div className="company-profile-form">
       <div className="profile-summary-bar">{summary}</div>
+      <div className="signup-form-header">
+        <span className="section-kicker">Perfil</span>
+        <h2>Empresa y reglas de matching</h2>
+        <p>Completá identidad, keywords, compradores y alcance de búsqueda.</p>
+      </div>
 
       <div className="field">
         <label htmlFor="company-name">Empresa</label>
@@ -107,6 +117,29 @@ export function CompanyProfileForm({
           onChange={(event) => updateField("company_name", event.target.value)}
         />
       </div>
+      <div className="source-form-grid">
+        <div className="field">
+          <label htmlFor="company-cuit">CUIT</label>
+          <input id="company-cuit" value={form.cuit} disabled />
+        </div>
+        <div className="field">
+          <label htmlFor="company-legal-name">Razón social</label>
+          <input
+            id="company-legal-name"
+            value={form.legal_name}
+            onChange={(event) => updateField("legal_name", event.target.value)}
+          />
+        </div>
+      </div>
+      {profile.company_data_source ? (
+        <div className="detail-note-card">
+          <span className="section-kicker">Fuente legal</span>
+          <p>
+            {profile.company_data_source}
+            {profile.company_data_updated_at ? ` · ${new Date(profile.company_data_updated_at).toLocaleString("es-AR")}` : ""}
+          </p>
+        </div>
+      ) : null}
 
       <div className="field">
         <label htmlFor="company-description">Descripción de la empresa</label>
@@ -115,7 +148,7 @@ export function CompanyProfileForm({
           rows={5}
           value={form.company_description}
           onChange={(event) => updateField("company_description", event.target.value)}
-          placeholder="Qué vende, a quién le vende y en qué sectores compite"
+          placeholder="Qué vende, a quién le vende, cómo compite y qué documentación suele presentar…"
         />
       </div>
 
@@ -147,7 +180,7 @@ export function CompanyProfileForm({
           rows={4}
           value={form.include_keywords}
           onChange={(event) => updateField("include_keywords", event.target.value)}
-          placeholder="software, licencias, soporte, digitalización"
+          placeholder="software, licencias, soporte, digitalizacion, mantenimiento, mesa de ayuda…"
         />
       </div>
 
@@ -205,10 +238,17 @@ export function CompanyProfileForm({
       </div>
 
       <button type="button" onClick={saveProfile} disabled={isPending} className="button-primary button-block">
-        {isPending ? "Guardando y recalculando..." : "Guardar perfil y recalcular relevancia"}
+        {isPending ? "Guardando y recalculando…" : "Guardar perfil y recalcular relevancia"}
       </button>
 
-      {message ? <p className="form-message form-message-block">{message}</p> : null}
+      <div className="signup-confidence-bar">
+        <span>Fit comercial</span>
+        <span>Buyers</span>
+        <span>Jurisdicción</span>
+        <span>Umbral</span>
+      </div>
+
+      {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>
   );
 }

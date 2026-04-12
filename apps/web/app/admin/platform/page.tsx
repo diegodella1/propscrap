@@ -7,6 +7,7 @@ import {
   fetchAutomationSettings,
   fetchSourceRuns,
   fetchUsers,
+  fetchWhatsappOutbox,
 } from "../../../lib/api";
 import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
 
@@ -23,12 +24,13 @@ export default async function PlatformAdminRoute() {
     redirect(currentUser.role === "manager" ? "/admin/company" : "/dashboard");
   }
 
-  const [sourceRuns, alerts, users, sources, automationSettings] = await Promise.all([
+  const [sourceRuns, alerts, users, sources, automationSettings, whatsappOutbox] = await Promise.all([
     fetchSourceRuns(cookieHeader || undefined),
     fetchAlerts(cookieHeader || undefined),
     fetchUsers(cookieHeader || undefined),
     fetchAdminSources(cookieHeader || undefined),
     fetchAutomationSettings(cookieHeader || undefined),
+    fetchWhatsappOutbox(cookieHeader || undefined),
   ]);
 
   return (
@@ -39,6 +41,7 @@ export default async function PlatformAdminRoute() {
       users={users}
       sources={sources}
       automationSettings={automationSettings}
+      whatsappOutbox={whatsappOutbox}
     />
   );
 }

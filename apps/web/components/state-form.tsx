@@ -42,6 +42,7 @@ export function StateForm({
       setMessage("");
       const response = await fetch(`${API_BASE_URL}/api/v1/tenders/${tenderId}/state`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ state, notes }),
       });
@@ -55,6 +56,10 @@ export function StateForm({
 
   return (
     <div className="state-form">
+      <div className="state-form-intro">
+        <span className="section-kicker">Seguimiento</span>
+        <p>Actualizá estado y dejá una nota breve.</p>
+      </div>
       <select value={state} onChange={(event) => setState(event.target.value)}>
         {STATES.map((item) => (
           <option key={item} value={item}>
@@ -65,13 +70,13 @@ export function StateForm({
       <textarea
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
-        placeholder="Nota breve para contexto interno o próximo paso"
+        placeholder="Próximo paso, riesgo o contexto interno…"
         rows={4}
       />
       <button type="button" onClick={submit} disabled={isPending} className="button-primary button-block">
-        {isPending ? "Guardando..." : "Guardar estado"}
+        {isPending ? "Guardando…" : "Guardar estado"}
       </button>
-      {message ? <span className="form-message">{message}</span> : null}
+      {message ? <span className="form-message" aria-live="polite">{message}</span> : null}
     </div>
   );
 }

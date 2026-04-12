@@ -122,7 +122,10 @@ export type Source = {
   name: string;
   slug: string;
   source_type: string;
+  scraping_mode: string;
+  connector_slug?: string | null;
   base_url: string;
+  config_json?: Record<string, unknown> | null;
   is_active: boolean;
   last_run_at?: string | null;
   connector_available?: boolean;
@@ -154,9 +157,18 @@ export type Alert = {
   payload_snapshot: Record<string, string> | null;
 };
 
+export type WhatsappOutboxMessage = {
+  id: string;
+  provider: string;
+  to: string;
+  body: string;
+  created_at: string;
+};
+
 export type User = {
   id: number;
   company_profile_id: number | null;
+  cuit: string | null;
   email: string;
   full_name: string;
   company_name: string | null;
@@ -176,8 +188,10 @@ export type User = {
 export type MeUpdateInput = {
   full_name?: string;
   company_name?: string;
+  cuit?: string;
   whatsapp_number?: string;
   whatsapp_opt_in?: boolean;
+  email_opt_in?: boolean;
   alert_priority?: "alta" | "media" | "todas";
   receive_deadlines?: boolean;
   receive_relevant?: boolean;
@@ -185,7 +199,9 @@ export type MeUpdateInput = {
 
 export type CompanyProfile = {
   id: number;
+  cuit: string | null;
   company_name: string;
+  legal_name: string | null;
   company_description: string;
   sectors: string[] | null;
   include_keywords: string[] | null;
@@ -195,6 +211,9 @@ export type CompanyProfile = {
   min_amount: string | null;
   max_amount: string | null;
   alert_preferences_json: { min_score?: number } | null;
+  tax_status_json: Record<string, unknown> | null;
+  company_data_source: string | null;
+  company_data_updated_at: string | null;
 };
 
 export type AutomationSettings = {
@@ -202,8 +221,15 @@ export type AutomationSettings = {
   is_enabled: boolean;
   ingestion_interval_hours: number;
   openai_api_key_configured: boolean;
+  resend_api_key_configured: boolean;
+  email_delivery_enabled: boolean;
   openai_model: string | null;
   llm_master_prompt: string | null;
+  contact_email: string | null;
+  contact_whatsapp_number: string | null;
+  contact_telegram_handle: string | null;
+  demo_booking_url: string | null;
+  resend_from_email: string | null;
   last_run_started_at: string | null;
   last_run_finished_at: string | null;
   last_success_at: string | null;
@@ -211,11 +237,21 @@ export type AutomationSettings = {
   last_cycle_summary: Record<string, unknown> | null;
 };
 
+export type PublicPlatformSettings = {
+  contact_email: string | null;
+  contact_whatsapp_number: string | null;
+  contact_telegram_handle: string | null;
+  demo_booking_url: string | null;
+};
+
 export type SourceCreateInput = {
   name: string;
   slug: string;
   source_type: string;
+  scraping_mode: string;
+  connector_slug?: string | null;
   base_url: string;
+  config_json?: Record<string, unknown> | null;
   is_active: boolean;
 };
 
@@ -223,8 +259,22 @@ export type SourceUpdateInput = {
   name?: string;
   slug?: string;
   source_type?: string;
+  scraping_mode?: string;
+  connector_slug?: string | null;
   base_url?: string;
+  config_json?: Record<string, unknown> | null;
   is_active?: boolean;
+};
+
+export type CompanyLookup = {
+  cuit: string;
+  company_name: string;
+  legal_name: string;
+  tax_status_json: Record<string, unknown> | null;
+  company_data_source: string;
+  company_data_updated_at: string;
+  jurisdictions: string[] | null;
+  sectors: string[] | null;
 };
 
 export async function fetchTenders(searchParams?: {
@@ -263,9 +313,10 @@ export async function fetchSources() {
   return (await response.json()) as Source[];
 }
 
-export async function fetchTenderDetail(id: string) {
+export async function fetchTenderDetail(id: string, cookieHeader?: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/tenders/${id}`, {
     cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
   });
 
   if (!response.ok) {
@@ -273,6 +324,20 @@ export async function fetchTenderDetail(id: string) {
   }
 
   return (await response.json()) as TenderDetail;
+}
+
+export async function fetchSavedTenders(cookieHeader?: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/saved-tenders`, {
+    cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
+  });
+  if (response.status === 401) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error("Failed to fetch saved tenders");
+  }
+  return (await response.json()) as TenderResponse;
 }
 
 function withCookieHeader(cookieHeader?: string) {
@@ -346,6 +411,27 @@ export async function fetchAutomationSettings(cookieHeader?: string) {
     throw new Error("Failed to fetch automation settings");
   }
   return (await response.json()) as AutomationSettings;
+}
+
+export async function fetchPublicPlatformSettings() {
+  const response = await fetch(`${API_BASE_URL}/api/v1/public/platform-settings`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch public platform settings");
+  }
+  return (await response.json()) as PublicPlatformSettings;
+}
+
+export async function fetchWhatsappOutbox(cookieHeader?: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/alerts/outbox`, {
+    cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch WhatsApp outbox");
+  }
+  return (await response.json()) as WhatsappOutboxMessage[];
 }
 
 export async function fetchCurrentUser(cookieHeader?: string) {

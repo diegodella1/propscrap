@@ -12,59 +12,113 @@ type Props = {
 export function CompanyAdminPage({ currentUserName, users }: Props) {
   return (
     <main className="page-shell">
-      <SiteHeader section="admin" currentUserName={currentUserName} />
+      <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="manager" />
 
-      <section className="hero hero-app">
+      <section className="hero hero-app admin-hero company-admin-hero">
         <div>
-          <span className="eyebrow">Admin de empresa</span>
-          <h1>Administración de tu empresa.</h1>
+          <span className="eyebrow">Administración de empresa</span>
+          <h1>Equipo y perfil comercial.</h1>
         </div>
-        <p>Desde acá gestionás tu perfil comercial y tu equipo. No ves otras empresas ni la configuración global de la plataforma.</p>
+        <p>Gestioná usuarios y mantené el criterio de matching de tu empresa.</p>
       </section>
 
-      <section className="stats-grid">
-        <article className="stat-card">
-          <div className="stat-label">Equipo</div>
-          <div className="stat-value">{users.length}</div>
+      <section className="dashboard-executive-band admin-summary-band company-admin-summary-band">
+        <article>
+          <span>Usuarios</span>
+          <strong>{users.length}</strong>
         </article>
-        <article className="stat-card">
-          <div className="stat-label">Rol</div>
-          <div className="stat-value">Empresa</div>
+        <article>
+          <span>Ámbito</span>
+          <strong>1 empresa</strong>
         </article>
-        <article className="stat-card">
-          <div className="stat-label">Scope</div>
-          <div className="stat-value">1 empresa</div>
+        <article>
+          <span>Permiso</span>
+          <strong>Manager</strong>
+        </article>
+        <article>
+          <span>Alcance</span>
+          <strong>Equipo + perfil</strong>
         </article>
       </section>
 
-      <section className="admin-control-grid">
-        <article className="panel dispatch-panel">
-          <div className="results-header">
-            <div>
-              <span className="section-kicker">Perfil</span>
-              <h2>Cómo quiere comprar tu empresa</h2>
+      <section className="admin-shell-grid company-admin-shell-grid">
+        <aside className="panel admin-rail">
+          <div className="admin-rail-block">
+            <span className="section-kicker">Qué hacer acá</span>
+            <div className="admin-quick-list">
+              <article>
+                <strong>Cargar la empresa</strong>
+                <p>Partir del CUIT y completar el perfil comercial usable para matching.</p>
+              </article>
+              <article>
+                <strong>Ordenar alertas</strong>
+                <p>Definir aviso por email, WhatsApp y dashboard según cada usuario.</p>
+              </article>
+              <article>
+                <strong>Seguir licitaciones</strong>
+                <p>Guardar oportunidades y trabajar fechas, notas y próximos pasos.</p>
+              </article>
             </div>
-            <p>Definí keywords, compradores, jurisdicciones y criterios de matching solo para tu empresa.</p>
           </div>
-          <div className="hero-actions">
-            <Link href="/company-profile" className="button-primary">
-              Editar perfil comercial
-            </Link>
-          </div>
-        </article>
-      </section>
+        </aside>
 
-      <section style={{ display: "grid", gap: 20 }}>
-        <article className="panel table-panel">
-          <div className="results-header">
-            <div>
-              <span className="section-kicker">Usuarios</span>
-              <h2>Usuarios de tu empresa</h2>
-            </div>
-            <p>Solo podés ver y editar usuarios de tu empresa. No hay acceso a otras cuentas ni a configuración global.</p>
-          </div>
-          <UserEditorList users={users} />
-        </article>
+        <div className="admin-content-stack">
+          <section className="dashboard-focus-grid admin-focus-grid company-admin-focus-grid">
+            <article className="panel dispatch-panel">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Perfil comercial</span>
+                  <h2>Empresa, dossier y criterios de búsqueda</h2>
+                </div>
+                <p>CUIT, descripción, keywords, buyers, jurisdicciones y documentación base impactan directamente qué entra al radar.</p>
+              </div>
+              <div className="hero-actions">
+                <Link href="/company-profile" className="button-primary">
+                  Editar perfil comercial
+                </Link>
+                <Link href="/dashboard" className="button-secondary">
+                  Ver oportunidades
+                </Link>
+              </div>
+            </article>
+
+            <article className="panel dispatch-panel onboarding-companion">
+              <span className="section-kicker">Alcance del rol</span>
+              <h2>Qué puede hacer un admin de empresa</h2>
+              <div className="admin-overview-grid">
+                <article>
+                  <strong>Equipo</strong>
+                  <p>Alta, baja y modificación de usuarios de su propia empresa.</p>
+                </article>
+                <article>
+                  <strong>Matching</strong>
+                  <p>Definir keywords, buyers y fuentes objetivo para mejorar el discovery.</p>
+                </article>
+                <article>
+                  <strong>Seguimiento</strong>
+                  <p>Guardar licitaciones, trabajar fechas y sostener una cartera activa.</p>
+                </article>
+                <article>
+                  <strong>Límite</strong>
+                  <p>No accede a otras empresas ni a configuración global de fuentes, LLM o automatización.</p>
+                </article>
+              </div>
+            </article>
+          </section>
+
+          <section className="admin-section-stack">
+            <article className="panel table-panel table-panel-upgraded">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Equipo</span>
+                  <h2>Usuarios de la empresa</h2>
+                </div>
+                <p>Mantené una operación compartida y trazable, sin depender de una sola persona.</p>
+              </div>
+              <UserEditorList users={users} />
+            </article>
+          </section>
+        </div>
       </section>
     </main>
   );

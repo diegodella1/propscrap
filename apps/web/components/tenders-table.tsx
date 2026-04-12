@@ -21,7 +21,7 @@ function getUrgencyLabel(value: string | null) {
   if (diff < 0) return "Vencida";
   if (diff < 1000 * 60 * 60 * 24) return "Cierra en 24h";
   if (diff < 1000 * 60 * 60 * 24 * 3) return "Cierra en 3 días";
-  if (diff < 1000 * 60 * 60 * 24 * 7) return "Cierra esta semana";
+  if (diff < 1000 * 60 * 60 * 24 * 7) return "Esta semana";
   return "Con margen";
 }
 
@@ -37,27 +37,20 @@ function getUrgencyTone(value: string | null) {
 function formatStateLabel(value: string | null | undefined) {
   switch (value) {
     case "new":
-      return "Nuevo";
+      return "Nueva";
     case "seen":
-      return "Visto";
+      return "Vista";
     case "saved":
-      return "Guardado";
+      return "Guardada";
     case "discarded":
-      return "Descartado";
+      return "Descartada";
     case "evaluating":
-      return "En evaluación";
+      return "En revisión";
     case "presenting":
-      return "Presentando";
+      return "Preparando oferta";
     default:
       return value ?? "Sin estado";
   }
-}
-
-function formatScoreBand(value: string | null | undefined) {
-  if (value === "high") return "alto";
-  if (value === "medium") return "medio";
-  if (value === "low") return "bajo";
-  return value ?? "n/d";
 }
 
 function getScoreTone(score: number | null) {
@@ -67,155 +60,60 @@ function getScoreTone(score: number | null) {
   return "tone-muted";
 }
 
-function getStateTone(value: string | null | undefined) {
-  switch (value) {
-    case "presenting":
-    case "evaluating":
-      return "tone-success";
-    case "saved":
-      return "tone-calm";
-    case "discarded":
-      return "tone-danger";
-    case "seen":
-      return "tone-warning";
-    default:
-      return "tone-neutral";
-  }
-}
-
 export function TendersTable({ tenders, total }: Props) {
   return (
-    <section className="panel table-panel">
+    <section className="panel table-panel table-panel-upgraded">
       <div className="results-header">
         <div>
-          <span className="section-kicker">Cola priorizada</span>
-          <h2>Licitaciones priorizadas</h2>
-          <p>{total} registros persistidos en esta instancia local.</p>
+          <span className="section-kicker">Resultados</span>
+          <h2>Oportunidades disponibles</h2>
+          <p>{total} registros visibles en esta instancia.</p>
         </div>
-        <p className="muted">Una vista para decidir, no para acumular filas.</p>
+        <p className="muted">Cada fila muestra fuente, urgencia, score y acceso al dossier.</p>
       </div>
 
-      <div className="table-wrap">
-        <table className="desktop-table">
-          <thead>
-            <tr>
-              <th>Título</th>
-              <th>Organismo</th>
-              <th>Fechas</th>
-              <th>Estado</th>
-              <th>Fuente</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tenders.map((tender) => {
-              const match = tender.matches[0];
-              const state = tender.states[0];
-              const score = match ? Math.round(Number(match.score)) : null;
-
-              return (
-                <tr key={tender.id}>
-                  <td>
-                    <div className="title-cell">
-                      <strong>{tender.title}</strong>
-                      <div className="meta">
-                        {tender.procedure_type ? (
-                          <span className="badge">{tender.procedure_type}</span>
-                        ) : null}
-                        {tender.jurisdiction ? (
-                          <span className="badge">{tender.jurisdiction}</span>
-                        ) : null}
-                        <span className={`badge ${getUrgencyTone(tender.deadline_date)}`}>
-                          {getUrgencyLabel(tender.deadline_date)}
-                        </span>
-                      </div>
-                      <Link href={`/tenders/${tender.id}`} className="linkish">
-                        Abrir dossier
-                      </Link>
-                    </div>
-                  </td>
-                  <td>{tender.organization ?? "Sin organismo"}</td>
-                  <td>
-                    <div className="title-cell">
-                      <span className="muted">
-                        Publicación: {tender.publication_date ?? "Sin fecha"}
-                      </span>
-                      <span
-                        className={`badge ${getUrgencyTone(tender.deadline_date)}`}
-                      >
-                        Cierre: {formatDate(tender.deadline_date)}
-                      </span>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="title-cell">
-                      <span>{tender.status_raw ?? "Sin estado"}</span>
-                      {match ? (
-                        <span className={`badge score-chip ${getScoreTone(score)}`}>
-                          Score {score} / {formatScoreBand(match.score_band)}
-                        </span>
-                      ) : (
-                        <span className="badge">Sin match</span>
-                      )}
-                      {state ? (
-                        <span className={`badge workflow-chip ${getStateTone(state.state)}`}>
-                          {formatStateLabel(state.state)}
-                        </span>
-                      ) : null}
-                    </div>
-                  </td>
-                  <td>
-                    <div className="title-cell">
-                      <span className="badge source-chip">{tender.source.name}</span>
-                      {match?.reasons_json?.summary?.[0] ? (
-                        <span className="muted">{match.reasons_json.summary[0]}</span>
-                      ) : null}
-                      <a
-                        href={tender.source_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="linkish"
-                      >
-                        Fuente original
-                      </a>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="results-ribbon">
+        <span>Score y motivo</span>
+        <span>Deadline</span>
+        <span>Workflow</span>
+        <span>Fuente original</span>
       </div>
 
-      <div className="mobile-tender-list">
+      <div className="opportunity-list">
         {tenders.map((tender) => {
           const match = tender.matches[0];
           const state = tender.states[0];
           const score = match ? Math.round(Number(match.score)) : null;
 
           return (
-            <article key={tender.id} className="mobile-tender-card">
-              <div className="meta">
-                <span className="source-chip">{tender.source.name}</span>
-                {match ? <span className={`score-chip badge ${getScoreTone(score)}`}>Score {score}</span> : null}
-                {state ? (
-                  <span className={`badge workflow-chip ${getStateTone(state.state)}`}>
-                    {formatStateLabel(state.state)}
-                  </span>
-                ) : null}
+            <article key={tender.id} className="opportunity-list-card">
+              <div className="opportunity-list-main">
+                <div className="opportunity-list-head">
+                  <span className="source-chip">{tender.source.name}</span>
+                  {tender.procedure_type ? <span className="badge">{tender.procedure_type}</span> : null}
+                  {tender.jurisdiction ? <span className="badge">{tender.jurisdiction}</span> : null}
+                  <span className={`badge ${getUrgencyTone(tender.deadline_date)}`}>{getUrgencyLabel(tender.deadline_date)}</span>
+                </div>
+                <strong>{tender.title}</strong>
+                <p>{tender.organization ?? "Sin organismo"} · cierre {formatDate(tender.deadline_date)}</p>
+                <p className="muted">
+                  {match?.reasons_json?.summary?.[0] ?? "Sin explicación sintetizada todavía."}
+                </p>
               </div>
-              <h3>{tender.title}</h3>
-              <p>{tender.organization ?? "Sin organismo"} · {tender.jurisdiction ?? "Sin jurisdicción"}</p>
-              <div className="meta">
-                {tender.procedure_type ? <span className="badge">{tender.procedure_type}</span> : null}
-                <span className={`badge ${getUrgencyTone(tender.deadline_date)}`}>
-                  {getUrgencyLabel(tender.deadline_date)}
-                </span>
-              </div>
-              <div className="mobile-card-footer">
-                <span className="muted">{formatDate(tender.deadline_date)}</span>
-                <Link href={`/tenders/${tender.id}`} className="linkish">
-                  Ver detalle
+
+              <div className="opportunity-list-aside">
+                {match ? (
+                  <span className={`badge score-chip ${getScoreTone(score)}`}>Score {score}</span>
+                ) : (
+                  <span className="badge">Sin match</span>
+                )}
+                {state ? <span className="badge">{formatStateLabel(state.state)}</span> : null}
+                <Link href={`/tenders/${tender.id}`} className="button-secondary">
+                  Abrir dossier
                 </Link>
+                <a href={tender.source_url} target="_blank" rel="noreferrer" className="linkish">
+                  Fuente original
+                </a>
               </div>
             </article>
           );

@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict
 class UserRead(BaseModel):
     id: int
     company_profile_id: int | None = None
+    cuit: str | None = None
     email: str
     full_name: str
     company_name: str | None = None
@@ -38,12 +39,25 @@ class AdminAlertRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class WhatsappOutboxMessageRead(BaseModel):
+    id: str
+    provider: str
+    to: str
+    body: str
+    created_at: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class SourceAdminRead(BaseModel):
     id: int
     name: str
     slug: str
     source_type: str
+    scraping_mode: str
+    connector_slug: str | None = None
     base_url: str
+    config_json: dict | None = None
     is_active: bool
     last_run_at: datetime | None = None
     connector_available: bool
@@ -55,7 +69,10 @@ class SourceCreateRequest(BaseModel):
     name: str
     slug: str
     source_type: str
+    scraping_mode: str = "coded"
+    connector_slug: str | None = None
     base_url: str
+    config_json: dict | None = None
     is_active: bool = True
 
 
@@ -63,13 +80,17 @@ class SourceUpdateRequest(BaseModel):
     name: str | None = None
     slug: str | None = None
     source_type: str | None = None
+    scraping_mode: str | None = None
+    connector_slug: str | None = None
     base_url: str | None = None
+    config_json: dict | None = None
     is_active: bool | None = None
 
 
 class UserUpdateRequest(BaseModel):
     full_name: str | None = None
     company_name: str | None = None
+    cuit: str | None = None
     role: str | None = None
     is_active: bool | None = None
     whatsapp_number: str | None = None
@@ -80,7 +101,9 @@ class UserUpdateRequest(BaseModel):
 
 class CompanyProfileAdminRead(BaseModel):
     id: int
+    cuit: str | None = None
     company_name: str
+    legal_name: str | None = None
     company_description: str
     sectors: list[str] | None = None
     include_keywords: list[str] | None = None
@@ -90,12 +113,17 @@ class CompanyProfileAdminRead(BaseModel):
     min_amount: str | None = None
     max_amount: str | None = None
     alert_preferences_json: dict | None = None
+    tax_status_json: dict | None = None
+    company_data_source: str | None = None
+    company_data_updated_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class CompanyProfileUpdateRequest(BaseModel):
+    cuit: str | None = None
     company_name: str
+    legal_name: str | None = None
     company_description: str
     sectors: list[str] | None = None
     include_keywords: list[str] | None = None
@@ -105,6 +133,7 @@ class CompanyProfileUpdateRequest(BaseModel):
     min_amount: str | None = None
     max_amount: str | None = None
     alert_preferences_json: dict | None = None
+    tax_status_json: dict | None = None
 
 
 class AutomationSettingsRead(BaseModel):
@@ -112,8 +141,15 @@ class AutomationSettingsRead(BaseModel):
     is_enabled: bool
     ingestion_interval_hours: int
     openai_api_key_configured: bool = False
+    resend_api_key_configured: bool = False
+    email_delivery_enabled: bool = False
     openai_model: str | None = None
     llm_master_prompt: str | None = None
+    contact_email: str | None = None
+    contact_whatsapp_number: str | None = None
+    contact_telegram_handle: str | None = None
+    demo_booking_url: str | None = None
+    resend_from_email: str | None = None
     last_run_started_at: datetime | None = None
     last_run_finished_at: datetime | None = None
     last_success_at: datetime | None = None
@@ -129,3 +165,17 @@ class AutomationSettingsUpdateRequest(BaseModel):
     openai_api_key: str | None = None
     openai_model: str | None = None
     llm_master_prompt: str | None = None
+    contact_email: str | None = None
+    contact_whatsapp_number: str | None = None
+    contact_telegram_handle: str | None = None
+    demo_booking_url: str | None = None
+    resend_api_key: str | None = None
+    resend_from_email: str | None = None
+    email_delivery_enabled: bool | None = None
+
+
+class PublicPlatformSettingsRead(BaseModel):
+    contact_email: str | None = None
+    contact_whatsapp_number: str | None = None
+    contact_telegram_handle: str | None = None
+    demo_booking_url: str | None = None

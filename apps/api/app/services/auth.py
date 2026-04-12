@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.errors import ConflictError, NotFoundError, ValidationError
 from app.models.tender import User
+from app.services.company_registry import lookup_company_by_cuit, validate_cuit
 
 PBKDF2_ITERATIONS = 600_000
 
@@ -22,11 +23,13 @@ def create_user_account(
     full_name: str,
     email: str,
     password: str,
+    cuit: str,
     company_name: str | None,
 ) -> User:
-    from app.services.company_profiles import ensure_user_company_profile
+    from app.services.company_profiles import apply_company_lookup_result
 
     normalized_email = email.strip().lower()
+    normalized_cuit = validate_cuit(cuit)
     validate_email(normalized_email)
     existing = db.execute(select(User).where(User.email == normalized_email)).scalar_one_or_none()
     if existing is not None:
@@ -37,6 +40,7 @@ def create_user_account(
     user = User(
         email=normalized_email,
         full_name=full_name.strip(),
+        cuit=normalized_cuit,
         company_name=company_name.strip() if company_name and company_name.strip() else None,
         password_hash=hash_password(password),
         role="manager",
@@ -44,7 +48,8 @@ def create_user_account(
     )
     db.add(user)
     db.flush()
-    ensure_user_company_profile(db, user)
+    company_result = lookup_company_by_cuit(normalized_cuit)
+    apply_company_lookup_result(db, user=user, company_result=company_result)
     return user
 
 

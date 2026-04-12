@@ -23,6 +23,15 @@ class WhatsappSendResult:
     provider_name: str
 
 
+@dataclass(slots=True)
+class WhatsappOutboxMessage:
+    id: str
+    provider: str
+    to: str
+    body: str
+    created_at: str
+
+
 class WhatsappProvider:
     provider_name = "base"
 
@@ -94,12 +103,7 @@ class MetaWhatsappProvider(WhatsappProvider):
 
 def get_whatsapp_provider() -> WhatsappProvider:
     settings = get_settings()
-    configured_outbox_path = Path(settings.whatsapp_outbox_path)
-    outbox_path = (
-        configured_outbox_path
-        if configured_outbox_path.is_absolute()
-        else Path(__file__).resolve().parents[4] / configured_outbox_path
-    )
+    outbox_path = get_whatsapp_outbox_path()
 
     if not settings.whatsapp_enabled:
         return MetaWhatsappProvider(api_version=settings.whatsapp_meta_api_version, token=None, phone_number_id=None)
@@ -112,3 +116,39 @@ def get_whatsapp_provider() -> WhatsappProvider:
         )
 
     return MockWhatsappProvider(outbox_path=outbox_path)
+
+
+def get_whatsapp_outbox_path() -> Path:
+    settings = get_settings()
+    configured_outbox_path = Path(settings.whatsapp_outbox_path)
+    if configured_outbox_path.is_absolute():
+        return configured_outbox_path
+    return Path(__file__).resolve().parents[4] / configured_outbox_path
+
+
+def read_whatsapp_outbox(*, limit: int = 50) -> list[WhatsappOutboxMessage]:
+    outbox_path = get_whatsapp_outbox_path()
+    if not outbox_path.exists():
+        return []
+
+    lines = outbox_path.read_text(encoding="utf-8").splitlines()
+    messages: list[WhatsappOutboxMessage] = []
+    for line in reversed(lines):
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        messages.append(
+            WhatsappOutboxMessage(
+                id=str(payload.get("id") or ""),
+                provider=str(payload.get("provider") or "mock"),
+                to=str(payload.get("to") or ""),
+                body=str(payload.get("body") or ""),
+                created_at=str(payload.get("created_at") or ""),
+            )
+        )
+        if len(messages) >= limit:
+            break
+    return messages

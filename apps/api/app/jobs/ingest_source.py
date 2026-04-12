@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.errors import NotFoundError
@@ -13,19 +14,33 @@ from app.services.sources import ensure_source, finish_source_run, start_source_
 
 
 def ingest_source(db: Session, source_slug: str) -> dict:
-    connector_cls = CONNECTORS.get(source_slug)
+    source = db.execute(select(Source).where(Source.slug == source_slug)).scalar_one_or_none()
+    connector_key = source.connector_slug if source and source.connector_slug else source_slug
+    connector_cls = CONNECTORS.get(connector_key)
     if not connector_cls:
         raise NotFoundError(f"Unknown source slug: {source_slug}")
 
     connector = connector_cls()
-    source = ensure_source(
-        db,
-        slug=connector.slug,
-        name=connector.name,
-        source_type="portal",
-        base_url=connector.base_url,
-    )
-    db.flush()
+    if source is None:
+        source = ensure_source(
+            db,
+            slug=source_slug,
+            name=connector.name,
+            source_type="portal",
+            scraping_mode="coded",
+            connector_slug=connector.slug,
+            base_url=connector.base_url,
+        )
+        db.flush()
+    else:
+        source.name = source.name or connector.name
+        source.source_type = source.source_type or "portal"
+        source.scraping_mode = source.scraping_mode or "coded"
+        source.connector_slug = connector.slug
+        if not source.base_url:
+            source.base_url = connector.base_url
+        db.add(source)
+        db.flush()
 
     run = start_source_run(db, source.id)
     db.commit()

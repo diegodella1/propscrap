@@ -18,23 +18,29 @@ export default async function LoginPage() {
       <section className="hero hero-app about-hero">
         <div>
           <span className="eyebrow">Ingresar</span>
-          <h1>Entrá y dejá tus alertas listas.</h1>
+          <h1>Ingresá a tu workspace.</h1>
         </div>
-        <p>Usá tu email y contraseña. Si todavía no tenés cuenta, la podés crear en menos de un minuto.</p>
+        <p>Entrás con email y contraseña y volvés a oportunidades, seguimiento o administración según tu rol.</p>
       </section>
 
-      <section className="auth-layout">
+      <section className="auth-layout auth-layout-upgraded signup-shell login-shell">
         <LoginForm />
-        <article className="panel dispatch-panel">
-          <span className="section-kicker">Nuevo</span>
-          <h2>¿Todavía no tenés cuenta?</h2>
-          <p className="muted">
-            Creala una vez y después vas a poder cargar tu WhatsApp, definir qué querés recibir y cambiarlo cuando
-            quieras.
-          </p>
-          <Link href="/signup" className="button-secondary">
-            Crear cuenta
-          </Link>
+        <article className="panel dispatch-panel onboarding-companion signup-companion login-companion">
+          <span className="section-kicker">Acceso</span>
+          <h2>Qué vas a encontrar adentro.</h2>
+          <div className="signup-path">
+            <p>Discovery priorizado.</p>
+            <p>Seguimiento y alertas configuradas.</p>
+            <p>Capas de administración, si tu rol lo permite.</p>
+          </div>
+          <div className="hero-actions">
+            <Link href="/signup" className="button-secondary">
+              Crear cuenta
+            </Link>
+            <Link href="/about" className="linkish">
+              Ver propuesta
+            </Link>
+          </div>
         </article>
       </section>
     </main>

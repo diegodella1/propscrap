@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from decimal import Decimal
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.errors import ConflictError
 from app.models.tender import CompanyProfile, User
+from app.services.company_registry import CompanyLookupResult, validate_cuit
 
 DEMO_PROFILE_NAME = "Tecnologia Sanitaria Integrada SA"
 DEFAULT_PROFILE_DESCRIPTION = (
@@ -47,13 +50,16 @@ DEFAULT_BUYERS = [
 
 def ensure_demo_company_profile(db: Session) -> CompanyProfile:
     existing = db.execute(
-        select(CompanyProfile).where(CompanyProfile.company_name == DEMO_PROFILE_NAME)
-    ).scalar_one_or_none()
+        select(CompanyProfile)
+        .where(CompanyProfile.company_name == DEMO_PROFILE_NAME)
+        .order_by(CompanyProfile.id.asc())
+    ).scalars().first()
     if existing:
         return existing
 
     profile = CompanyProfile(
         company_name=DEMO_PROFILE_NAME,
+        legal_name=DEMO_PROFILE_NAME,
         company_description=DEFAULT_PROFILE_DESCRIPTION,
         sectors=DEFAULT_SECTORS.copy(),
         include_keywords=DEFAULT_INCLUDE_KEYWORDS.copy(),
@@ -75,8 +81,35 @@ def ensure_user_company_profile(db: Session, user: User) -> CompanyProfile:
         if existing is not None:
             return existing
 
+    desired_name = (user.company_name or user.full_name or "Mi empresa").strip()
+    normalized_cuit = validate_cuit(user.cuit) if user.cuit else None
+    if normalized_cuit:
+        existing_by_cuit = db.execute(
+            select(CompanyProfile).where(CompanyProfile.cuit == normalized_cuit)
+        ).scalar_one_or_none()
+        if existing_by_cuit is not None:
+            user.company_profile_id = existing_by_cuit.id
+            user.company_name = existing_by_cuit.company_name
+            db.add(user)
+            db.flush()
+            return existing_by_cuit
+    elif desired_name:
+        existing_by_name = db.execute(
+            select(CompanyProfile)
+            .where(func.lower(CompanyProfile.company_name) == desired_name.lower())
+            .order_by(CompanyProfile.id.asc())
+        ).scalars().first()
+        if existing_by_name is not None:
+            user.company_profile_id = existing_by_name.id
+            user.company_name = existing_by_name.company_name
+            db.add(user)
+            db.flush()
+            return existing_by_name
+
     profile = CompanyProfile(
-        company_name=(user.company_name or user.full_name or "Mi empresa").strip(),
+        cuit=normalized_cuit,
+        company_name=desired_name,
+        legal_name=desired_name,
         company_description=DEFAULT_PROFILE_DESCRIPTION,
         sectors=DEFAULT_SECTORS.copy(),
         include_keywords=DEFAULT_INCLUDE_KEYWORDS.copy(),
@@ -115,7 +148,9 @@ def update_company_profile(
     db: Session,
     profile: CompanyProfile,
     *,
+    cuit: str | None,
     company_name: str,
+    legal_name: str | None,
     company_description: str,
     sectors: list[str] | None,
     include_keywords: list[str] | None,
@@ -125,8 +160,18 @@ def update_company_profile(
     min_amount: str | None,
     max_amount: str | None,
     alert_preferences_json: dict | None,
+    tax_status_json: dict | None,
 ) -> CompanyProfile:
+    normalized_cuit = validate_cuit(cuit) if cuit else None
+    if normalized_cuit and normalized_cuit != profile.cuit:
+        existing = db.execute(
+            select(CompanyProfile).where(CompanyProfile.cuit == normalized_cuit, CompanyProfile.id != profile.id)
+        ).scalar_one_or_none()
+        if existing is not None:
+            raise ConflictError(f"Ya existe un perfil de empresa para el CUIT {normalized_cuit}")
+    profile.cuit = normalized_cuit
     profile.company_name = company_name.strip()
+    profile.legal_name = legal_name.strip() if legal_name and legal_name.strip() else profile.company_name
     profile.company_description = company_description.strip()
     profile.sectors = sectors or []
     profile.include_keywords = include_keywords or []
@@ -136,6 +181,69 @@ def update_company_profile(
     profile.min_amount = Decimal(min_amount) if min_amount else None
     profile.max_amount = Decimal(max_amount) if max_amount else None
     profile.alert_preferences_json = alert_preferences_json or {}
+    profile.tax_status_json = tax_status_json or profile.tax_status_json or {}
+    db.add(profile)
+    db.flush()
+    return profile
+
+
+def apply_company_lookup_result(
+    db: Session,
+    *,
+    user: User,
+    company_result: CompanyLookupResult,
+) -> CompanyProfile:
+    normalized_cuit = validate_cuit(company_result.cuit)
+    existing = db.execute(select(CompanyProfile).where(CompanyProfile.cuit == normalized_cuit)).scalar_one_or_none()
+    if existing is None:
+        existing = CompanyProfile(
+            cuit=normalized_cuit,
+            company_name=company_result.company_name,
+            legal_name=company_result.legal_name,
+            company_description=DEFAULT_PROFILE_DESCRIPTION,
+            sectors=company_result.sectors or DEFAULT_SECTORS.copy(),
+            include_keywords=DEFAULT_INCLUDE_KEYWORDS.copy(),
+            exclude_keywords=DEFAULT_EXCLUDE_KEYWORDS.copy(),
+            jurisdictions=company_result.jurisdictions or DEFAULT_JURISDICTIONS.copy(),
+            preferred_buyers=DEFAULT_BUYERS.copy(),
+            min_amount=Decimal("1000000"),
+            max_amount=Decimal("100000000"),
+            alert_preferences_json={"min_score": 60},
+            tax_status_json=company_result.tax_status_json,
+            company_data_source=company_result.company_data_source,
+            company_data_updated_at=company_result.company_data_updated_at,
+        )
+        db.add(existing)
+        db.flush()
+    else:
+        existing.company_name = company_result.company_name
+        existing.legal_name = company_result.legal_name
+        if company_result.sectors:
+            existing.sectors = company_result.sectors
+        if company_result.jurisdictions:
+            existing.jurisdictions = company_result.jurisdictions
+        existing.tax_status_json = company_result.tax_status_json
+        existing.company_data_source = company_result.company_data_source
+        existing.company_data_updated_at = company_result.company_data_updated_at
+        db.add(existing)
+        db.flush()
+
+    user.cuit = normalized_cuit
+    user.company_name = existing.company_name
+    user.company_profile_id = existing.id
+    db.add(user)
+    db.flush()
+    return existing
+
+
+def touch_company_profile_sync_metadata(
+    db: Session,
+    profile: CompanyProfile,
+    *,
+    company_data_source: str,
+) -> CompanyProfile:
+    profile.company_data_source = company_data_source
+    profile.company_data_updated_at = datetime.now(tz=UTC)
     db.add(profile)
     db.flush()
     return profile

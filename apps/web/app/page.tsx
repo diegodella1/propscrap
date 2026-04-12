@@ -1,214 +1,265 @@
 import Link from "next/link";
 
-import {
-  HeroTechnicalIllustration,
-  ProcessDiagramIllustration,
-  ProofRibbonIllustration,
-} from "../components/landing-ornaments";
+import { ExecutiveControlIllustration, WorkspaceBoardIllustration } from "../components/landing-ornaments";
 import { SiteHeader } from "../components/site-header";
-import { fetchAlerts, fetchSources, fetchTenders } from "../lib/api";
+import { fetchSources, fetchTenders } from "../lib/api";
 import { getCurrentUserFromSession } from "../lib/session";
 
+function formatDeadlineLabel(value: string | null) {
+  if (!value) return "Sin cierre informado";
+  const diff = new Date(value).getTime() - Date.now();
+  if (diff < 1000 * 60 * 60 * 24) return "Cierra en 24h";
+  if (diff < 1000 * 60 * 60 * 24 * 3) return "Cierra en 3 días";
+  if (diff < 1000 * 60 * 60 * 24 * 7) return "Cierra esta semana";
+  return "Con margen";
+}
+
 export default async function LandingPage() {
-  const [sources, tenders, alerts, currentUser] = await Promise.all([
+  const [sources, tenders, currentUser] = await Promise.all([
     fetchSources(),
-    fetchTenders({ min_score: "60" }),
-    fetchAlerts(),
+    fetchTenders({ min_score: "50" }),
     getCurrentUserFromSession(),
   ]);
 
   const featured = tenders.items.slice(0, 3);
-  const sourceNames = sources.map((source) => source.name).join(" · ");
-  const urgent = featured.filter((item) => {
+  const urgentCount = featured.filter((item) => {
     if (!item.deadline_date) return false;
-    return new Date(item.deadline_date).getTime() - Date.now() < 1000 * 60 * 60 * 24 * 10;
+    return new Date(item.deadline_date).getTime() - Date.now() < 1000 * 60 * 60 * 24 * 7;
   }).length;
+  const sourceLabels = sources.slice(0, 4).map((source) => source.name);
+  const isLoggedIn = Boolean(currentUser);
 
   return (
     <main className="page-shell landing-shell">
-      <SiteHeader section="landing" currentUserName={currentUser?.full_name} />
+      <SiteHeader
+        section="landing"
+        currentUserName={currentUser?.full_name}
+        currentUserRole={currentUser?.role}
+      />
 
-      <section className="landing-hero landing-hero-refined">
+      <section
+        className={`landing-hero landing-hero-refined landing-masterhead ${
+          isLoggedIn ? "landing-masterhead-operator" : "landing-masterhead-public"
+        }`}
+      >
         <div className="hero-copy">
-          <span className="eyebrow">Licitaciones IA · Argentina</span>
-          <h1>La forma sobria de convertir licitaciones dispersas en una operación comercial clara.</h1>
+          <span className="eyebrow">Plataforma para proveedores del Estado</span>
+          <h1>
+            {isLoggedIn
+              ? "Un sistema de trabajo claro para licitaciones públicas."
+              : "Encontrá, evaluá y seguí licitaciones sin trabajar a ciegas."}
+          </h1>
           <p className="hero-lead">
-            Licitaciones IA reúne fuentes públicas, procesa documentos, explica relevancia y ordena una cola de
-            decisión. El resultado no es más información: es menos ruido y mejores prioridades.
+            {isLoggedIn
+              ? "EasyTaciones concentra fuentes, oportunidades y próximas acciones para que el equipo decida con criterio y llegue a tiempo."
+              : "EasyTaciones toma un proceso manual, disperso y difícil de sostener y lo convierte en un sistema de trabajo. La empresa entra por CUIT, se completa un perfil inicial y el equipo empieza a operar con contexto."}
           </p>
-
           <div className="hero-actions">
-            <Link href="/dashboard" className="button-primary">
-              Entrar al producto
+            <Link href="/contact" className="button-primary">
+              Solicitar Demo
             </Link>
-            <Link href="#about" className="button-secondary">
-              Entender cómo funciona
+            <Link href={currentUser ? "/dashboard" : "/signup"} className="button-secondary">
+              {currentUser ? "Ir al Workspace" : "Registrar Empresa por CUIT"}
+            </Link>
+            <Link href="/about" className="button-secondary">
+              Ver Cómo Funciona
             </Link>
           </div>
-
-          <div className="hero-inline-metrics">
-            <article>
-              <span>Fuentes activas</span>
-              <strong>{sources.length}</strong>
-            </article>
-            <article>
-              <span>Alertas vigentes</span>
-              <strong>{alerts.length}</strong>
-            </article>
-            <article>
-              <span>Prioridad alta</span>
-              <strong>{tenders.total}</strong>
-            </article>
-          </div>
+          {isLoggedIn ? (
+            <div className="hero-inline-metrics">
+              <article>
+                <span>Fuentes activas</span>
+                <strong>{sources.length}</strong>
+              </article>
+              <article>
+                <span>Oportunidades visibles</span>
+                <strong>{tenders.total}</strong>
+              </article>
+              <article>
+                <span>Cierres cercanos</span>
+                <strong>{urgentCount}</strong>
+              </article>
+            </div>
+          ) : (
+            <div className="hero-inline-metrics hero-inline-splash">
+              <article>
+                <span>Paso 1</span>
+                <strong>Registro por CUIT</strong>
+                <p>Alta legal y perfil inicial en el primer paso.</p>
+              </article>
+              <article>
+                <span>Paso 2</span>
+                <strong>Discovery priorizado</strong>
+                <p>Una sola vista con fit, contexto y fecha.</p>
+              </article>
+              <article>
+                <span>Paso 3</span>
+                <strong>Seguimiento sin memoria informal</strong>
+                <p>Pipeline, notas y alertas con trazabilidad.</p>
+              </article>
+            </div>
+          )}
         </div>
 
-        <div className="hero-board">
+        <div className="hero-board hero-board-premium">
           <div className="board-frame refined-board">
-            <HeroTechnicalIllustration />
             <div className="board-topline">
-              <span className="mini-pill">Instancia local persistida</span>
-              <span className="mini-pill mini-pill-warm">{urgent} cierres cercanos</span>
+              <span className="mini-pill">{isLoggedIn ? "Alta por CUIT" : "Demo guiada"}</span>
+              <span className="mini-pill mini-pill-warm">{isLoggedIn ? "Seguimiento sin caos" : "Operacion sin desorden"}</span>
             </div>
+
+            <ExecutiveControlIllustration />
 
             <div className="board-score">
               <div>
-                <small>Vista principal</small>
-                <strong>Una cola de decisión</strong>
+                <small>{isLoggedIn ? "Resultado operativo" : "Propuesta de valor"}</small>
+                <strong>{isLoggedIn ? "Menos dispersión. Más criterio. Mejor ejecución." : "La empresa entra por CUIT. El equipo trabaja con criterio."}</strong>
               </div>
               <p>
-                Score, urgencia, fuente y estado operativo en una sola lectura. La decisión empieza acá, no en una
-                cadena de pestañas abiertas.
+                {isLoggedIn
+                  ? "La operación deja de vivir entre tabs, PDFs y planillas y pasa a una superficie única con prioridad, fecha y estado."
+                  : "La propuesta no es ver más portales. Es tener una lectura común de qué apareció, qué importa y qué hay que seguir."}
               </p>
             </div>
 
-            <div className="board-list">
-              {featured.map((item) => (
-                <article key={item.id} className="opportunity-card">
-                  <div className="opportunity-head">
-                    <span className="source-chip">{item.source.name}</span>
-                    <span className="score-chip">Score {Math.round(Number(item.matches[0]?.score ?? 0))}</span>
-                  </div>
-                  <strong>{item.title}</strong>
-                  <p>{item.organization ?? "Sin organismo"} · {item.jurisdiction ?? "Sin jurisdicción"}</p>
-                </article>
-              ))}
+            <div className="decision-rows">
+              {isLoggedIn
+                ? featured.map((item) => (
+                    <article key={item.id} className="decision-row">
+                      <div className="decision-row-head">
+                        <span className="source-chip">{item.source.name}</span>
+                        <span className="badge tone-calm">{formatDeadlineLabel(item.deadline_date)}</span>
+                      </div>
+                      <strong>{item.title}</strong>
+                      <p>
+                        {item.matches[0]?.reasons_json?.summary?.[0] ??
+                          "Aparece ordenada con contexto suficiente para decidir si vale moverla."}
+                      </p>
+                    </article>
+                  ))
+                : [
+                    {
+                      key: "cuit",
+                      label: "Paso 1",
+                      title: "La empresa entra por CUIT.",
+                      copy: "Se valida la identidad legal y se arma una base inicial.",
+                    },
+                    {
+                      key: "match",
+                      label: "Paso 2",
+                      title: "El sistema ordena el discovery.",
+                      copy: "Cada oportunidad aparece con score, fecha y motivo de match.",
+                    },
+                    {
+                      key: "followup",
+                      label: "Paso 3",
+                      title: "El equipo sigue sin perderse.",
+                      copy: "La licitación pasa a pipeline con alertas y próxima acción visible.",
+                    },
+                  ].map((item) => (
+                    <article key={item.key} className="decision-row">
+                      <div className="decision-row-head">
+                        <span className="source-chip">{item.label}</span>
+                        <span className="badge tone-calm">Splash pública</span>
+                      </div>
+                      <strong>{item.title}</strong>
+                      <p>{item.copy}</p>
+                    </article>
+                  ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="proof-strip">
+      <section className="ops-proof-grid landing-proof-grid">
         <article className="proof-card">
-          <ProofRibbonIllustration />
+          <span className="section-kicker">Problema</span>
+          <h2>Buscar no es operar</h2>
+          <p>Portales, pliegos y planillas rompen continuidad y criterio comercial.</p>
+        </article>
+        <article className="proof-card">
+          <span className="section-kicker">Solución</span>
+          <h2>Una sola vista operativa</h2>
+          <p>Fuentes, oportunidades y seguimiento entran en la misma lógica.</p>
+        </article>
+        <article className="proof-card">
           <span className="section-kicker">Resultado</span>
-          <strong>Menos fricción operativa.</strong>
-          <p>La revisión manual de portales dispersos se reemplaza por una sola cola priorizada y trazable.</p>
-        </article>
-        <article className="proof-card">
-          <span className="section-kicker">Criterio</span>
-          <strong>Relevancia que se puede explicar.</strong>
-          <p>La plataforma deja razones visibles, fechas críticas y evidencia para defender por qué avanzar o no.</p>
-        </article>
-        <article className="proof-card">
-          <span className="section-kicker">Cobertura</span>
-          <strong>{sourceNames}</strong>
-          <p>Fuentes reales ya persistidas, con una estructura lista para sumar conectores sin romper la operación.</p>
+          <h2>Menos pérdida por timing</h2>
+          <p>Menos pérdida por timing y más claridad sobre qué mover hoy.</p>
         </article>
       </section>
 
-      <section className="experience-strip">
-        <article className="experience-card experience-card-dark">
-          <span className="section-kicker">Vista 1</span>
-          <h3>Cola priorizada</h3>
-          <p>Una lectura de negocio: qué aparece primero, por qué y con cuánto margen real.</p>
-          <div className="experience-mini-board">
-            {featured.slice(0, 2).map((item) => (
-              <div key={item.id} className="experience-mini-row">
-                <span>{item.title}</span>
-                <span className="badge tone-warning">Score {Math.round(Number(item.matches[0]?.score ?? 0))}</span>
-              </div>
-            ))}
+      <section className="landing-system-stage">
+        <div className="results-header landing-system-header">
+          <div>
+            <span className="section-kicker">Sistema</span>
+            <h2>Una herramienta para pasar de búsqueda manual a seguimiento ordenado.</h2>
           </div>
-        </article>
-        <article className="experience-card">
-          <ProcessDiagramIllustration />
-          <span className="section-kicker">Vista 2</span>
-          <h3>Dossier con contexto</h3>
-          <p>Documentos, resumen, matching y deadlines en una misma ficha para decidir sin desorden.</p>
-        </article>
-        <article className="experience-card">
-          <span className="section-kicker">Vista 3</span>
-          <h3>Operación trazable</h3>
-          <p>Fuentes, corridas, perfil de empresa y alertas visibles para no depender de intuición ni memoria.</p>
-        </article>
-      </section>
-
-      <section className="about-grid" id="about">
-        <article className="feature-panel feature-panel-dark">
-          <span className="section-kicker">Qué es</span>
-          <h2>Un sistema de criterio para compras públicas.</h2>
           <p>
-            Centraliza licitaciones, procesa documentos, resume lo relevante, compara contra un perfil de empresa y
-            deja un flujo simple para evaluar, guardar o descartar. La fuente de verdad es el dashboard, no una
-            combinación de mails, portales y planillas.
+            El valor está en bajar ruido, fijar criterio y sostener la ejecución con contexto compartido.
           </p>
-        </article>
+        </div>
 
-        <article className="feature-panel feature-panel-light">
-          <span className="section-kicker">Recorrido</span>
-          <ol className="timeline-list">
-            <li>Se registran fuentes y se ejecutan corridas trazables.</li>
-            <li>Se descargan documentos y se obtiene texto usable.</li>
-            <li>Se prioriza por score, comprador, jurisdicción y tiempo remanente.</li>
-            <li>El equipo decide desde una cola con workflow y alertas.</li>
-          </ol>
-        </article>
-      </section>
-
-      <section className="why-grid">
-        <article className="why-card">
-          <span className="section-kicker">Para quién</span>
-          <h3>Equipos comerciales que necesitan foco</h3>
-          <p>Para áreas que no pueden darse el lujo de revisar todo, pero sí necesitan detectar lo correcto a tiempo.</p>
-        </article>
-        <article className="why-card">
-          <span className="section-kicker">Valor visible</span>
-          <h3>Entendible en minutos</h3>
-          <p>La propuesta se ve en pantalla: prioridad, razones, deadlines, documentos y seguimiento mínimo.</p>
-        </article>
-        <article className="why-card">
-          <span className="section-kicker">Gobierno</span>
-          <h3>Control sobre la operación</h3>
-          <p>La instancia deja ver fuentes, corridas, alertas y estado general sin esconder la trastienda del sistema.</p>
-        </article>
-      </section>
-
-      <section className="featured-grid">
-        {featured.map((item) => (
-          <article key={item.id} className="featured-tender">
-            <div className="featured-meta">
-              <span className="source-chip">{item.source.name}</span>
-              <span className="mini-pill">#{item.id}</span>
-            </div>
-            <h3>{item.title}</h3>
-            <p>{item.matches[0]?.reasons_json?.summary?.[0] ?? "Sin explicación generada todavía."}</p>
-            <div className="featured-footer">
-              <span>{item.organization ?? "Sin organismo"}</span>
-              <Link href={`/tenders/${item.id}`}>Abrir detalle</Link>
+        <div className="landing-system-grid">
+          <article className="panel landing-system-copy">
+            <span className="section-kicker">Vista operativa</span>
+            <h3>Inbox, calendario y pipeline en una misma superficie.</h3>
+            <p>
+              Cada oportunidad aparece con motivo de match, deadline, estado y siguiente acción. No hay que perseguir
+              contexto entre herramientas.
+            </p>
+            <div className="landing-system-points">
+              <article>
+                <strong>Entrada</strong>
+                <p>Fuentes, APIs, sitios y documentos se vuelven una sola cola.</p>
+              </article>
+              <article>
+                <strong>Decisión</strong>
+                <p>La empresa ve por qué una licitación importa y decide rápido si seguirla.</p>
+              </article>
+              <article>
+                <strong>Ejecución</strong>
+                <p>La oportunidad pasa a seguimiento con responsables, notas y alertas.</p>
+              </article>
             </div>
           </article>
-        ))}
+
+          <article className="panel landing-system-diagram">
+            <WorkspaceBoardIllustration />
+          </article>
+        </div>
       </section>
 
-      <section className="cta-band">
-        <div>
-          <span className="section-kicker">Siguiente paso</span>
-          <h2>La propuesta se termina de entender cuando la cola ya está ordenada.</h2>
-          <p>Entrá al dashboard y mirá qué aparece primero, por qué aparece y qué conviene hacer con eso.</p>
-        </div>
-        <Link href="/dashboard" className="button-primary">
-          Entrar al dashboard
-        </Link>
+      <section className="editorial-grid landing-editorial-grid">
+        <article className="editorial-callout editorial-callout-dark">
+          <span className="section-kicker">Oferta</span>
+          <h2>No vendemos scraping. Vendemos orden operativo.</h2>
+          <p>El diferencial está en transformar información dispersa en un sistema de trabajo para empresas proveedoras.</p>
+        </article>
+
+        <article className="editorial-callout">
+          <span className="section-kicker">Cobertura inicial</span>
+          <h2>Una base multi-fuente lista para crecer.</h2>
+          <p>{sourceLabels.join(" · ") || "Fuentes persistidas y listas para administrarse desde la plataforma."}</p>
+        </article>
+      </section>
+
+      <section className="workspace-preview-grid landing-experience-grid">
+        <article className="experience-card experience-card-dark">
+          <span className="section-kicker">Para la empresa</span>
+          <h3>Discovery, pipeline y alertas en un mismo lugar.</h3>
+          <p>La empresa entra por CUIT y empieza a trabajar con una base inicial ya ordenada.</p>
+        </article>
+        <article className="experience-card">
+          <span className="section-kicker">Para el equipo</span>
+          <h3>Un criterio compartido</h3>
+          <p>Todos miran la misma oportunidad con el mismo estado y el mismo contexto.</p>
+        </article>
+        <article className="experience-card">
+          <span className="section-kicker">Para la gestión</span>
+          <h3>Menos fricción y menos pérdida.</h3>
+          <p>Saca a la empresa del desorden manual y la lleva a una operación mucho más gobernable.</p>
+        </article>
       </section>
     </main>
   );

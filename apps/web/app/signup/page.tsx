@@ -15,29 +15,49 @@ export default async function SignupPage() {
     <main className="page-shell">
       <SiteHeader section="auth" />
 
-      <section className="hero hero-app about-hero">
+      <section className="hero hero-app about-hero signup-hero">
         <div>
-          <span className="eyebrow">Crear cuenta</span>
-          <h1>Una cuenta simple para seguir oportunidades sin perderte nada.</h1>
+          <span className="eyebrow">Onboarding por CUIT</span>
+          <h1>Registrá tu empresa por CUIT.</h1>
         </div>
-        <p>
-          Te pedimos solo lo necesario para empezar. Después vas a poder dejar tu WhatsApp y elegir cómo querés
-          recibir alertas.
-        </p>
+        <p>Ingresás CUIT, validás identidad legal y arrancás con un perfil comercial inicial.</p>
       </section>
 
-      <section className="auth-layout">
+      <section className="auth-layout auth-layout-upgraded signup-shell">
         <SignupForm />
-        <article className="panel dispatch-panel">
-          <span className="section-kicker">Qué sigue</span>
-          <h2>Después del alta</h2>
-          <p className="muted">
-            Vas a entrar directo a tu cuenta para cargar tu número, activar alertas por WhatsApp y definir qué tan
-            filtradas las querés.
-          </p>
-          <Link href="/login" className="button-secondary">
-            Ya tengo cuenta
-          </Link>
+
+        <article className="panel dispatch-panel onboarding-companion signup-companion">
+          <span className="section-kicker">Qué se resuelve en el alta</span>
+          <h2>Alta inicial de la empresa.</h2>
+          <div className="signup-path">
+            <p>1. Consultamos el CUIT y precargamos la identidad legal de la empresa.</p>
+            <p>2. Confirmás cómo vende tu empresa: rubros, buyers, keywords y jurisdicciones.</p>
+            <p>3. Entrás al workspace con una base comercial lista para trabajar.</p>
+          </div>
+
+          <div className="onboarding-proof-list">
+            <article>
+              <strong>Fuente legal</strong>
+              <p>Base de datos pública argentina para acelerar el alta y reducir errores manuales.</p>
+            </article>
+            <article>
+              <strong>Perfil inicial</strong>
+              <p>No arrancás de cero: el sistema deja una primera estructura usable.</p>
+            </article>
+            <article>
+              <strong>Primer valor</strong>
+              <p>El objetivo del alta es llegar rápido a oportunidades relevantes.</p>
+            </article>
+          </div>
+
+          <div className="hero-actions">
+            <Link href="/about" className="button-secondary">
+              Ver el flujo completo
+            </Link>
+            <Link href="/login" className="linkish">
+              Ya tengo cuenta
+            </Link>
+          </div>
         </article>
       </section>
     </main>

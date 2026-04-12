@@ -6,8 +6,8 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=diego
-WorkingDirectory=/home/diego/Documents/propscrap/apps/api
-ExecStart=/home/diego/Documents/propscrap/scripts/start_propscrap_api.sh
+WorkingDirectory=/home/diego/Documents/prop/propscrap/apps/api
+ExecStart=/home/diego/Documents/prop/propscrap/scripts/start_propscrap_api.sh
 Restart=always
 RestartSec=5
 StandardOutput=append:/var/log/propscrap-api.log

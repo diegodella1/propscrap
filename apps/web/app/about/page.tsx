@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ProcessDiagramIllustration } from "../../components/landing-ornaments";
+import { ProcessFlowEditorialIllustration, WorkspaceBoardIllustration } from "../../components/landing-ornaments";
 import { SiteHeader } from "../../components/site-header";
 import { getCurrentUserFromSession } from "../../lib/session";
 
@@ -9,69 +9,135 @@ export default async function AboutPage() {
 
   return (
     <main className="page-shell">
-      <SiteHeader section="about" currentUserName={currentUser?.full_name} />
+      <SiteHeader
+        section="about"
+        currentUserName={currentUser?.full_name}
+        currentUserRole={currentUser?.role}
+      />
 
       <section className="hero hero-app about-hero">
         <div>
-          <span className="eyebrow">Cómo funciona</span>
-          <h1>De información fragmentada a un criterio operativo compartido.</h1>
+          <span className="eyebrow">Cómo Funciona</span>
+          <h1>Del CUIT al seguimiento, en un solo flujo.</h1>
         </div>
-        <p>
-          Licitaciones IA toma fuentes públicas, normaliza oportunidades, procesa documentos, prioriza relevancia y
-          deja una vista que un equipo comercial puede usar para decidir con menos fricción y más contexto.
-        </p>
+        <p>La lógica es simple: completar la empresa, ordenar el discovery y sostener la ejecución.</p>
       </section>
 
-      <section className="about-grid">
-        <article className="feature-panel feature-panel-dark">
-          <span className="section-kicker">Qué hace</span>
-          <h2>Centraliza, explica y ordena.</h2>
+      <section className="how-it-works-stage">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Recorrido</span>
+            <h2>Un flujo simple para un trabajo que hoy suele hacerse a mano.</h2>
+          </div>
+          <p>Primero entra la empresa. Después aparece el discovery. Por último se ordena la ejecución.</p>
+        </div>
+
+        <article className="panel how-it-works-diagram">
+          <ProcessFlowEditorialIllustration />
+        </article>
+
+        <div className="how-it-works-steps">
+          <article className="proof-card">
+            <span className="section-kicker">Paso 1</span>
+            <h2>Se registra la empresa</h2>
+            <p>Alta por CUIT para arrancar con identidad legal y una base comercial inicial.</p>
+          </article>
+          <article className="proof-card">
+            <span className="section-kicker">Paso 2</span>
+            <h2>Se ordena el discovery</h2>
+            <p>Las fuentes se consolidan en una cola priorizada, con contexto y fechas visibles.</p>
+          </article>
+          <article className="proof-card">
+            <span className="section-kicker">Paso 3</span>
+            <h2>Se ejecuta el seguimiento</h2>
+            <p>La licitación pasa a pipeline, con estado, notas, alertas y próxima acción.</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="editorial-grid">
+        <article className="editorial-callout editorial-callout-dark">
+          <span className="section-kicker">Para quién</span>
+          <h2>Empresas proveedoras que hoy trabajan licitaciones con demasiada fricción.</h2>
           <p>
-            El sistema consolida licitaciones, muestra metadatos, baja documentos, extrae texto, genera contexto
-            estructurado y calcula relevancia contra un perfil de empresa. El objetivo no es “mostrar más”, sino
-            ayudar a decidir mejor.
+            Si hoy el equipo trabaja con portales, pliegos y planillas por separado, EasyTaciones entra para dar
+            estructura y criterio compartido.
           </p>
         </article>
-
-        <article className="feature-panel feature-panel-light">
-          <ProcessDiagramIllustration />
-          <span className="section-kicker">Qué evita</span>
-          <ol className="timeline-list">
-            <li>Buscar manualmente en múltiples portales sin una vista común.</li>
-            <li>Discutir oportunidades sin fechas, evidencia ni score explicable.</li>
-            <li>Llegar tarde por no tener seguimiento mínimo y alertas visibles.</li>
-            <li>Perder trazabilidad entre hallazgo, análisis y decisión comercial.</li>
-          </ol>
+        <article className="editorial-callout">
+          <span className="section-kicker">Qué cambia</span>
+          <h2>Se deja de buscar y acordarse, y se pasa a ver, decidir y seguir.</h2>
+          <p>No es sólo más información. Es una operación más controlada.</p>
         </article>
       </section>
 
-      <section className="why-grid">
-        <article className="why-card">
-          <span className="section-kicker">1. Ingesta</span>
-          <h3>Fuentes públicas reales</h3>
-          <p>Las fuentes se registran, se corren y dejan trazabilidad. El sistema no oculta si algo falla.</p>
+      <section className="about-logic-stage">
+        <div className="results-header about-logic-header">
+          <div>
+            <span className="section-kicker">Workspace</span>
+            <h2>La promesa del producto se ve en la interfaz.</h2>
+          </div>
+          <p>Alta por CUIT, matching con criterio y seguimiento para no depender de memoria humana.</p>
+        </div>
+
+        <div className="about-logic-grid">
+          <article className="panel about-logic-diagram">
+            <WorkspaceBoardIllustration />
+          </article>
+
+          <article className="panel about-logic-copy">
+            <span className="section-kicker">Qué cambia</span>
+            <h3>Se pasa de una tarea artesanal a una operación repetible.</h3>
+            <div className="about-logic-points">
+              <article>
+                <strong>Antes</strong>
+                <p>Buscar, leer, copiar y acordarse. Todo repartido en personas, tabs y planillas.</p>
+              </article>
+              <article>
+                <strong>Con EasyTaciones</strong>
+                <p>La oportunidad entra con contexto, se guarda con criterio y se sigue con fechas y responsables.</p>
+              </article>
+              <article>
+                <strong>Para el equipo</strong>
+                <p>Más continuidad operativa, menos fricción interna y menos riesgo de perder timing.</p>
+              </article>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="workspace-preview-grid">
+        <article className="experience-card experience-card-dark">
+          <span className="section-kicker">Cliente</span>
+          <h3>Workspace simple y accionable</h3>
+          <p>Oportunidades, seguimiento y alertas en un único entorno de trabajo.</p>
         </article>
-        <article className="why-card">
-          <span className="section-kicker">2. Análisis</span>
-          <h3>Resumen, score y riesgo</h3>
-          <p>La oportunidad deja de ser un título y pasa a ser una decisión con contexto, razones y urgencia visible.</p>
+        <article className="experience-card">
+          <span className="section-kicker">Equipo</span>
+          <h3>Menos dependencia de personas clave</h3>
+          <p>El criterio deja de vivir en una sola persona y pasa a estar disponible para todos.</p>
         </article>
-        <article className="why-card">
-          <span className="section-kicker">3. Acción</span>
-          <h3>Workflow y alertas</h3>
-          <p>El equipo puede guardar, evaluar o descartar sin salir de la misma interfaz operativa.</p>
+        <article className="experience-card">
+          <span className="section-kicker">Empresa</span>
+          <h3>Más calma para operar</h3>
+          <p>Paz mental operativa frente a un proceso que suele sentirse caótico todos los días.</p>
         </article>
       </section>
 
       <section className="cta-band">
         <div>
-          <span className="section-kicker">Ver la experiencia</span>
-          <h2>La mejor explicación sigue siendo el producto funcionando.</h2>
-          <p>Entrá al dashboard para ver score, urgencia, fuentes y seguimiento en una misma vista.</p>
+          <span className="section-kicker">Siguiente Paso</span>
+          <h2>La propuesta se entiende mejor cuando se recorre el flujo completo.</h2>
+          <p>Pedí demo o registrá una empresa por CUIT para recorrer el producto desde adentro.</p>
         </div>
-        <Link href="/dashboard" className="button-primary">
-          Abrir dashboard
-        </Link>
+        <div className="hero-actions">
+          <Link href="/contact" className="button-primary">
+            Solicitar Demo
+          </Link>
+          <Link href={currentUser ? "/dashboard" : "/signup"} className="button-secondary">
+            {currentUser ? "Ir al Workspace" : "Registrar Empresa"}
+          </Link>
+        </div>
       </section>
     </main>
   );

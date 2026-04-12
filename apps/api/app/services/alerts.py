@@ -40,7 +40,7 @@ def list_dispatchable_alerts(db: Session, *, limit: int) -> list[Alert]:
         select(Alert)
         .options(joinedload(Alert.user))
         .where(
-            Alert.delivery_channel == "whatsapp",
+            Alert.delivery_channel.in_(("whatsapp", "email")),
             Alert.delivery_status.in_(DISPATCHABLE_STATUSES),
             Alert.scheduled_for <= now,
         )
@@ -125,6 +125,8 @@ def _eligible_channels(user: User, preferences: dict) -> list[str]:
         channels.append("dashboard")
     if "whatsapp" in requested_channels and has_verified_whatsapp(user):
         channels.append("whatsapp")
+    if "email" in requested_channels and user.email:
+        channels.append("email")
     return channels
 
 

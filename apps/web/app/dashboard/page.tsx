@@ -1,8 +1,12 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
 import { FilterPanel } from "../../components/filter-panel";
+import { WorkspaceBoardIllustration } from "../../components/landing-ornaments";
 import { SiteHeader } from "../../components/site-header";
 import { TendersTable } from "../../components/tenders-table";
 import { fetchAlerts, fetchSources, fetchTenders } from "../../lib/api";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../lib/session";
 
 type Props = {
   searchParams: Promise<{
@@ -12,179 +16,175 @@ type Props = {
   }>;
 };
 
+function formatStateLabel(value: string | null | undefined) {
+  switch (value) {
+    case "new":
+      return "Nueva";
+    case "seen":
+      return "Vista";
+    case "saved":
+      return "Guardada";
+    case "discarded":
+      return "Descartada";
+    case "evaluating":
+      return "En revisión";
+    case "presenting":
+      return "Preparando oferta";
+    default:
+      return value ?? "Sin estado";
+  }
+}
+
+function deadlineLabel(value: string | null) {
+  if (!value) return "Sin fecha";
+  const diff = new Date(value).getTime() - Date.now();
+  if (diff < 0) return "Vencida";
+  if (diff < 1000 * 60 * 60 * 24) return "Cierra en 24h";
+  if (diff < 1000 * 60 * 60 * 24 * 3) return "Cierra en 3 días";
+  if (diff < 1000 * 60 * 60 * 24 * 7) return "Cierra esta semana";
+  return "Con margen";
+}
+
 export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
-  const [sources, tenders, alerts, currentUser] = await Promise.all([
+  const [currentUser, cookieHeader] = await Promise.all([
+    getCurrentUserFromSession(),
+    getCookieHeaderFromSession(),
+  ]);
+
+  if (!currentUser) {
+    redirect("/login");
+  }
+
+  const [sources, tenders, alerts] = await Promise.all([
     fetchSources(),
     fetchTenders({
       source: params.source,
       jurisdiction: params.jurisdiction,
       min_score: params.min_score,
     }),
-    fetchAlerts(),
-    getCurrentUserFromSession(),
+    fetchAlerts(cookieHeader || undefined),
   ]);
 
-  const highRelevance = tenders.items.filter((item) => Number(item.matches[0]?.score ?? 0) >= 60).length;
-  const urgentDeadlines = tenders.items.filter((item) => {
+  const topPriority = [...tenders.items]
+    .sort((a, b) => Number(b.matches[0]?.score ?? 0) - Number(a.matches[0]?.score ?? 0))
+    .slice(0, 4);
+  const urgentDeadlines = topPriority.filter((item) => {
     if (!item.deadline_date) return false;
     return new Date(item.deadline_date).getTime() - Date.now() < 1000 * 60 * 60 * 24 * 7;
   }).length;
-  const topPriority = [...tenders.items]
-    .sort((a, b) => Number(b.matches[0]?.score ?? 0) - Number(a.matches[0]?.score ?? 0))
-    .slice(0, 3);
+  const inPipeline = tenders.items.filter((item) => {
+    const state = item.states[0]?.state;
+    return state === "saved" || state === "evaluating" || state === "presenting";
+  }).length;
   const visibleAlerts = alerts.slice(0, 4);
-
-  function scoreTone(score: number) {
-    if (score >= 75) return "tone-success";
-    if (score >= 50) return "tone-warning";
-    return "tone-muted";
-  }
-
-  function alertTone(type: string) {
-    if (type.includes("24h")) return "tone-danger";
-    if (type.includes("3d") || type.includes("7d")) return "tone-warning";
-    return "tone-calm";
-  }
-
-  function formatAlertType(value: string) {
-    if (value === "new_relevant") return "Nueva relevante";
-    if (value === "deadline_7d") return "Cierre en 7 días";
-    if (value === "deadline_3d") return "Cierre en 3 días";
-    if (value === "deadline_24h") return "Cierre en 24h";
-    return value;
-  }
-
-  function formatStateLabel(value: string | null | undefined) {
-    switch (value) {
-      case "new":
-        return "Nuevo";
-      case "seen":
-        return "Visto";
-      case "saved":
-        return "Guardado";
-      case "discarded":
-        return "Descartado";
-      case "evaluating":
-        return "En evaluación";
-      case "presenting":
-        return "Presentando";
-      default:
-        return value ?? "Sin estado";
-    }
-  }
-
-  function deadlineTone(value: string | null) {
-    if (!value) return "tone-neutral";
-    const diff = new Date(value).getTime() - Date.now();
-    if (diff < 0) return "tone-danger";
-    if (diff < 1000 * 60 * 60 * 24 * 3) return "tone-danger";
-    if (diff < 1000 * 60 * 60 * 24 * 7) return "tone-warning";
-    return "tone-calm";
-  }
-
-  function deadlineLabel(value: string | null) {
-    if (!value) return "Sin fecha";
-    const diff = new Date(value).getTime() - Date.now();
-    if (diff < 0) return "Vencida";
-    if (diff < 1000 * 60 * 60 * 24) return "Cierra en 24h";
-    if (diff < 1000 * 60 * 60 * 24 * 3) return "Cierra en 3 días";
-    if (diff < 1000 * 60 * 60 * 24 * 7) return "Cierra en 7 días";
-    return "Con margen";
-  }
 
   return (
     <main className="page-shell">
-      <SiteHeader section="dashboard" currentUserName={currentUser?.full_name} />
+      <SiteHeader section="dashboard" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
-      <section className="hero hero-app">
+      <section className="hero hero-app dashboard-hero">
         <div>
-          <span className="eyebrow">Dashboard operativo</span>
-          <h1>Qué merece atención ahora y qué no.</h1>
+          <span className="eyebrow">Workspace empresa</span>
+          <h1>Oportunidades.</h1>
         </div>
-        <p>
-          Esta es la vista principal del producto. Cada oportunidad combina score, deadline, fuente y estado para que
-          el equipo pueda decidir sin saltar entre portales y documentos dispersos.
-        </p>
+        <p>Revisá qué apareció, qué vence y qué ya está en seguimiento.</p>
       </section>
 
-      <section className="signal-grid">
-        <article className="signal-card signal-accent">
-          <span className="signal-label">Tenders visibles</span>
+      <section className="dashboard-executive-band dashboard-summary-band">
+        <article>
+          <span>Oportunidades visibles</span>
           <strong>{tenders.total}</strong>
-          <p>Normalizados y listos para revisión comercial.</p>
         </article>
-        <article className="signal-card">
-          <span className="signal-label">Alta relevancia</span>
-          <strong>{highRelevance}</strong>
-          <p>Con score 60+ según el perfil demo.</p>
-        </article>
-        <article className="signal-card">
-          <span className="signal-label">Vencen pronto</span>
+        <article>
+          <span>Cierres cercanos</span>
           <strong>{urgentDeadlines}</strong>
-          <p>Con cierre dentro de los próximos 7 días.</p>
         </article>
-        <article className="signal-card">
-          <span className="signal-label">Alerts activos</span>
+        <article>
+          <span>En seguimiento</span>
+          <strong>{inPipeline}</strong>
+        </article>
+        <article>
+          <span>Alertas activas</span>
           <strong>{alerts.length}</strong>
-          <p>Recordatorios y oportunidades nuevas listos para seguimiento.</p>
         </article>
       </section>
 
-      <section className="dispatch-grid">
+      <section className="panel dashboard-hero-board">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Orientación</span>
+            <h2>Qué mirar hoy.</h2>
+          </div>
+          <p>Inbox, calendario y pipeline sobre la misma vista.</p>
+        </div>
+        <WorkspaceBoardIllustration />
+      </section>
+
+      <section className="dashboard-focus-grid">
         <article className="panel dispatch-panel">
           <div className="results-header">
             <div>
               <span className="section-kicker">Prioridad</span>
-              <h2>Qué conviene poner primero sobre la mesa</h2>
+              <h2>Primero revisar</h2>
             </div>
-            <p>Los mejores casos combinan afinidad comercial, comprador relevante y tiempo todavía utilizable.</p>
+            <p>Ordenado por relevancia y urgencia.</p>
           </div>
 
-          <div className="priority-list">
+          <div className="decision-rows">
             {topPriority.map((item, index) => (
-              <article key={item.id} className="priority-item">
-                <div className="priority-rank">0{index + 1}</div>
-                <div className="priority-body">
-                  <div className="meta">
-                    <span className="source-chip">{item.source.name}</span>
-                    <span className={`score-chip badge ${scoreTone(Math.round(Number(item.matches[0]?.score ?? 0)))}`}>
-                      Score {Math.round(Number(item.matches[0]?.score ?? 0))}
-                    </span>
-                    <span className={`badge ${deadlineTone(item.deadline_date)}`}>{deadlineLabel(item.deadline_date)}</span>
-                    {item.states[0] ? (
-                      <span className="badge workflow-chip tone-calm">{formatStateLabel(item.states[0].state)}</span>
-                    ) : null}
-                  </div>
-                  <h3>{item.title}</h3>
-                  <p>{item.matches[0]?.reasons_json?.summary?.[0] ?? "Todavía no hay explicación sintetizada."}</p>
+              <article key={item.id} className="decision-row decision-row-dense">
+                <div className="decision-row-head">
+                  <span className="mini-pill">0{index + 1}</span>
+                  <span className="source-chip">{item.source.name}</span>
+                  <span className="badge tone-calm">{deadlineLabel(item.deadline_date)}</span>
+                  {item.states[0] ? <span className="badge">{formatStateLabel(item.states[0].state)}</span> : null}
+                </div>
+                <strong>{item.title}</strong>
+                <p>{item.matches[0]?.reasons_json?.summary?.[0] ?? "Revisar fit comercial y documentación."}</p>
+                <div className="decision-row-footer">
+                  <span className="muted">{item.organization ?? "Sin organismo"} · {item.jurisdiction ?? "Sin jurisdicción"}</span>
+                  <Link href={`/tenders/${item.id}`} className="linkish">
+                    Abrir dossier
+                  </Link>
                 </div>
               </article>
             ))}
           </div>
         </article>
 
-        <article className="panel dispatch-panel dispatch-alerts">
+        <article className="panel dispatch-panel dashboard-side-rail">
           <div className="results-header">
             <div>
               <span className="section-kicker">Alertas</span>
-              <h2>Eventos que no conviene dejar pasar</h2>
+              <h2>Actividad reciente</h2>
             </div>
           </div>
-
           <div className="alert-stack">
-            {visibleAlerts.map((alert) => (
-              <article key={alert.id} className={`alert-row ${alertTone(alert.alert_type)}`}>
-                <span className={`mini-pill ${alertTone(alert.alert_type)}`}>{formatAlertType(alert.alert_type)}</span>
-                <strong>Tender #{alert.tender_id}</strong>
-                <p>{new Date(alert.scheduled_for).toLocaleString("es-AR")}</p>
-              </article>
-            ))}
+            {visibleAlerts.length ? (
+              visibleAlerts.map((alert) => (
+                <article key={alert.id} className="alert-row">
+                  <span className="mini-pill">{alert.alert_type.replaceAll("_", " ")}</span>
+                  <strong>Tender #{alert.tender_id}</strong>
+                  <p>{new Date(alert.scheduled_for).toLocaleString("es-AR")}</p>
+                </article>
+              ))
+            ) : (
+              <p className="muted">Todavía no hay alertas activas para mostrar.</p>
+            )}
+          </div>
+
+          <div className="detail-note-card">
+            <span className="section-kicker">Siguiente paso</span>
+            <p>Mandá a seguimiento lo que ya decidiste trabajar.</p>
+            <Link href="/saved" className="linkish">
+              Ir al pipeline
+            </Link>
           </div>
         </article>
       </section>
 
-      <section className="layout-grid">
+      <section className="layout-grid dashboard-main-grid">
         <FilterPanel
           selectedJurisdiction={params.jurisdiction}
           selectedMinScore={params.min_score}

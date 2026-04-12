@@ -4,28 +4,34 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="site-footer-grid">
-        <div>
-          <span className="section-kicker">Licitaciones IA</span>
-          <h2>Una mesa de control para detectar, evaluar y actuar sobre oportunidades públicas.</h2>
+        <div className="footer-brand-block">
+          <span className="section-kicker" translate="no">EasyTaciones</span>
+          <h2>Una plataforma seria para descubrir, evaluar y seguir licitaciones.</h2>
           <p>
-            Consolida fuentes, ordena prioridades y deja una operación más sobria y más clara que revisar portales
-            sueltos o planillas improvisadas.
+            EasyTaciones ordena fuentes, oportunidades y seguimiento en un solo sistema de trabajo para equipos que
+            necesitan criterio, trazabilidad y timing.
           </p>
+          <div className="footer-metrics">
+            <span>Alta por CUIT</span>
+            <span>Discovery Priorizado</span>
+            <span>Seguimiento Trazable</span>
+          </div>
         </div>
 
         <div className="footer-column">
           <strong>Producto</strong>
           <Link href="/">Inicio</Link>
-          <Link href="/about">Cómo funciona</Link>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/signup">Crear cuenta</Link>
+          <Link href="/about">Cómo Funciona</Link>
+          <Link href="/contact">Solicitar Demo</Link>
+          <Link href="/signup">Registrar Empresa</Link>
         </div>
 
         <div className="footer-column">
-          <strong>Cuenta</strong>
+          <strong>Operación</strong>
           <Link href="/login">Ingresar</Link>
-          <Link href="/mi-cuenta">Mi cuenta</Link>
-          <Link href="/tenders/1">Ver un dossier</Link>
+          <Link href="/dashboard">Workspace</Link>
+          <Link href="/mi-cuenta">Mi Cuenta</Link>
+          <Link href="/saved">Seguimiento</Link>
         </div>
       </div>
     </footer>

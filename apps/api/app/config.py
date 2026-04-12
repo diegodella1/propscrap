@@ -31,6 +31,18 @@ class Settings(BaseSettings):
     openai_model: str = Field(default="gpt-4.1-mini", alias="OPENAI_MODEL")
     llm_enabled: bool = Field(default=True, alias="LLM_ENABLED")
     llm_enrichment_batch_size: int = Field(default=10, alias="LLM_ENRICHMENT_BATCH_SIZE")
+    arca_padron_archive_url: str = Field(
+        default="https://www.afip.gob.ar/genericos/cInscripcion/archivos/apellidoNombreDenominacion.zip",
+        alias="ARCA_PADRON_ARCHIVE_URL",
+    )
+    arca_padron_cache_hours: int = Field(default=24 * 7, alias="ARCA_PADRON_CACHE_HOURS")
+    arca_ws_constancia_url: str = Field(
+        default="https://aws.arca.gob.ar/sr-padron/webservices/personaServiceA5",
+        alias="ARCA_WS_CONSTANCIA_URL",
+    )
+    arca_ws_token: str | None = Field(default=None, alias="ARCA_WS_TOKEN")
+    arca_ws_sign: str | None = Field(default=None, alias="ARCA_WS_SIGN")
+    arca_ws_cuit_representada: str | None = Field(default=None, alias="ARCA_WS_CUIT_REPRESENTADA")
     whatsapp_provider: str = Field(default="mock", alias="WHATSAPP_PROVIDER")
     whatsapp_enabled: bool = Field(default=False, alias="WHATSAPP_ENABLED")
     whatsapp_meta_token: str | None = Field(default=None, alias="WHATSAPP_META_TOKEN")
@@ -40,6 +52,8 @@ class Settings(BaseSettings):
         default="data/outbox/whatsapp_messages.jsonl",
         alias="WHATSAPP_OUTBOX_PATH",
     )
+    resend_api_key: str | None = Field(default=None, alias="RESEND_API_KEY")
+    resend_from_email: str | None = Field(default=None, alias="RESEND_FROM_EMAIL")
     alert_dispatch_batch_size: int = Field(default=50, alias="ALERT_DISPATCH_BATCH_SIZE")
     alert_dispatch_max_attempts: int = Field(default=5, alias="ALERT_DISPATCH_MAX_ATTEMPTS")
     automation_poll_seconds: int = Field(default=60, alias="AUTOMATION_POLL_SECONDS")
