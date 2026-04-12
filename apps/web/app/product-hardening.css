@@ -586,6 +586,79 @@ textarea.code-textarea,
   margin-top: 2px;
 }
 
+.wizard-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.52);
+}
+
+.wizard-card {
+  width: min(760px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: none;
+}
+
+.wizard-header,
+.wizard-step-card {
+  display: grid;
+  gap: 10px;
+}
+
+.wizard-header h2,
+.wizard-step-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-display);
+}
+
+.wizard-header p,
+.wizard-step-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.wizard-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wizard-progress-step {
+  width: 36px;
+  height: 36px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #ffffff;
+  color: #334155;
+}
+
+.wizard-progress-step--active {
+  background: #0b5cad;
+  border-color: #0b5cad;
+  color: #ffffff;
+}
+
+.wizard-step-card {
+  padding: 18px;
+  border: 1px solid rgba(11, 92, 173, 0.12);
+  background: #f8fbff;
+}
+
+.wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
 /* System-wide geometry pass: single width rhythm, square corners,
    consistent padding, cleaner headers, and flatter UI across marketing,
    auth, workspace, and admin. */
@@ -653,7 +726,10 @@ body::after {
 .field textarea,
 .state-form input,
 .state-form select,
-.state-form textarea {
+.state-form textarea,
+.wizard-card,
+.wizard-progress-step,
+.wizard-step-card {
   border-radius: 0 !important;
 }
 
@@ -1015,6 +1091,14 @@ body::after {
 @media (max-width: 720px) {
   .page-shell {
     padding: 16px 14px 48px !important;
+  }
+
+  .wizard-overlay {
+    padding: 12px;
+  }
+
+  .wizard-card {
+    padding: 18px;
   }
 
   .dashboard-executive-band,

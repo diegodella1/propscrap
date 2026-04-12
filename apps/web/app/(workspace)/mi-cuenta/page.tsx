@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AccountSettingsForm } from "../../../components/account-settings-form";
 import { PageShell } from "../../../components/layout/page-shell";
 import { LogoutButton } from "../../../components/logout-button";
+import { OnboardingWizard } from "../../../components/onboarding-wizard";
 import { SiteHeader } from "../../../components/site-header";
 import { getCurrentUserFromSession } from "../../../lib/session";
 
@@ -44,6 +45,7 @@ export default async function AccountPage({ searchParams }: Props) {
 
   return (
     <PageShell variant="workspace" className="workspace-shell account-page">
+      {currentUser.role !== "admin" ? <OnboardingWizard variant="company" forceOpen={onboarding} /> : null}
       <SiteHeader
         section="account"
         currentUserName={currentUser.full_name}

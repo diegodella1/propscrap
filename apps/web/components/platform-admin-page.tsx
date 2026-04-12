@@ -1,5 +1,6 @@
 import { AlertOpsPanel } from "./alert-ops-panel";
 import { AutomationSettingsPanel } from "./automation-settings-panel";
+import { OnboardingWizard } from "./onboarding-wizard";
 import { SiteHeader } from "./site-header";
 import { SourceEditorList } from "./source-editor-list";
 import { SourceForm } from "./source-form";
@@ -49,6 +50,7 @@ export function PlatformAdminPage({
 
   return (
     <main className="page-shell workspace-shell">
+      <OnboardingWizard variant="superadmin" />
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="admin" />
 
       <section className="workspace-header admin-header">
