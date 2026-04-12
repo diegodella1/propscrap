@@ -14,7 +14,7 @@ export default async function SignupPage() {
   }
 
   return (
-    <PageShell variant="auth">
+    <PageShell variant="auth" className="page-screen page-screen--signup">
       <SiteHeader section="auth" />
 
       <PageHero

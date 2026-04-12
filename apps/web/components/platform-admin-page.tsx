@@ -103,7 +103,7 @@ export function PlatformAdminPage({
   ];
 
   return (
-    <main className="page-shell workspace-shell">
+    <main className="page-shell workspace-shell page-screen page-screen--admin-platform">
       <OnboardingWizard
         variant="superadmin"
         content={{

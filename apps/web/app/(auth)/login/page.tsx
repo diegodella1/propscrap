@@ -13,7 +13,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <PageShell variant="auth">
+    <PageShell variant="auth" className="page-screen page-screen--login-selector">
       <SiteHeader section="auth" />
 
       <PageHero

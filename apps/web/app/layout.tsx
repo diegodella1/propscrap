@@ -1,5 +1,4 @@
 import "./globals.css";
-import "./product-hardening.css";
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter, Manrope } from "next/font/google";
 import { ConditionalFooter } from "../components/conditional-footer";

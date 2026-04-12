@@ -18,7 +18,7 @@ export function CompanyAdminPage({ currentUserName, companyProfile, users }: Pro
   const emailReady = users.filter((user) => (user.alert_preferences_json?.channels ?? []).includes("email")).length;
 
   return (
-    <main className="page-shell workspace-shell">
+    <main className="page-shell workspace-shell page-screen page-screen--admin-company">
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="manager" />
 
       <section className="workspace-header admin-header company-admin-header">

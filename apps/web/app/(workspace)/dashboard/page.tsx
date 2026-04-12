@@ -131,7 +131,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const nextActivationStep = activationSteps.find((step) => !step.complete) ?? activationSteps[activationSteps.length - 1];
 
   return (
-    <PageShell variant="workspace" className="workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell page-screen page-screen--dashboard">
       <SiteHeader section="dashboard" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
       <section className="workspace-header dashboard-header">

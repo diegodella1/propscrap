@@ -14,7 +14,7 @@ export default async function CompanyProfilePage() {
   const profile = await getMyCompanyProfileFromSession();
 
   return (
-    <PageShell variant="workspace" className="workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell page-screen page-screen--company-profile">
       <SiteHeader
         section="profile"
         currentUserName={currentUser.full_name}

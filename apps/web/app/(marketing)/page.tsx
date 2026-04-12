@@ -38,7 +38,7 @@ export default async function LandingPage() {
   const isLoggedIn = Boolean(currentUser);
 
   return (
-    <PageShell variant="marketing" className="landing-shell">
+    <PageShell variant="marketing" className="landing-shell page-screen page-screen--home">
       <SiteHeader
         section="landing"
         currentUserName={currentUser?.full_name}

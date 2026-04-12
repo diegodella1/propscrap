@@ -43,7 +43,7 @@ export default async function SavedTendersPage() {
   }));
 
   return (
-    <PageShell variant="workspace" className="workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell page-screen page-screen--saved">
       <SiteHeader section="saved" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
       <section className="workspace-header">

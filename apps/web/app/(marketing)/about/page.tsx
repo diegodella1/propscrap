@@ -9,7 +9,7 @@ export default async function AboutPage() {
   const currentUser = await getCurrentUserFromSession();
 
   return (
-    <PageShell variant="marketing">
+    <PageShell variant="marketing" className="page-screen page-screen--about">
       <SiteHeader
         section="about"
         currentUserName={currentUser?.full_name}

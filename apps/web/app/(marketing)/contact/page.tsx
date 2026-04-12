@@ -13,7 +13,7 @@ export default async function ContactPage() {
   ]);
 
   return (
-    <PageShell variant="marketing">
+    <PageShell variant="marketing" className="page-screen page-screen--contact">
       <SiteHeader
         section="contact"
         currentUserName={currentUser?.full_name}

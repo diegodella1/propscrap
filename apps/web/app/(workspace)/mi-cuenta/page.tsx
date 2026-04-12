@@ -105,7 +105,7 @@ export default async function AccountPage({ searchParams }: Props) {
   ];
 
   return (
-    <PageShell variant="workspace" className="workspace-shell account-page">
+    <PageShell variant="workspace" className="workspace-shell account-page page-screen page-screen--account">
       {currentUser.role !== "admin" ? (
         <OnboardingWizard
           variant="company"

@@ -256,3 +256,970 @@
   border: 1px solid rgba(37, 99, 235, 0.15);
   color: var(--accent-deep);
 }
+
+/* Final visual reset: blue/white/gray system, square geometry, quieter product surfaces. */
+:root {
+  --bg: #edf3f8;
+  --bg-strong: #0c1726;
+  --bg-soft: #f7fafd;
+  --panel: #ffffff;
+  --panel-strong: #102033;
+  --panel-alt: #e7eef5;
+  --text: #13202b;
+  --text-inverse: #f5f8fc;
+  --muted: #5e6d7b;
+  --line: rgba(19, 32, 43, 0.12);
+  --line-strong: rgba(245, 248, 252, 0.16);
+  --accent: #0f5fc7;
+  --accent-soft: #dbe8f8;
+  --accent-deep: #12345a;
+  --signal: #12345a;
+  --signal-soft: #dbe5ef;
+  --warning: #8c5c2f;
+  --warning-soft: #f3e2cf;
+  --danger: #a33a30;
+  --danger-soft: #f7dfdb;
+  --success: #1d6b4c;
+  --success-soft: #d7ecdf;
+  --calm: #4c647f;
+  --calm-soft: #dbe4ee;
+  --teal-deep: #12345a;
+  --shadow: 0 18px 48px rgba(12, 23, 38, 0.08);
+  --shadow-tight: 0 10px 24px rgba(12, 23, 38, 0.06);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+}
+
+html,
+body {
+  background: linear-gradient(180deg, #f8fbfe 0%, #edf3f8 48%, #e4ebf2 100%) !important;
+  color: var(--text) !important;
+}
+
+body::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 16%) !important;
+  opacity: 0.18 !important;
+}
+
+body::after {
+  display: none !important;
+}
+
+.site-header,
+.brand-mark,
+.site-nav a,
+.site-nav-toggle,
+.button-primary,
+.button-secondary,
+.button-block,
+.panel,
+.board-frame,
+.feature-panel,
+.signal-card,
+.featured-tender,
+.metrics-ribbon article,
+.editorial-callout,
+.auth-form-card,
+.auth-form-card--surface,
+.contact-request-card,
+.detail-note-card,
+.profile-section-card,
+.source-card,
+.source-editor-card,
+.table-wrap,
+.table-panel,
+.table-panel-upgraded,
+.dispatch-panel,
+.admin-overview-card,
+.ops-priority-card,
+.workspace-kpi-band article,
+.opportunity-card,
+.opportunity-list-card,
+.pipeline-card,
+.decision-row,
+.workspace-adoption-main,
+.workspace-adoption-step,
+.signup-confidence-bar span,
+.signup-path p,
+.mini-pill,
+.badge,
+.section-kicker,
+.eyebrow,
+.source-chip,
+.filter-pill,
+.score-chip,
+.signal-ledger-grid article,
+.command-card,
+.decision-card,
+.operations-band,
+.profile-summary-bar,
+.field input,
+.field select,
+.field textarea,
+.state-form input,
+.state-form select,
+.state-form textarea,
+.table-wrap thead th,
+.table-wrap tbody td,
+.admin-anchor-nav a,
+.opportunity-list-empty {
+  border-radius: 0 !important;
+}
+
+.page-shell {
+  max-width: 1360px;
+  padding: 28px 28px 88px;
+}
+
+.site-header {
+  gap: 18px;
+  margin-bottom: 28px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px) saturate(1.04);
+  box-shadow: 0 8px 24px rgba(12, 23, 38, 0.05);
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  background: #12345a;
+  border-color: rgba(18, 52, 90, 0.18);
+  color: var(--text-inverse);
+  box-shadow: none;
+}
+
+.brand-lockup strong,
+.hero h1,
+.landing-hero h1,
+.results-header h2,
+.section-heading h2,
+.signup-form-header h2,
+.workspace-header h1,
+.board-score strong,
+.signal-card strong,
+.stat-value,
+.metrics-ribbon strong,
+.workspace-kpi-band article strong,
+.panel h3,
+.panel h2,
+.auth-choice-card h2,
+.profile-section-card h3,
+.detail-note-card strong,
+.source-card strong,
+.opportunity-card strong,
+.decision-row strong {
+  color: #0c1726 !important;
+  letter-spacing: -0.04em !important;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.brand-lockup small,
+.hero p,
+.landing-hero p,
+.hero-lead,
+.results-header p,
+.muted,
+.signup-form-header p,
+.detail-note-card p,
+.source-card p,
+.ops-priority-card p,
+.admin-overview-card p,
+.auth-choice-card p,
+.company-profile-form p,
+.form-flow-hint,
+.form-message,
+.workspace-header p,
+.table-panel p,
+.dispatch-panel p {
+  color: var(--muted) !important;
+}
+
+.site-nav a,
+.button-primary,
+.button-secondary,
+.section-kicker,
+.eyebrow,
+.mini-pill,
+.badge,
+.source-chip,
+.filter-pill,
+.score-chip {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.site-nav a {
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  color: var(--muted);
+  background: transparent;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  background: #eef4f9;
+  border-color: rgba(18, 52, 90, 0.1);
+  color: var(--text);
+}
+
+.site-nav a[data-active="true"] {
+  background: #12345a !important;
+  color: var(--text-inverse) !important;
+  border-color: #12345a !important;
+  box-shadow: none !important;
+}
+
+.button-primary,
+.button-secondary {
+  min-height: 48px;
+  padding: 0 18px;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.button-primary {
+  background: #12345a !important;
+  border: 1px solid #12345a !important;
+  color: var(--text-inverse) !important;
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #0f2d4f !important;
+  border-color: #0f2d4f !important;
+}
+
+.button-secondary {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: #f6f9fc !important;
+  border-color: rgba(18, 52, 90, 0.18) !important;
+}
+
+.eyebrow,
+.section-kicker,
+.mini-pill,
+.badge,
+.source-chip,
+.filter-pill,
+.score-chip,
+.signal-ledger-grid span,
+.footer-metrics span {
+  padding: 6px 10px !important;
+  background: #e7eef5 !important;
+  color: #35506d !important;
+  border: 1px solid rgba(19, 32, 43, 0.08) !important;
+}
+
+.mini-pill-warm,
+.badge.tone-warning,
+.score-chip.tone-warning {
+  background: var(--warning-soft) !important;
+  color: var(--warning) !important;
+}
+
+.badge.tone-success,
+.score-chip.tone-success {
+  background: var(--success-soft) !important;
+  color: var(--success) !important;
+}
+
+.badge.tone-danger,
+.score-chip.tone-danger {
+  background: var(--danger-soft) !important;
+  color: var(--danger) !important;
+}
+
+.landing-hero,
+.hero-app,
+.auth-layout,
+.auth-choice-grid,
+.ops-proof-grid,
+.landing-system-grid,
+.editorial-grid,
+.admin-shell-grid,
+.admin-control-grid,
+.admin-overview-grid,
+.dashboard-focus-grid,
+.profile-workbench-grid,
+.layout-grid,
+.workspace-preview-grid,
+.dashboard-focus-grid,
+.ops-priority-grid,
+.source-form-grid {
+  gap: 20px !important;
+}
+
+.hero-copy,
+.auth-form-card,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.company-profile-form,
+.profile-section-card,
+.source-card,
+.admin-overview-card,
+.ops-priority-card,
+.decision-row,
+.opportunity-card,
+.pipeline-card,
+.opportunity-list-card,
+.workspace-adoption-main,
+.workspace-adoption-step,
+.detail-note-card,
+.onboarding-companion {
+  min-width: 0;
+}
+
+.landing-masterhead,
+.hero-app,
+.about-hero,
+.auth-page-header,
+.workspace-header,
+.contact-shell > .panel:first-child {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.hero-inline-metrics,
+.dashboard-executive-band,
+.detail-date-strip,
+.signup-confidence-bar,
+.results-ribbon,
+.admin-ops-snapshot {
+  gap: 12px !important;
+}
+
+.hero-inline-metrics article,
+.dashboard-executive-band article,
+.detail-date-strip article,
+.workspace-kpi-band article,
+.results-ribbon span,
+.signup-confidence-bar span,
+.admin-ops-snapshot > article {
+  padding: 16px !important;
+  background: #f7fafc !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+}
+
+.panel,
+.board-frame,
+.auth-form-card,
+.auth-form-card--surface,
+.contact-request-card,
+.detail-note-card,
+.profile-section-card,
+.source-card,
+.table-panel,
+.table-panel-upgraded,
+.dispatch-panel,
+.admin-overview-card,
+.ops-priority-card,
+.workspace-adoption-main,
+.workspace-adoption-step,
+.opportunity-list-card,
+.pipeline-card,
+.decision-row,
+.opportunity-card {
+  border: 1px solid var(--line) !important;
+  background: #ffffff !important;
+  box-shadow: 0 8px 22px rgba(12, 23, 38, 0.04) !important;
+}
+
+.board-frame {
+  padding: 22px !important;
+  overflow: hidden;
+}
+
+.board-frame::after {
+  display: none !important;
+}
+
+.board-topline,
+.board-score,
+.featured-meta,
+.opportunity-head,
+.meta,
+.source-card-header,
+.pipeline-card-footer,
+.decision-row-head,
+.decision-row-footer,
+.results-header,
+.workspace-header,
+.section-heading {
+  gap: 10px !important;
+}
+
+.results-header,
+.workspace-header,
+.pipeline-column-head,
+.source-card-header,
+.signup-form-header {
+  border-bottom: 1px solid rgba(19, 32, 43, 0.08) !important;
+  padding-bottom: 12px !important;
+}
+
+.auth-form-card,
+.auth-form-card--surface,
+.contact-request-card,
+.company-profile-form,
+.table-panel,
+.table-panel-upgraded,
+.dispatch-panel,
+.profile-section-card,
+.source-card,
+.detail-note-card,
+.state-form {
+  padding: 22px !important;
+}
+
+.form-flow-hint,
+.profile-summary-bar,
+.detail-note-card,
+.signup-lookup-card,
+.profile-summary-bar-strong {
+  background: #f5f8fb !important;
+  border: 1px solid rgba(19, 32, 43, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.field label {
+  margin-bottom: 8px;
+  color: #0f2136 !important;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea,
+.state-form input,
+.state-form select,
+.state-form textarea {
+  min-height: 48px !important;
+  padding: 12px 14px !important;
+  background: #fbfdff !important;
+  border: 1px solid rgba(19, 32, 43, 0.14) !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+}
+
+.field textarea,
+.state-form textarea {
+  min-height: 120px !important;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.state-form input:focus,
+.state-form select:focus,
+.state-form textarea:focus {
+  outline: none !important;
+  border-color: #12345a !important;
+  box-shadow: 0 0 0 2px rgba(18, 52, 90, 0.12) !important;
+}
+
+.table-wrap {
+  border: 1px solid var(--line) !important;
+  overflow: hidden;
+  background: #fff !important;
+}
+
+.table-wrap thead th {
+  padding: 12px 14px !important;
+  background: #edf3f8 !important;
+  color: #4c647f !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.table-wrap tbody td {
+  padding: 12px 14px !important;
+  border-bottom: 1px solid rgba(19, 32, 43, 0.06) !important;
+}
+
+.table-wrap tbody tr:nth-child(even) {
+  background: #f9fbfd !important;
+}
+
+.admin-workbench-grid .admin-rail,
+.admin-rail {
+  background: #f7fafc !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+  color: var(--text) !important;
+}
+
+.admin-rail .section-kicker,
+.admin-rail strong,
+.admin-rail a {
+  color: var(--text) !important;
+}
+
+.admin-anchor-nav a {
+  display: block;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(19, 32, 43, 0.08) !important;
+  background: #ffffff !important;
+}
+
+.admin-anchor-nav a:hover,
+.admin-anchor-nav a:focus-visible {
+  background: #edf3f8 !important;
+}
+
+.operations-band {
+  padding: 14px 16px !important;
+  background: #f7fafc !important;
+}
+
+.opportunity-list-empty {
+  max-width: 520px;
+  padding: 22px;
+  border: 1px dashed rgba(18, 52, 90, 0.2) !important;
+  background: #f7fafc !important;
+}
+
+.executive-control-illustration svg,
+.workspace-board-illustration svg,
+.process-flow-editorial-illustration svg,
+.hero-technical-illustration svg,
+.proof-ribbon-illustration svg,
+.process-diagram-illustration svg {
+  width: 100%;
+  height: auto;
+}
+
+.executive-control-illustration .executive-shell,
+.workspace-board-illustration .workspace-shell,
+.process-flow-editorial-illustration .process-flow-shell {
+  fill: #12345a !important;
+}
+
+.executive-control-illustration .executive-band,
+.workspace-board-illustration .workspace-strip,
+.process-flow-editorial-illustration .process-flow-panel {
+  fill: rgba(255, 255, 255, 0.08) !important;
+}
+
+.executive-control-illustration text,
+.workspace-board-illustration text,
+.process-flow-editorial-illustration text {
+  fill: #f5f8fc !important;
+}
+
+@media (max-width: 960px) {
+  .page-shell {
+    padding: 20px 18px 72px;
+  }
+
+  .site-header {
+    top: 0;
+  }
+
+  .landing-hero,
+  .hero-app,
+  .auth-layout,
+  .auth-choice-grid,
+  .admin-shell-grid,
+  .admin-control-grid,
+  .landing-system-grid,
+  .editorial-grid,
+  .profile-workbench-grid,
+  .dashboard-focus-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 16px 14px 64px;
+  }
+
+  .site-header,
+  .auth-form-card,
+  .auth-form-card--surface,
+  .contact-request-card,
+  .company-profile-form,
+  .table-panel,
+  .table-panel-upgraded,
+  .dispatch-panel,
+  .profile-section-card,
+  .source-card,
+  .detail-note-card,
+  .board-frame,
+  .panel {
+    padding: 16px !important;
+  }
+
+  .hero-inline-metrics,
+  .dashboard-executive-band,
+  .detail-date-strip,
+  .signup-confidence-bar,
+  .results-ribbon,
+  .admin-ops-snapshot {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Screen-specific pass driven by /visual demos: editorial hierarchy, tonal layering, quieter product framing. */
+.page-screen {
+  position: relative;
+}
+
+.page-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 320px;
+  background: radial-gradient(circle at top right, rgba(15, 95, 199, 0.08), transparent 38%);
+  pointer-events: none;
+}
+
+.page-screen > * {
+  position: relative;
+}
+
+.page-screen--home .landing-hero,
+.page-screen--about .about-hero,
+.page-screen--contact .about-hero,
+.page-screen--signup .auth-page-header,
+.page-screen--login-selector .auth-page-header,
+.page-screen--dashboard .dashboard-header,
+.page-screen--saved .workspace-header,
+.page-screen--account .account-header,
+.page-screen--company-profile .profile-header,
+.page-screen--admin-company .company-admin-header,
+.page-screen--admin-platform .admin-header {
+  margin-bottom: 32px !important;
+}
+
+.page-screen--home .landing-hero {
+  align-items: center;
+  gap: 28px !important;
+}
+
+.page-screen--home .hero-copy {
+  max-width: 760px;
+  gap: 18px !important;
+  padding-top: 8px;
+}
+
+.page-screen--home .landing-hero h1 {
+  max-width: 10ch;
+  font-size: clamp(3.5rem, 7vw, 6.6rem) !important;
+  line-height: 0.92 !important;
+}
+
+.page-screen--home .hero-lead {
+  max-width: 58ch;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+.page-screen--home .hero-board-premium {
+  align-self: stretch;
+}
+
+.page-screen--home .board-frame.refined-board {
+  min-height: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #f3f7fb 100%) !important;
+}
+
+.page-screen--home .ops-proof-grid,
+.page-screen--about .workspace-preview-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.page-screen--home .proof-card,
+.page-screen--about .experience-card {
+  min-height: 220px;
+  padding: 24px !important;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+
+.page-screen--home .landing-system-grid,
+.page-screen--about .about-logic-grid,
+.page-screen--contact .contact-shell,
+.page-screen--signup .signup-shell,
+.page-screen--dashboard .dashboard-focus-grid,
+.page-screen--company-profile .profile-main-grid {
+  grid-template-columns: minmax(0, 1.18fr) minmax(340px, 0.82fr) !important;
+}
+
+.page-screen--home .landing-system-copy,
+.page-screen--about .about-logic-copy,
+.page-screen--contact .contact-qualification-panel,
+.page-screen--signup .signup-companion,
+.page-screen--dashboard .dashboard-side-rail {
+  background: #f7fafc !important;
+}
+
+.page-screen--home .landing-system-copy h3,
+.page-screen--about .about-logic-copy h3,
+.page-screen--contact .contact-qualification-panel h2,
+.page-screen--signup .signup-companion h2,
+.page-screen--dashboard .dashboard-side-rail h2,
+.page-screen--company-profile .ops-priority-card h3,
+.page-screen--admin-company .admin-overview-card h3,
+.page-screen--admin-platform .admin-overview-card h3 {
+  font-size: clamp(1.45rem, 2.1vw, 2.05rem) !important;
+  line-height: 1.05 !important;
+}
+
+.page-screen--about .about-hero,
+.page-screen--contact .about-hero {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: end;
+}
+
+.page-screen--about .about-hero h1,
+.page-screen--contact .about-hero h1,
+.page-screen--signup .auth-page-header h1,
+.page-screen--login-selector .auth-page-header h1 {
+  max-width: 12ch;
+  font-size: clamp(2.9rem, 5vw, 4.9rem) !important;
+  line-height: 0.95 !important;
+}
+
+.page-screen--about .how-it-works-stage,
+.page-screen--about .about-logic-stage,
+.page-screen--contact .contact-shell,
+.page-screen--signup .signup-shell,
+.page-screen--dashboard .workspace-briefing-panel,
+.page-screen--saved .workspace-pipeline-board,
+.page-screen--account .account-shell,
+.page-screen--company-profile .workspace-detail-grid,
+.page-screen--admin-company .company-admin-shell-grid,
+.page-screen--admin-platform .admin-workbench-grid {
+  margin-top: 32px;
+}
+
+.page-screen--about .how-it-works-diagram,
+.page-screen--about .about-logic-diagram,
+.page-screen--home .landing-system-diagram,
+.page-screen--dashboard .dashboard-hero-board {
+  padding: 28px !important;
+  background: linear-gradient(180deg, #12345a 0%, #0f2d4f 100%) !important;
+}
+
+.page-screen--about .how-it-works-diagram svg,
+.page-screen--about .about-logic-diagram svg,
+.page-screen--home .landing-system-diagram svg,
+.page-screen--dashboard .dashboard-hero-board svg {
+  display: block;
+}
+
+.page-screen--about .how-it-works-steps,
+.page-screen--dashboard .decision-rows,
+.page-screen--saved .pipeline-column-body,
+.page-screen--admin-platform .admin-content-stack,
+.page-screen--admin-company .admin-content-stack {
+  gap: 14px !important;
+}
+
+.page-screen--contact .contact-shell,
+.page-screen--signup .signup-shell,
+.page-screen--account .account-shell {
+  align-items: start !important;
+}
+
+.page-screen--contact .contact-request-card,
+.page-screen--signup .auth-form-card,
+.page-screen--login-selector .auth-choice-card,
+.page-screen--account .dispatch-panel,
+.page-screen--company-profile .dispatch-panel,
+.page-screen--admin-company .table-panel,
+.page-screen--admin-platform .dispatch-panel,
+.page-screen--admin-platform .table-panel {
+  background: #ffffff !important;
+}
+
+.page-screen--login-selector .auth-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page-screen--login-selector .auth-choice-card {
+  min-height: 100%;
+  padding: 26px !important;
+}
+
+.page-screen--signup .signup-companion,
+.page-screen--contact .contact-companion,
+.page-screen--account .onboarding-companion {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.page-screen--dashboard .dashboard-summary-band,
+.page-screen--saved .workspace-kpi-band,
+.page-screen--account .account-summary-band,
+.page-screen--company-profile .profile-summary-band,
+.page-screen--admin-company .company-admin-summary-band,
+.page-screen--admin-platform .admin-summary-band {
+  margin-bottom: 22px;
+}
+
+.page-screen--dashboard .dashboard-summary-band article,
+.page-screen--saved .workspace-kpi-band article,
+.page-screen--account .account-summary-band article,
+.page-screen--company-profile .profile-summary-band article,
+.page-screen--admin-company .company-admin-summary-band article,
+.page-screen--admin-platform .admin-summary-band article {
+  min-height: 108px;
+  align-content: space-between;
+}
+
+.page-screen--dashboard .ops-priority-card-strong,
+.page-screen--company-profile .ops-priority-card-strong,
+.page-screen--about .editorial-callout-dark,
+.page-screen--home .editorial-callout-dark {
+  background: linear-gradient(180deg, #001430 0%, #002855 100%) !important;
+  color: #f5f8fc !important;
+}
+
+.page-screen--dashboard .ops-priority-card-strong p,
+.page-screen--company-profile .ops-priority-card-strong p,
+.page-screen--about .editorial-callout-dark p,
+.page-screen--home .editorial-callout-dark p,
+.page-screen--dashboard .ops-priority-card-strong .section-kicker,
+.page-screen--company-profile .ops-priority-card-strong .section-kicker,
+.page-screen--about .editorial-callout-dark .section-kicker,
+.page-screen--home .editorial-callout-dark .section-kicker {
+  color: rgba(245, 248, 252, 0.82) !important;
+}
+
+.page-screen--dashboard .dashboard-main-grid {
+  align-items: start;
+}
+
+.page-screen--dashboard .dashboard-side-rail,
+.page-screen--admin-company .admin-rail,
+.page-screen--admin-platform .admin-rail {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.page-screen--saved .workspace-pipeline-board {
+  align-items: start;
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
+}
+
+.page-screen--saved .pipeline-column {
+  background: #f7fafc !important;
+}
+
+.page-screen--saved .pipeline-card,
+.page-screen--dashboard .decision-row,
+.page-screen--admin-platform .admin-overview-card,
+.page-screen--admin-company .admin-overview-card,
+.page-screen--company-profile .source-card {
+  background: #ffffff !important;
+}
+
+.page-screen--account .account-shell,
+.page-screen--company-profile .profile-main-grid,
+.page-screen--admin-company .company-admin-shell-grid,
+.page-screen--admin-platform .admin-shell-grid {
+  align-items: start;
+}
+
+.page-screen--company-profile .profile-summary-bar,
+.page-screen--company-profile .profile-section-card,
+.page-screen--admin-platform .admin-section-stack,
+.page-screen--admin-company .admin-section-stack {
+  border-top: 4px solid #dbe5ef;
+}
+
+.page-screen--company-profile .profile-summary-bar {
+  padding: 14px 16px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-screen--admin-platform .admin-rail,
+.page-screen--admin-company .admin-rail {
+  background: linear-gradient(180deg, #f5f9fd 0%, #edf3f8 100%) !important;
+}
+
+.page-screen--admin-platform .admin-overview-grid,
+.page-screen--admin-company .admin-overview-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page-screen--admin-platform .admin-main-grid,
+.page-screen--admin-company .admin-focus-grid {
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.28fr) !important;
+}
+
+.page-screen--admin-platform .admin-ops-snapshot,
+.page-screen--admin-company .admin-overview-grid {
+  gap: 14px !important;
+}
+
+.page-screen--home .cta-band,
+.page-screen--about .cta-band {
+  padding: 28px !important;
+  align-items: center;
+}
+
+@media (max-width: 1120px) {
+  .page-screen--home .landing-system-grid,
+  .page-screen--about .about-logic-grid,
+  .page-screen--contact .contact-shell,
+  .page-screen--signup .signup-shell,
+  .page-screen--dashboard .dashboard-focus-grid,
+  .page-screen--company-profile .profile-main-grid,
+  .page-screen--admin-platform .admin-main-grid,
+  .page-screen--admin-company .admin-focus-grid,
+  .page-screen--login-selector .auth-choice-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-screen--saved .workspace-pipeline-board {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .page-screen--home .ops-proof-grid,
+  .page-screen--about .workspace-preview-grid,
+  .page-screen--admin-platform .admin-overview-grid,
+  .page-screen--admin-company .admin-overview-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .page-screen--home .landing-hero h1,
+  .page-screen--about .about-hero h1,
+  .page-screen--contact .about-hero h1,
+  .page-screen--signup .auth-page-header h1,
+  .page-screen--login-selector .auth-page-header h1 {
+    max-width: none;
+    font-size: clamp(2.4rem, 11vw, 3.8rem) !important;
+  }
+
+  .page-screen--dashboard .dashboard-side-rail,
+  .page-screen--admin-company .admin-rail,
+  .page-screen--admin-platform .admin-rail {
+    position: static;
+  }
+}
