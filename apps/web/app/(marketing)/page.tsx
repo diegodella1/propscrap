@@ -27,7 +27,14 @@ export default async function LandingPage() {
     if (!item.deadline_date) return false;
     return new Date(item.deadline_date).getTime() - Date.now() < 1000 * 60 * 60 * 24 * 7;
   }).length;
-  const sourceLabels = sources.slice(0, 4).map((source) => source.name);
+  const sourceLabels = Array.from(
+    new Set(
+      sources
+        .map((source) => source.name.trim())
+        .filter((name) => name.length > 0)
+        .filter((name) => !/(^|\b)(qa|test|demo|updated)(\b|$)/i.test(name)),
+    ),
+  ).slice(0, 4);
   const isLoggedIn = Boolean(currentUser);
 
   return (
@@ -85,7 +92,7 @@ export default async function LandingPage() {
             <div className="hero-inline-metrics hero-inline-splash">
               <article>
                 <span>Paso 1</span>
-                <strong>Registro por CUIT</strong>
+                <strong>Alta por CUIT</strong>
                 <p>Alta legal y perfil inicial en el primer paso.</p>
               </article>
               <article>
@@ -95,7 +102,7 @@ export default async function LandingPage() {
               </article>
               <article>
                 <span>Paso 3</span>
-                <strong>Seguimiento sin memoria informal</strong>
+                <strong>Seguimiento trazable</strong>
                 <p>Pipeline, notas y alertas con trazabilidad.</p>
               </article>
             </div>
@@ -241,7 +248,10 @@ export default async function LandingPage() {
         <article className="editorial-callout">
           <span className="section-kicker">Cobertura inicial</span>
           <h2>Una base multi-fuente lista para crecer.</h2>
-          <p>{sourceLabels.join(" · ") || "Fuentes persistidas y listas para administrarse desde la plataforma."}</p>
+          <p>
+            {sourceLabels.join(" · ") ||
+              "COMPR.AR · portales oficiales · boletines públicos · fuentes administradas desde la plataforma."}
+          </p>
         </article>
       </section>
 

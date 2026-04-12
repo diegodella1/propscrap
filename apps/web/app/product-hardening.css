@@ -1,0 +1,499 @@
+/* Final stability pass for public cards and splash copy. Keeps contrast and wrapping
+   predictable despite the large number of earlier marketing overrides in globals. */
+.hero-inline-splash {
+  align-items: stretch;
+}
+
+.hero-inline-splash article,
+.decision-row,
+.proof-card,
+.editorial-callout,
+.experience-card,
+.landing-system-points article,
+.about-logic-points article {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hero-inline-splash article {
+  gap: 10px;
+}
+
+.hero-inline-splash strong {
+  margin-top: 0;
+  font-size: clamp(1rem, 1.6vw, 1.2rem) !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.hero-inline-splash p,
+.decision-row p,
+.proof-card p,
+.editorial-callout p,
+.experience-card p,
+.landing-system-points p,
+.about-logic-points p {
+  margin: 0;
+  color: #475569 !important;
+  line-height: 1.6 !important;
+  overflow-wrap: anywhere;
+}
+
+.decision-row strong,
+.proof-card h2,
+.proof-card strong,
+.editorial-callout h2,
+.experience-card h3,
+.landing-system-copy h3,
+.about-logic-copy h3 {
+  color: #0f172a;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  hyphens: auto;
+  text-wrap: balance;
+}
+
+.editorial-callout-dark,
+.experience-card-dark {
+  background: linear-gradient(180deg, #0f172a 0%, #162033 100%) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
+  color: #f8fafc !important;
+}
+
+.editorial-callout-dark h2,
+.experience-card-dark h3 {
+  color: #f8fafc !important;
+}
+
+.editorial-callout-dark p,
+.experience-card-dark p,
+.editorial-callout-dark .section-kicker,
+.experience-card-dark .section-kicker {
+  color: rgba(241, 245, 249, 0.84) !important;
+}
+
+.editorial-callout-dark .section-kicker,
+.experience-card-dark .section-kicker {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.badge,
+.source-chip,
+.mini-pill,
+.score-chip,
+.filter-pill,
+.section-kicker,
+.eyebrow {
+  max-width: 100%;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.landing-proof-grid,
+.landing-editorial-grid,
+.landing-experience-grid,
+.workspace-preview-grid,
+.ops-proof-grid,
+.editorial-grid,
+.landing-system-grid,
+.about-logic-grid {
+  align-items: stretch;
+}
+
+/* Product-wide hardening pass: square geometry, clearer contrast, tighter panels,
+   and safer wrapping for dense operational screens. */
+.site-header,
+.panel,
+.board-frame,
+.proof-card,
+.experience-card,
+.editorial-callout,
+.decision-row,
+.alert-row,
+.pipeline-card,
+.pipeline-column,
+.opportunity-list-card,
+.auth-form-card,
+.dispatch-panel,
+.detail-note-card,
+.source-card,
+.admin-disclosure,
+.admin-anchor-nav a,
+.admin-quick-list article,
+.admin-status-list article,
+.admin-overview-card,
+.admin-job-card,
+.table-wrap table,
+.table-wrap th,
+.table-wrap td,
+.profile-summary-bar,
+.results-ribbon,
+.button-primary,
+.button-secondary,
+.badge,
+.source-chip,
+.mini-pill,
+.score-chip,
+.filter-pill,
+.site-nav a,
+input,
+select,
+textarea {
+  border-radius: 0 !important;
+}
+
+.auth-layout,
+.account-shell,
+.profile-main-grid,
+.dashboard-focus-grid,
+.admin-focus-grid,
+.company-admin-focus-grid,
+.admin-main-grid,
+.admin-control-grid,
+.admin-data-grid,
+.admin-overview-grid,
+.admin-ops-snapshot,
+.admin-delivery-kpis,
+.layout-grid,
+.tender-layout {
+  gap: 16px !important;
+}
+
+.auth-form-card,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.dashboard-filter-panel,
+.admin-rail,
+.pipeline-column,
+.opportunity-list-card,
+.source-card,
+.detail-note-card,
+.workspace-empty-state {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.workspace-empty-state,
+.auth-layout .onboarding-companion,
+.account-shell .onboarding-companion,
+.profile-main-grid .dispatch-panel:last-child,
+.admin-focus-grid .onboarding-companion,
+.company-admin-focus-grid .onboarding-companion,
+.detail-sidebar .detail-note-card {
+  background: #f8fbff !important;
+  border-color: rgba(11, 92, 173, 0.12) !important;
+}
+
+.workspace-header,
+.results-header,
+.section-heading,
+.signup-form-header,
+.source-card-header,
+.decision-row-head,
+.decision-row-footer,
+.pipeline-card-footer,
+.meta,
+.source-edit-actions {
+  min-width: 0;
+}
+
+.workspace-header h1,
+.results-header h2,
+.section-heading h2,
+.signup-form-header h2,
+.dispatch-panel h2,
+.table-panel h2,
+.table-panel-upgraded h2,
+.admin-overview-card h3,
+.proof-card h2,
+.editorial-callout h2,
+.experience-card h3,
+.source-card-header strong,
+.decision-row strong,
+.pipeline-card strong,
+.opportunity-list-card strong {
+  max-width: 24ch;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.workspace-header p,
+.results-header p,
+.section-heading p,
+.signup-form-header p,
+.proof-card p,
+.editorial-callout p,
+.experience-card p,
+.decision-row p,
+.pipeline-card p,
+.opportunity-list-card p,
+.source-card p,
+.admin-overview-card p,
+.admin-quick-list p,
+.admin-status-list p,
+.detail-note-card p,
+.form-message,
+.admin-field-help p,
+.muted {
+  color: #475569 !important;
+  overflow-wrap: anywhere;
+}
+
+.dashboard-executive-band article,
+.hero-inline-metrics article,
+.admin-overview-card,
+.admin-quick-list article,
+.admin-status-list article,
+.proof-card,
+.experience-card,
+.editorial-callout {
+  border-top: 3px solid #0b5cad !important;
+}
+
+.auth-form-card,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.dashboard-filter-panel,
+.admin-rail {
+  padding: 18px !important;
+}
+
+.auth-form-card .signup-form-header,
+.dispatch-panel .results-header,
+.table-panel .results-header,
+.table-panel-upgraded .results-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.field,
+.form-field {
+  gap: 6px !important;
+}
+
+.field label,
+.form-field span {
+  color: #334155 !important;
+  font-size: 0.78rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+input,
+select,
+textarea {
+  padding: 11px 12px !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  background: #fff !important;
+}
+
+textarea.code-textarea,
+.code-textarea {
+  min-height: 200px;
+  background: #f8fbff !important;
+}
+
+.signup-stage-strip,
+.signup-confidence-bar,
+.filter-preset-row,
+.hero-actions,
+.workspace-header-actions,
+.meta,
+.source-edit-actions {
+  gap: 10px !important;
+}
+
+.signup-stage-strip,
+.signup-confidence-bar {
+  padding-top: 4px;
+}
+
+.signup-stage-strip .mini-pill,
+.signup-confidence-bar span,
+.filter-preset-row .filter-pill {
+  justify-content: center;
+  min-height: 36px;
+}
+
+.checkbox-row {
+  padding: 10px 0 !important;
+}
+
+.checkbox-row span {
+  color: #0f172a !important;
+}
+
+.form-message,
+.form-message-block {
+  padding: 10px 12px;
+  border: 1px solid rgba(11, 92, 173, 0.14);
+  background: #f8fbff;
+  color: #0f3f75 !important;
+}
+
+.dashboard-filter-panel,
+.admin-rail {
+  border-top: 4px solid #0b5cad !important;
+}
+
+.opportunity-list-card,
+.pipeline-card,
+.decision-row,
+.source-card,
+.admin-overview-card,
+.admin-quick-list article,
+.admin-status-list article,
+.detail-note-card {
+  overflow: hidden;
+}
+
+.opportunity-list-card {
+  grid-template-columns: minmax(0, 1fr) 200px !important;
+}
+
+.opportunity-list-main,
+.opportunity-list-aside,
+.pipeline-column-body,
+.source-edit-stack,
+.user-edit-stack,
+.source-stack,
+.alert-stack,
+.onboarding-proof-list {
+  display: grid;
+  gap: 10px;
+}
+
+.opportunity-list-aside,
+.pipeline-card-footer,
+.decision-row-footer,
+.source-edit-actions {
+  align-items: start !important;
+}
+
+.pipeline-card-footer .muted,
+.decision-row-footer .muted,
+.opportunity-list-main .muted {
+  line-height: 1.45;
+}
+
+.table-wrap {
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+}
+
+.table-wrap table {
+  min-width: 720px;
+  background: #fff;
+}
+
+.table-wrap th,
+.table-wrap td {
+  overflow-wrap: anywhere;
+}
+
+.table-wrap th {
+  background: #f8fbff !important;
+  color: #334155 !important;
+}
+
+.admin-disclosure-summary {
+  padding: 12px 14px !important;
+  background: #fff;
+}
+
+.admin-disclosure-panel {
+  gap: 12px !important;
+  padding: 0 14px 14px !important;
+}
+
+.source-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.source-card-header .meta {
+  justify-content: flex-end;
+}
+
+.admin-anchor-nav a {
+  min-height: 42px;
+  background: #fff !important;
+  color: #0f172a !important;
+}
+
+.admin-anchor-nav a:hover,
+.admin-anchor-nav a:focus-visible {
+  background: #f8fbff !important;
+  color: #0f3f75 !important;
+}
+
+.profile-summary-bar,
+.results-ribbon {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1120px) {
+  .opportunity-list-card,
+  .source-card-header,
+  .workspace-header,
+  .dashboard-focus-grid,
+  .admin-focus-grid,
+  .company-admin-focus-grid,
+  .admin-main-grid,
+  .profile-main-grid,
+  .account-shell {
+    grid-template-columns: 1fr !important;
+  }
+
+  .opportunity-list-aside {
+    border-left: 0 !important;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    padding-left: 0 !important;
+    padding-top: 12px;
+  }
+
+  .source-card-header .meta,
+  .workspace-header-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard-executive-band,
+  .hero-inline-metrics,
+  .admin-overview-grid,
+  .admin-ops-snapshot,
+  .admin-delivery-kpis,
+  .workspace-preview-grid,
+  .ops-proof-grid,
+  .landing-experience-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .auth-form-card,
+  .dispatch-panel,
+  .table-panel,
+  .table-panel-upgraded,
+  .dashboard-filter-panel,
+  .admin-rail {
+    padding: 16px !important;
+  }
+
+  .workspace-header h1,
+  .results-header h2,
+  .signup-form-header h2 {
+    max-width: 100%;
+  }
+}
