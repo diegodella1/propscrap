@@ -114,7 +114,9 @@ HEALTH="$(retry_curl -fsS http://127.0.0.1:8001/health)"
 echo "[2] public pages"
 check_contains "$BASE_WEB/" "La infraestructura operativa para empresas que venden al Estado."
 check_contains "$BASE_WEB/signup" "Registrá tu empresa por CUIT."
-check_contains "$BASE_WEB/login" "Ingresá a tu workspace."
+check_contains "$BASE_WEB/login" "Elegí el tipo de acceso."
+check_contains "$BASE_WEB/login/empresa" "Ingresá como cliente."
+check_contains "$BASE_WEB/login/superadmin" "Ingresá a la consola de plataforma."
 retry_curl -fsS "$BASE_API/public/platform-settings" >/dev/null
 
 echo "[3] company lookup"

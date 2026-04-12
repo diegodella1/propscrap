@@ -3,14 +3,13 @@ import { redirect } from "next/navigation";
 
 import { PageHero } from "../../../components/layout/page-hero";
 import { PageShell } from "../../../components/layout/page-shell";
-import { LoginForm } from "../../../components/login-form";
 import { SiteHeader } from "../../../components/site-header";
 import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function LoginPage() {
   const currentUser = await getCurrentUserFromSession();
   if (currentUser) {
-    redirect("/mi-cuenta");
+    redirect(currentUser.role === "admin" ? "/admin/platform" : "/dashboard");
   }
 
   return (
@@ -18,28 +17,47 @@ export default async function LoginPage() {
       <SiteHeader section="auth" />
 
       <PageHero
-        eyebrow="Ingresar"
-        title="Ingresá a tu workspace."
-        description="Accedé con email y contraseña para volver a oportunidades, seguimiento o administración según tu rol."
+        eyebrow="Acceso"
+        title="Elegí el tipo de acceso."
+        description="Separá el ingreso operativo de clientes del acceso de plataforma para superadmin."
         className="workspace-header auth-page-header"
       />
 
-      <section className="auth-layout auth-layout-upgraded signup-shell login-shell">
-        <LoginForm />
-        <article className="panel dispatch-panel onboarding-companion signup-companion login-companion">
-          <span className="section-kicker">Qué encontrás adentro</span>
-          <h2>Una herramienta de trabajo, no una landing</h2>
-          <div className="signup-path">
-            <p>Oportunidades priorizadas por score y urgencia.</p>
-            <p>Seguimiento con estados, notas y alertas.</p>
-            <p>Capas de administración si tu rol lo permite.</p>
+      <section className="auth-choice-grid">
+        <article className="panel dispatch-panel auth-choice-card">
+          <span className="section-kicker">Clientes</span>
+          <h2>Ingreso empresa</h2>
+          <p>Para usuarios de empresas que buscan licitaciones, guardan oportunidades y trabajan seguimiento.</p>
+          <div className="signup-confidence-bar">
+            <span>Dashboard</span>
+            <span>Seguimiento</span>
+            <span>Perfil empresa</span>
           </div>
           <div className="hero-actions">
+            <Link href="/login/empresa" className="button-primary">
+              Ingresar empresa
+            </Link>
             <Link href="/signup" className="button-secondary">
               Crear cuenta
             </Link>
-            <Link href="/about" className="linkish">
-              Ver propuesta
+          </div>
+        </article>
+
+        <article className="panel dispatch-panel auth-choice-card">
+          <span className="section-kicker">Plataforma</span>
+          <h2>Ingreso superadmin</h2>
+          <p>Para operación global: fuentes, jobs, automatización, credenciales y administración transversal.</p>
+          <div className="signup-confidence-bar">
+            <span>Fuentes</span>
+            <span>Jobs</span>
+            <span>Usuarios</span>
+          </div>
+          <div className="hero-actions">
+            <Link href="/login/superadmin" className="button-primary">
+              Ingresar superadmin
+            </Link>
+            <Link href="/about" className="button-secondary">
+              Ver cómo funciona
             </Link>
           </div>
         </article>

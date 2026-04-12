@@ -41,6 +41,8 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
     signup: pathname.startsWith("/signup"),
     contact: pathname.startsWith("/contact"),
     login: pathname.startsWith("/login"),
+    loginCompany: pathname.startsWith("/login/empresa"),
+    loginAdmin: pathname.startsWith("/login/superadmin"),
     dashboard: pathname.startsWith("/dashboard") || pathname.startsWith("/tenders/"),
     saved: pathname.startsWith("/saved"),
     profile: pathname.startsWith("/company-profile"),
@@ -140,7 +142,7 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
                 data-active={active.login}
                 onClick={closeNav}
               >
-                Ingresar
+                Accesos
               </Link>
               <Link href="/contact" className="button-primary site-auth-button" onClick={closeNav}>
                 Hablar con Ventas

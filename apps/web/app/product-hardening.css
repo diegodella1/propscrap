@@ -491,6 +491,33 @@ textarea.code-textarea,
   overflow-wrap: anywhere;
 }
 
+.auth-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.auth-choice-card {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.login-demo-card {
+  display: grid;
+  gap: 6px;
+  background: #f8fbff !important;
+  border-color: rgba(11, 92, 173, 0.12) !important;
+}
+
+.login-demo-card p {
+  margin: 0;
+}
+
+.login-demo-card strong {
+  color: #0f172a;
+}
+
 @media (max-width: 1120px) {
   .opportunity-list-card,
   .source-card-header,
@@ -517,6 +544,10 @@ textarea.code-textarea,
   }
 
   .ops-readiness-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-choice-grid {
     grid-template-columns: 1fr;
   }
 }
