@@ -4,7 +4,7 @@ import { SiteHeader } from "./site-header";
 import { SourceEditorList } from "./source-editor-list";
 import { SourceForm } from "./source-form";
 import { UserEditorList } from "./user-editor-list";
-import type { Alert, AutomationSettings, Source, SourceRun, User, WhatsappOutboxMessage } from "../lib/api";
+import type { AdminAuditEvent, Alert, AutomationSettings, Source, SourceRun, User, WhatsappOutboxMessage } from "../lib/api";
 
 type Props = {
   currentUserName: string;
@@ -14,6 +14,7 @@ type Props = {
   sources: Source[];
   automationSettings: AutomationSettings;
   whatsappOutbox: WhatsappOutboxMessage[];
+  auditEvents: AdminAuditEvent[];
 };
 
 export function PlatformAdminPage({
@@ -24,8 +25,10 @@ export function PlatformAdminPage({
   sources,
   automationSettings,
   whatsappOutbox,
+  auditEvents,
 }: Props) {
   const sourceMap = new Map(sources.map((source) => [source.id, source]));
+  const userMap = new Map(users.map((user) => [user.id, user]));
   const activeSources = sources.filter((source) => source.is_active).length;
   const healthyRuns = sourceRuns.filter((run) => run.status === "success" || run.status === "completed").length;
   const failedRuns = sourceRuns.filter((run) => run.status === "failed" || run.status === "error").length;
@@ -86,6 +89,7 @@ export function PlatformAdminPage({
               <a href="#admin-sources">Fuentes</a>
               <a href="#admin-automation">Automatización</a>
               <a href="#admin-delivery">Entregas</a>
+              <a href="#admin-audit">Auditoría</a>
               <a href="#admin-users">Usuarios</a>
             </nav>
           </div>
@@ -375,6 +379,48 @@ export function PlatformAdminPage({
                 </div>
               </article>
             </div>
+          </section>
+
+          <section id="admin-audit" className="admin-section-stack">
+            <article className="panel table-panel table-panel-upgraded">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Auditoría</span>
+                  <h2>Eventos administrativos recientes</h2>
+                </div>
+                <p>Registro de acciones sensibles ejecutadas por platform admins y jobs manuales.</p>
+              </div>
+              {auditEvents.length === 0 ? (
+                <p className="muted">Todavía no hay eventos de auditoría registrados.</p>
+              ) : (
+                <div className="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Actor</th>
+                        <th>Acción</th>
+                        <th>Detalle</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {auditEvents.slice(0, 20).map((event) => (
+                        <tr key={event.id}>
+                          <td>{new Date(event.created_at).toLocaleString("es-AR")}</td>
+                          <td>
+                            {event.actor_user_id
+                              ? userMap.get(event.actor_user_id)?.email ?? `user:${event.actor_user_id}`
+                              : "system"}
+                          </td>
+                          <td>{event.action}</td>
+                          <td>{event.detail_json ? JSON.stringify(event.detail_json) : "{}"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </article>
           </section>
 
           <section id="admin-users" className="admin-section-stack">

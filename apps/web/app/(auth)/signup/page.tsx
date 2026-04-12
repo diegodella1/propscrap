@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { SignupForm } from "../../components/signup-form";
-import { SiteHeader } from "../../components/site-header";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { PageHero } from "../../../components/layout/page-hero";
+import { PageShell } from "../../../components/layout/page-shell";
+import { SignupForm } from "../../../components/signup-form";
+import { SiteHeader } from "../../../components/site-header";
+import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function SignupPage() {
   const currentUser = await getCurrentUserFromSession();
@@ -12,23 +14,22 @@ export default async function SignupPage() {
   }
 
   return (
-    <main className="page-shell">
+    <PageShell variant="auth">
       <SiteHeader section="auth" />
 
-      <section className="hero hero-app about-hero signup-hero">
-        <div>
-          <span className="eyebrow">Onboarding por CUIT</span>
-          <h1>Registrá tu empresa por CUIT.</h1>
-        </div>
-        <p>Ingresás CUIT, validás identidad legal y arrancás con un perfil comercial inicial.</p>
-      </section>
+      <PageHero
+        eyebrow="Onboarding por CUIT"
+        title="Registrá tu empresa por CUIT."
+        description="Ingresás CUIT, validás identidad legal y arrancás con un perfil comercial inicial."
+        className="workspace-header auth-page-header"
+      />
 
       <section className="auth-layout auth-layout-upgraded signup-shell">
         <SignupForm />
 
         <article className="panel dispatch-panel onboarding-companion signup-companion">
           <span className="section-kicker">Qué se resuelve en el alta</span>
-          <h2>Alta inicial de la empresa.</h2>
+          <h2>Alta inicial de la empresa</h2>
           <div className="signup-path">
             <p>1. Consultamos el CUIT y precargamos la identidad legal de la empresa.</p>
             <p>2. Confirmás cómo vende tu empresa: rubros, buyers, keywords y jurisdicciones.</p>
@@ -60,6 +61,6 @@ export default async function SignupPage() {
           </div>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

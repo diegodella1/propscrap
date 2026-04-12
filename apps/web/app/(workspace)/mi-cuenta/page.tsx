@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AccountSettingsForm } from "../../components/account-settings-form";
-import { LogoutButton } from "../../components/logout-button";
-import { SiteHeader } from "../../components/site-header";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { AccountSettingsForm } from "../../../components/account-settings-form";
+import { PageShell } from "../../../components/layout/page-shell";
+import { LogoutButton } from "../../../components/logout-button";
+import { SiteHeader } from "../../../components/site-header";
+import { getCurrentUserFromSession } from "../../../lib/session";
 
 type Props = {
   searchParams: Promise<{ onboarding?: string }>;
@@ -34,26 +35,36 @@ export default async function AccountPage({ searchParams }: Props) {
         : null;
 
   return (
-    <main className="page-shell">
+    <PageShell variant="workspace" className="workspace-shell">
       <SiteHeader
         section="account"
         currentUserName={currentUser.full_name}
         currentUserRole={currentUser.role}
       />
 
-      <section className="hero hero-app about-hero account-hero">
+      <section className="workspace-header account-header">
         <div>
           <span className="eyebrow">Mi cuenta</span>
           <h1>Preferencias personales.</h1>
+          <p>
+            {onboarding
+              ? "Definí canal y nivel de alerta antes de empezar a operar."
+              : "Ajustá identidad, canal y preferencias de avisos."}
+          </p>
         </div>
-        <p>
-          {onboarding
-            ? "Configurá canal de alertas y datos personales antes de empezar."
-            : "Ajustá canal, identidad y preferencias de alertas."}
-        </p>
+        <div className="workspace-header-actions">
+          <Link href="/company-profile" className="button-secondary">
+            Perfil comercial
+          </Link>
+          {adminHref && adminLabel ? (
+            <Link href={adminHref} className="button-primary">
+              {adminLabel}
+            </Link>
+          ) : null}
+        </div>
       </section>
 
-      <section className="dashboard-executive-band account-summary-band">
+      <section className="dashboard-executive-band account-summary-band workspace-kpi-band">
         <article>
           <span>Canal principal</span>
           <strong>{currentUser.whatsapp_opt_in ? "WhatsApp" : "Dashboard"}</strong>
@@ -103,18 +114,13 @@ export default async function AccountPage({ searchParams }: Props) {
           </div>
 
           <div className="hero-actions">
-            <Link href="/company-profile" className="button-primary">
+            <Link href="/company-profile" className="button-secondary">
               Editar perfil comercial
             </Link>
-            {adminHref && adminLabel ? (
-              <Link href={adminHref} className="button-secondary">
-                {adminLabel}
-              </Link>
-            ) : null}
             <LogoutButton />
           </div>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

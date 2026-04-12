@@ -15,9 +15,11 @@ from app.jobs.enrich_tender import enrich_pending_tenders, enrich_tender
 from app.jobs.ingest_source import ingest_source
 from app.jobs.match_tenders import match_all_tenders, match_tender
 from app.jobs.process_tender import process_tender
+from app.models.admin_audit import AdminAuditEvent
 from app.models.tender import Alert, CompanyProfile, Source, SourceRun, User
 from app.schemas.admin import (
     AdminAlertRead,
+    AdminAuditEventRead,
     AutomationSettingsRead,
     AutomationSettingsUpdateRequest,
     CompanyProfileAdminRead,
@@ -780,6 +782,20 @@ def get_whatsapp_alert_outbox(
     _: User = Depends(require_platform_admin),
 ) -> list[WhatsappOutboxMessageRead]:
     return [WhatsappOutboxMessageRead.model_validate(item) for item in read_whatsapp_outbox(limit=limit)]
+
+
+@router.get("/admin/audit-events", response_model=list[AdminAuditEventRead])
+def get_admin_audit_events(
+    limit: int = Query(default=50, ge=1, le=200),
+    db: Session = Depends(get_db),
+    _: User = Depends(require_platform_admin),
+) -> list[AdminAuditEventRead]:
+    rows = (
+        db.execute(select(AdminAuditEvent).order_by(AdminAuditEvent.created_at.desc(), AdminAuditEvent.id.desc()).limit(limit))
+        .scalars()
+        .all()
+    )
+    return [AdminAuditEventRead.model_validate(row) for row in rows]
 
 
 @router.post("/tenders/{tender_id}/state")

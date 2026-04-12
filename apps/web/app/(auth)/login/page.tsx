@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { LoginForm } from "../../components/login-form";
-import { SiteHeader } from "../../components/site-header";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { PageHero } from "../../../components/layout/page-hero";
+import { PageShell } from "../../../components/layout/page-shell";
+import { LoginForm } from "../../../components/login-form";
+import { SiteHeader } from "../../../components/site-header";
+import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function LoginPage() {
   const currentUser = await getCurrentUserFromSession();
@@ -12,26 +14,25 @@ export default async function LoginPage() {
   }
 
   return (
-    <main className="page-shell">
+    <PageShell variant="auth">
       <SiteHeader section="auth" />
 
-      <section className="hero hero-app about-hero">
-        <div>
-          <span className="eyebrow">Ingresar</span>
-          <h1>Ingresá a tu workspace.</h1>
-        </div>
-        <p>Entrás con email y contraseña y volvés a oportunidades, seguimiento o administración según tu rol.</p>
-      </section>
+      <PageHero
+        eyebrow="Ingresar"
+        title="Ingresá a tu workspace."
+        description="Accedé con email y contraseña para volver a oportunidades, seguimiento o administración según tu rol."
+        className="workspace-header auth-page-header"
+      />
 
       <section className="auth-layout auth-layout-upgraded signup-shell login-shell">
         <LoginForm />
         <article className="panel dispatch-panel onboarding-companion signup-companion login-companion">
-          <span className="section-kicker">Acceso</span>
-          <h2>Qué vas a encontrar adentro.</h2>
+          <span className="section-kicker">Qué encontrás adentro</span>
+          <h2>Una herramienta de trabajo, no una landing</h2>
           <div className="signup-path">
-            <p>Discovery priorizado.</p>
-            <p>Seguimiento y alertas configuradas.</p>
-            <p>Capas de administración, si tu rol lo permite.</p>
+            <p>Oportunidades priorizadas por score y urgencia.</p>
+            <p>Seguimiento con estados, notas y alertas.</p>
+            <p>Capas de administración si tu rol lo permite.</p>
           </div>
           <div className="hero-actions">
             <Link href="/signup" className="button-secondary">
@@ -43,6 +44,6 @@ export default async function LoginPage() {
           </div>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

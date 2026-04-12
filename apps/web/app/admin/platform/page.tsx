@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 
 import { PlatformAdminPage } from "../../../components/platform-admin-page";
 import {
+  fetchAdminAuditEvents,
   fetchAdminSources,
   fetchAlerts,
   fetchAutomationSettings,
@@ -24,13 +25,14 @@ export default async function PlatformAdminRoute() {
     redirect(currentUser.role === "manager" ? "/admin/company" : "/dashboard");
   }
 
-  const [sourceRuns, alerts, users, sources, automationSettings, whatsappOutbox] = await Promise.all([
+  const [sourceRuns, alerts, users, sources, automationSettings, whatsappOutbox, auditEvents] = await Promise.all([
     fetchSourceRuns(cookieHeader || undefined),
     fetchAlerts(cookieHeader || undefined),
     fetchUsers(cookieHeader || undefined),
     fetchAdminSources(cookieHeader || undefined),
     fetchAutomationSettings(cookieHeader || undefined),
     fetchWhatsappOutbox(cookieHeader || undefined),
+    fetchAdminAuditEvents(cookieHeader || undefined),
   ]);
 
   return (
@@ -42,6 +44,7 @@ export default async function PlatformAdminRoute() {
       sources={sources}
       automationSettings={automationSettings}
       whatsappOutbox={whatsappOutbox}
+      auditEvents={auditEvents}
     />
   );
 }

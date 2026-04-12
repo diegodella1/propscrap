@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { ProcessFlowEditorialIllustration, WorkspaceBoardIllustration } from "../../components/landing-ornaments";
-import { SiteHeader } from "../../components/site-header";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { ProcessFlowEditorialIllustration, WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
+import { SiteHeader } from "../../../components/site-header";
+import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function AboutPage() {
   const currentUser = await getCurrentUserFromSession();

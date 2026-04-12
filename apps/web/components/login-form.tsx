@@ -3,6 +3,8 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+import { formatFastApiDetail } from "../lib/api";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 export function LoginForm() {
@@ -23,7 +25,7 @@ export function LoginForm() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        setMessage(payload?.detail ?? "No se pudo iniciar sesión.");
+        setMessage(formatFastApiDetail(payload ?? { detail: "No se pudo iniciar sesión." }));
         return;
       }
       router.push("/mi-cuenta");
@@ -34,9 +36,9 @@ export function LoginForm() {
   return (
     <div className="auth-form-card auth-form-card-upgraded login-form-card">
       <div className="signup-form-header">
-        <span className="section-kicker">Acceso seguro</span>
-        <h2>Entrar al centro de trabajo.</h2>
-        <p>Un único login para volver a discovery, seguimiento y administración sin fricción adicional.</p>
+        <span className="section-kicker">Acceso</span>
+        <h2>Entrá al workspace</h2>
+        <p>Usá tu email de trabajo para volver a oportunidades, seguimiento y administración.</p>
       </div>
       <div className="field">
         <label htmlFor="login-email">Email</label>
@@ -67,9 +69,9 @@ export function LoginForm() {
         {isPending ? "Ingresando…" : "Ingresar"}
       </button>
       <div className="signup-confidence-bar">
-        <span>Discovery</span>
-        <span>Matching</span>
-        <span>Alertas</span>
+        <span>Oportunidades</span>
+        <span>Seguimiento</span>
+        <span>Administración</span>
       </div>
       {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>

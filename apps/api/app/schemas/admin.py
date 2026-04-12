@@ -46,6 +46,16 @@ class AdminAlertRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class AdminAuditEventRead(BaseModel):
+    id: int
+    actor_user_id: int | None = None
+    action: str
+    detail_json: dict | None = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class WhatsappOutboxMessageRead(BaseModel):
     id: str
     provider: str

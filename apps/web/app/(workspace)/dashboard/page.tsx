@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { FilterPanel } from "../../components/filter-panel";
-import { WorkspaceBoardIllustration } from "../../components/landing-ornaments";
-import { SiteHeader } from "../../components/site-header";
-import { TendersTable } from "../../components/tenders-table";
-import { fetchAlerts, fetchSources, fetchTenders } from "../../lib/api";
-import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../lib/session";
+import { FilterPanel } from "../../../components/filter-panel";
+import { WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
+import { SiteHeader } from "../../../components/site-header";
+import { TendersTable } from "../../../components/tenders-table";
+import { fetchAlerts, fetchSources, fetchTenders } from "../../../lib/api";
+import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
 
 type Props = {
   searchParams: Promise<{

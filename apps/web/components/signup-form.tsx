@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-import type { CompanyLookup } from "../lib/api";
+import { formatFastApiDetail, type CompanyLookup } from "../lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -43,7 +43,7 @@ export function SignupForm() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        setMessage(payload?.detail ?? "No pudimos consultar ese CUIT.");
+        setMessage(formatFastApiDetail(payload ?? { detail: "No pudimos consultar ese CUIT." }));
         return;
       }
       const lookup = payload as CompanyLookup;
@@ -66,7 +66,7 @@ export function SignupForm() {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        setMessage(payload?.detail ?? "No se pudo crear la cuenta.");
+        setMessage(formatFastApiDetail(payload ?? { detail: "No se pudo crear la cuenta." }));
         return;
       }
       router.push("/mi-cuenta?onboarding=1");
@@ -80,10 +80,10 @@ export function SignupForm() {
     <div className="auth-form-card auth-form-card-upgraded">
       <div className="signup-form-header">
         <span className="section-kicker">Paso 1 · Identidad legal</span>
-        <h2>Ingresá el CUIT y empezá con una base empresarial confiable.</h2>
+        <h2>Registrá la empresa con base legal verificable.</h2>
         <p>
-          El onboarding está pensado para llegar rápido a valor real: identificar la empresa, confirmar el perfil base
-          y pasar a una operación ya orientada.
+          El alta está pensada para llegar rápido a valor real: validar CUIT, precargar identidad y abrir un workspace
+          ya orientado.
         </p>
       </div>
 

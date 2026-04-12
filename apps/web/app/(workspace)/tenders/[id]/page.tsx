@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { SiteHeader } from "../../../components/site-header";
-import { StateForm } from "../../../components/state-form";
-import { fetchTenderDetail } from "../../../lib/api";
-import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
+import { PageShell } from "../../../../components/layout/page-shell";
+import { SiteHeader } from "../../../../components/site-header";
+import { StateForm } from "../../../../components/state-form";
+import { fetchTenderDetail } from "../../../../lib/api";
+import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../../lib/session";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -50,18 +51,26 @@ export default async function TenderDetailPage({ params }: Props) {
   const extractedText = tender.documents.find((document) => document.texts.length > 0)?.texts[0]?.extracted_text;
 
   return (
-    <main className="page-shell">
+    <PageShell variant="workspace" className="workspace-shell">
       <SiteHeader section="detail" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
-      <section className="hero hero-app about-hero tender-hero">
+      <section className="workspace-header tender-detail-header">
         <div>
           <span className="eyebrow">Dossier de licitación</span>
-          <h1 style={{ maxWidth: "15ch" }}>{tender.title}</h1>
+          <h1 className="tender-detail-title">{tender.title}</h1>
+          <p>
+            {tender.organization ?? "Sin organismo"} · {tender.jurisdiction ?? "Sin jurisdicción"} ·{" "}
+            {tender.procedure_type ?? "Sin tipo de procedimiento"}
+          </p>
         </div>
-        <p>
-          {tender.organization ?? "Sin organismo"} · {tender.jurisdiction ?? "Sin jurisdicción"} ·{" "}
-          {tender.procedure_type ?? "Sin tipo de procedimiento"}
-        </p>
+        <div className="workspace-header-actions">
+          <a href={tender.source_url} className="button-secondary" target="_blank" rel="noreferrer">
+            Ver fuente original
+          </a>
+          <Link href="/saved" className="button-primary">
+            Ver pipeline
+          </Link>
+        </div>
       </section>
 
       <section className="detail-masthead tender-masthead">
@@ -169,7 +178,9 @@ export default async function TenderDetailPage({ params }: Props) {
                 ) : null}
               </div>
             ) : (
-              <p className="muted">Todavía no hay matching calculado para esta licitación.</p>
+              <div className="workspace-empty-state">
+                <p className="muted">Todavía no hay matching calculado para esta licitación.</p>
+              </div>
             )}
           </article>
 
@@ -199,7 +210,9 @@ export default async function TenderDetailPage({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <p className="muted">Todavía no hay alertas programadas para esta licitación.</p>
+              <div className="workspace-empty-state">
+                <p className="muted">Todavía no hay alertas programadas para esta licitación.</p>
+              </div>
             )}
           </article>
 
@@ -239,7 +252,9 @@ export default async function TenderDetailPage({ params }: Props) {
                 ) : null}
               </div>
             ) : (
-              <p className="muted">Todavía no hay enriquecimiento LLM para esta licitación.</p>
+              <div className="workspace-empty-state">
+                <p className="muted">Todavía no hay enriquecimiento LLM para esta licitación.</p>
+              </div>
             )}
           </article>
 
@@ -249,7 +264,9 @@ export default async function TenderDetailPage({ params }: Props) {
               <h2>Adjuntos y extracción</h2>
             </div>
             {tender.documents.length === 0 ? (
-              <p className="muted">Esta fuente todavía no expone documentos descargados en la demo.</p>
+              <div className="workspace-empty-state">
+                <p className="muted">Esta fuente todavía no expone documentos descargados en la demo.</p>
+              </div>
             ) : (
               <div className="document-grid">
                 {tender.documents.map((document) => (
@@ -291,6 +308,6 @@ export default async function TenderDetailPage({ params }: Props) {
           </article>
         </section>
       </section>
-    </main>
+    </PageShell>
   );
 }

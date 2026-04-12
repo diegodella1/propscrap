@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { SiteHeader } from "../../components/site-header";
-import { fetchSavedTenders } from "../../lib/api";
-import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../lib/session";
+import { SiteHeader } from "../../../components/site-header";
+import { fetchSavedTenders } from "../../../lib/api";
+import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
 
 const PIPELINE = [
   { key: "saved", label: "Guardadas" },

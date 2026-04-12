@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 
-import type { User } from "../lib/api";
+import { formatFastApiDetail, type User } from "../lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -42,7 +42,7 @@ export function AccountSettingsForm({ user }: { user: User }) {
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
-        setMessage(payload?.detail ?? "No se pudo guardar tu perfil.");
+        setMessage(formatFastApiDetail(payload ?? { detail: "No se pudo guardar tu perfil." }));
         return;
       }
       setMessage("Perfil guardado.");

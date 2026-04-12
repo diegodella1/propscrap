@@ -186,6 +186,14 @@ export type Alert = {
   payload_snapshot: Record<string, string> | null;
 };
 
+export type AdminAuditEvent = {
+  id: number;
+  actor_user_id: number | null;
+  action: string;
+  detail_json: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export type WhatsappOutboxMessage = {
   id: string;
   provider: string;
@@ -461,6 +469,17 @@ export async function fetchWhatsappOutbox(cookieHeader?: string) {
     throw new Error("Failed to fetch WhatsApp outbox");
   }
   return (await response.json()) as WhatsappOutboxMessage[];
+}
+
+export async function fetchAdminAuditEvents(cookieHeader?: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/audit-events`, {
+    cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin audit events");
+  }
+  return (await response.json()) as AdminAuditEvent[];
 }
 
 export async function fetchCurrentUser(cookieHeader?: string) {

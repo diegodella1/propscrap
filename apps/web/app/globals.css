@@ -7583,7 +7583,80 @@ textarea:focus-visible {
     font-size: clamp(1.85rem, 8vw, 2.6rem) !important;
   }
 
-  .workspace-kpi-band {
-    grid-template-columns: 1fr;
+    .workspace-kpi-band {
+      grid-template-columns: 1fr;
+    }
+}
+
+.auth-page-header,
+.tender-detail-header,
+.account-header {
+  margin-bottom: 0 !important;
+}
+
+.auth-page-header h1,
+.account-header h1,
+.tender-detail-header h1 {
+  max-width: 14ch;
+}
+
+.tender-detail-title {
+  max-width: 15ch;
+}
+
+.auth-layout .onboarding-companion,
+.account-shell .onboarding-companion,
+.detail-sidebar .detail-note-card,
+.workspace-empty-state {
+  background: #f8fbff !important;
+}
+
+.workspace-empty-state {
+  padding: 18px;
+}
+
+.workspace-empty-state p {
+  margin: 0;
+}
+
+.account-shell {
+  align-items: start;
+}
+
+.account-shell > article:first-child,
+.account-shell > article:last-child {
+  min-width: 0;
+}
+
+.tender-layout .detail-content {
+  display: grid;
+  gap: 14px;
+}
+
+.tender-layout .detail-sidebar {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.tender-layout .signal-card strong {
+  font-size: 1.7rem;
+}
+
+.tender-layout .text-block {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.tender-layout .document-card {
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
+  padding: 14px;
+}
+
+@media (max-width: 900px) {
+  .tender-layout .detail-sidebar {
+    position: static;
+    top: auto;
   }
 }

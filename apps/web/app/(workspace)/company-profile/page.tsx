@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { CompanyProfileForm } from "../../components/company-profile-form";
-import { SiteHeader } from "../../components/site-header";
-import { getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../lib/session";
+import { CompanyProfileForm } from "../../../components/company-profile-form";
+import { SiteHeader } from "../../../components/site-header";
+import { getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../../lib/session";
 
 export default async function CompanyProfilePage() {
   const currentUser = await getCurrentUserFromSession();

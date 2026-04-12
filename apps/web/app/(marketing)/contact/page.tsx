@@ -1,9 +1,9 @@
 import Link from "next/link";
 
-import { ContactRequestForm } from "../../components/contact-request-form";
-import { SiteHeader } from "../../components/site-header";
-import { fetchPublicPlatformSettings } from "../../lib/api";
-import { getCurrentUserFromSession } from "../../lib/session";
+import { ContactRequestForm } from "../../../components/contact-request-form";
+import { SiteHeader } from "../../../components/site-header";
+import { fetchPublicPlatformSettings } from "../../../lib/api";
+import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function ContactPage() {
   const [currentUser, platformSettings] = await Promise.all([
