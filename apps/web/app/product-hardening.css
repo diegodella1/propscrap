@@ -612,6 +612,14 @@ textarea.code-textarea,
   gap: 10px;
 }
 
+.wizard-status-bar,
+.wizard-step-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .wizard-header h2,
 .wizard-step-card h3 {
   margin: 0;
@@ -646,10 +654,21 @@ textarea.code-textarea,
   color: #ffffff;
 }
 
+.wizard-progress-step--complete {
+  border-color: rgba(12, 122, 74, 0.22);
+  background: #f0fdf4;
+  color: #166534;
+}
+
 .wizard-step-card {
   padding: 18px;
   border: 1px solid rgba(11, 92, 173, 0.12);
   background: #f8fbff;
+}
+
+.wizard-step-evidence {
+  padding-top: 2px;
+  color: #0f172a !important;
 }
 
 .wizard-actions {
@@ -657,6 +676,16 @@ textarea.code-textarea,
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
+}
+
+.workspace-empty-state-strong {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.workspace-empty-state-strong strong {
+  color: #0f172a;
 }
 
 /* System-wide geometry pass: single width rhythm, square corners,

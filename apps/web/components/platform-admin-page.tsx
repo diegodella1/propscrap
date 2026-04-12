@@ -1,6 +1,6 @@
 import { AlertOpsPanel } from "./alert-ops-panel";
 import { AutomationSettingsPanel } from "./automation-settings-panel";
-import { OnboardingWizard } from "./onboarding-wizard";
+import { OnboardingWizard, type OnboardingStep } from "./onboarding-wizard";
 import { SiteHeader } from "./site-header";
 import { SourceEditorList } from "./source-editor-list";
 import { SourceForm } from "./source-form";
@@ -47,10 +47,69 @@ export function PlatformAdminPage({
   const latestAuditEvent = auditEvents[0] ?? null;
   const platformStatus =
     failedRuns > 0 ? "Atención operativa" : pendingAlerts > 0 ? "Operación en cola" : "Operación estable";
+  const llmReady = automationSettings.openai_api_key_configured && Boolean(automationSettings.openai_model);
+  const deliveryReady = Boolean(
+    (automationSettings.email_delivery_enabled && automationSettings.resend_api_key_configured) ||
+      automationSettings.whatsapp_enabled ||
+      automationSettings.telegram_enabled,
+  );
+  const adminOnboardingSteps: OnboardingStep[] = [
+    {
+      id: "sources",
+      title: "Revisá las fuentes base",
+      body: "Confirmá que las fuentes centrales estén activas y con conector disponible antes de abrir el campo.",
+      href: "/admin/platform#admin-sources",
+      cta: "Ir a fuentes",
+      complete: activeSources > 0 && connectorReady > 0,
+      evidence:
+        activeSources > 0
+          ? `${activeSources} fuentes activas y ${connectorReady} conectores listos.`
+          : "Todavía no hay fuentes activas suficientes para operar.",
+    },
+    {
+      id: "llm",
+      title: "Configurá IA y scoring",
+      body: "Dejá API key, modelo y prompt maestro en condiciones para resumen y ranking.",
+      href: "/admin/platform#admin-automation",
+      cta: "Ir a IA",
+      complete: llmReady,
+      evidence: llmReady
+        ? `Modelo activo: ${automationSettings.openai_model}.`
+        : "Falta completar API key o modelo de OpenAI.",
+    },
+    {
+      id: "delivery",
+      title: "Activá el delivery operativo",
+      body: "Resend, WhatsApp o Telegram tienen que estar listos para alertas fuera de la web.",
+      href: "/admin/platform#admin-delivery",
+      cta: "Ir a delivery",
+      complete: deliveryReady,
+      evidence: deliveryReady
+        ? "Hay al menos un canal de entrega habilitado."
+        : "Todavía no hay un canal de delivery externo listo.",
+    },
+    {
+      id: "users",
+      title: "Verificá acceso y auditoría",
+      body: "Revisá usuarios, roles y trazabilidad administrativa antes de mostrarlo a cliente.",
+      href: "/admin/platform#admin-users",
+      cta: "Ir a usuarios",
+      complete: users.length > 0 && auditEvents.length > 0,
+      evidence:
+        users.length > 0
+          ? `${users.length} usuarios cargados y ${auditEvents.length} eventos de auditoría.`
+          : "Todavía no hay usuarios globales para validar ABM.",
+    },
+  ];
 
   return (
     <main className="page-shell workspace-shell">
-      <OnboardingWizard variant="superadmin" />
+      <OnboardingWizard
+        variant="superadmin"
+        content={{
+          steps: adminOnboardingSteps,
+        }}
+      />
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="admin" />
 
       <section className="workspace-header admin-header">

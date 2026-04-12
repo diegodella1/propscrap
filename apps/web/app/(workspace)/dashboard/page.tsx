@@ -141,24 +141,34 @@ export default async function DashboardPage({ searchParams }: Props) {
           </div>
 
           <div className="decision-rows">
-            {topPriority.map((item, index) => (
-              <article key={item.id} className="decision-row decision-row-dense">
-                <div className="decision-row-head">
-                  <span className="mini-pill">0{index + 1}</span>
-                  <span className="source-chip">{item.source.name}</span>
-                  <span className="badge tone-calm">{deadlineLabel(item.deadline_date)}</span>
-                  {item.states[0] ? <span className="badge">{formatStateLabel(item.states[0].state)}</span> : null}
-                </div>
-                <strong>{item.title}</strong>
-                <p>{item.matches[0]?.reasons_json?.summary?.[0] ?? "Revisar fit comercial y documentación."}</p>
-                <div className="decision-row-footer">
-                  <span className="muted">{item.organization ?? "Sin organismo"} · {item.jurisdiction ?? "Sin jurisdicción"}</span>
-                  <Link href={`/tenders/${item.id}`} className="linkish">
-                    Abrir dossier
-                  </Link>
-                </div>
-              </article>
-            ))}
+            {topPriority.length ? (
+              topPriority.map((item, index) => (
+                <article key={item.id} className="decision-row decision-row-dense">
+                  <div className="decision-row-head">
+                    <span className="mini-pill">0{index + 1}</span>
+                    <span className="source-chip">{item.source.name}</span>
+                    <span className="badge tone-calm">{deadlineLabel(item.deadline_date)}</span>
+                    {item.states[0] ? <span className="badge">{formatStateLabel(item.states[0].state)}</span> : null}
+                  </div>
+                  <strong>{item.title}</strong>
+                  <p>{item.matches[0]?.reasons_json?.summary?.[0] ?? "Revisar fit comercial y documentación."}</p>
+                  <div className="decision-row-footer">
+                    <span className="muted">{item.organization ?? "Sin organismo"} · {item.jurisdiction ?? "Sin jurisdicción"}</span>
+                    <Link href={`/tenders/${item.id}`} className="linkish">
+                      Abrir dossier
+                    </Link>
+                  </div>
+                </article>
+              ))
+            ) : (
+              <div className="workspace-empty-state workspace-empty-state-strong">
+                <strong>Todavía no hay oportunidades priorizadas.</strong>
+                <p>Si el discovery quedó vacío, el siguiente ajuste razonable es mejorar el perfil comercial para afinar matching y cobertura.</p>
+                <Link href="/company-profile" className="button-secondary">
+                  Ajustar perfil comercial
+                </Link>
+              </div>
+            )}
           </div>
         </article>
 

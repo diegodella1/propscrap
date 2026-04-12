@@ -71,6 +71,16 @@ export default async function SavedTendersPage() {
         </article>
       </section>
 
+      {saved.total === 0 ? (
+        <section className="workspace-empty-state workspace-empty-state-strong">
+          <strong>Tu pipeline todavía está vacío.</strong>
+          <p>Guardá una licitación desde discovery para empezar a ordenar seguimiento, notas y fechas clave.</p>
+          <Link href="/dashboard" className="button-primary">
+            Ir a oportunidades
+          </Link>
+        </section>
+      ) : null}
+
       <section className="pipeline-board workspace-pipeline-board">
         {grouped.map((column) => (
           <article key={column.key} className="pipeline-column">

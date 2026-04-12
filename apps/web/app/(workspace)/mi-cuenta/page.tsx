@@ -4,9 +4,10 @@ import { redirect } from "next/navigation";
 import { AccountSettingsForm } from "../../../components/account-settings-form";
 import { PageShell } from "../../../components/layout/page-shell";
 import { LogoutButton } from "../../../components/logout-button";
-import { OnboardingWizard } from "../../../components/onboarding-wizard";
+import { OnboardingWizard, type OnboardingStep } from "../../../components/onboarding-wizard";
 import { SiteHeader } from "../../../components/site-header";
-import { getCurrentUserFromSession } from "../../../lib/session";
+import { fetchSavedTenders } from "../../../lib/api";
+import { getCookieHeaderFromSession, getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../../lib/session";
 
 type Props = {
   searchParams: Promise<{ onboarding?: string }>;
@@ -28,10 +29,16 @@ function primaryChannelLabel(currentUser: Awaited<ReturnType<typeof getCurrentUs
 
 export default async function AccountPage({ searchParams }: Props) {
   const params = await searchParams;
-  const currentUser = await getCurrentUserFromSession();
+  const [currentUser, profile, cookieHeader] = await Promise.all([
+    getCurrentUserFromSession(),
+    getMyCompanyProfileFromSession(),
+    getCookieHeaderFromSession(),
+  ]);
   if (!currentUser) {
     redirect("/login");
   }
+
+  const saved = await fetchSavedTenders(cookieHeader || undefined).catch(() => null);
 
   const onboarding = params.onboarding === "1";
   const adminHref =
@@ -42,10 +49,72 @@ export default async function AccountPage({ searchParams }: Props) {
       : currentUser.role === "manager"
         ? "Abrir equipo"
         : null;
+  const channels = currentUser.alert_preferences_json?.channels ?? ["dashboard"];
+  const alertChannelReady =
+    channels.includes("email") ||
+    (channels.includes("whatsapp") && Boolean(currentUser.whatsapp_number)) ||
+    (channels.includes("telegram") && Boolean(currentUser.telegram_chat_id));
+  const profileReady = Boolean(
+    profile?.company_description?.trim() &&
+      ((profile?.include_keywords?.length ?? 0) > 0 ||
+        (profile?.preferred_buyers?.length ?? 0) > 0 ||
+        (profile?.jurisdictions?.length ?? 0) > 0),
+  );
+  const savedCount = saved?.total ?? 0;
+  const companyOnboardingSteps: OnboardingStep[] = [
+    {
+      id: "alerts",
+      title: "Definí tu canal de alertas",
+      body: "Configurá al menos un canal útil para sacar la operación del dashboard.",
+      href: "/mi-cuenta",
+      cta: "Configurar alertas",
+      complete: alertChannelReady,
+      evidence: alertChannelReady
+        ? `Activo: ${primaryChannelLabel(currentUser)}.`
+        : "Todavía no hay un canal directo listo para alertas útiles.",
+    },
+    {
+      id: "profile",
+      title: "Completá el perfil comercial",
+      body: "Cargá descripción, señales positivas y cobertura para que el matching deje de ser genérico.",
+      href: "/company-profile",
+      cta: "Completar perfil",
+      complete: profileReady,
+      evidence: profileReady
+        ? "Hay base comercial suficiente para recalcular relevancia."
+        : "Falta describir mejor la empresa o agregar señales de matching.",
+    },
+    {
+      id: "pipeline",
+      title: "Guardá tu primera licitación",
+      body: "Mandá al pipeline al menos una oportunidad para empezar a usar el flujo real de seguimiento.",
+      href: "/dashboard",
+      cta: "Ir a discovery",
+      complete: savedCount > 0,
+      evidence: savedCount > 0 ? `${savedCount} licitaciones ya están en seguimiento.` : "Todavía no guardaste ninguna oportunidad.",
+    },
+    {
+      id: "follow-up",
+      title: "Ordená el seguimiento",
+      body: "Revisá el pipeline y dejá notas o estado para sostener el próximo vencimiento sin ruido.",
+      href: "/saved",
+      cta: "Abrir pipeline",
+      complete: savedCount > 0,
+      evidence: savedCount > 0 ? "Ya existe pipeline para operar." : "El pipeline se activa cuando guardás la primera licitación.",
+    },
+  ];
 
   return (
     <PageShell variant="workspace" className="workspace-shell account-page">
-      {currentUser.role !== "admin" ? <OnboardingWizard variant="company" forceOpen={onboarding} /> : null}
+      {currentUser.role !== "admin" ? (
+        <OnboardingWizard
+          variant="company"
+          forceOpen={onboarding}
+          content={{
+            steps: companyOnboardingSteps,
+          }}
+        />
+      ) : null}
       <SiteHeader
         section="account"
         currentUserName={currentUser.full_name}
@@ -112,11 +181,9 @@ export default async function AccountPage({ searchParams }: Props) {
             <article>
               <strong>Canal</strong>
               <p>
-                {currentUser.whatsapp_number
-                  ? `WhatsApp ${currentUser.whatsapp_number}`
-                  : currentUser.telegram_chat_id
-                    ? `Telegram ${currentUser.telegram_chat_id}`
-                    : "Todavía no cargaste un canal directo para alertas instantáneas."}
+                {alertChannelReady
+                  ? primaryChannelLabel(currentUser)
+                  : "Todavía no cargaste un canal directo para alertas instantáneas."}
               </p>
             </article>
             <article>

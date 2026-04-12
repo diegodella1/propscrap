@@ -7,6 +7,10 @@ import { formatFastApiDetail, type CompanyLookup } from "../lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
+function normalizeCuit(value: string) {
+  return value.replace(/\D/g, "").slice(0, 11);
+}
+
 function renderTaxStatus(lookup: CompanyLookup | null) {
   if (!lookup?.tax_status_json) {
     return [];
@@ -36,9 +40,14 @@ export function SignupForm() {
 
   function lookupCompany() {
     startTransition(async () => {
+      const normalizedCuit = normalizeCuit(form.cuit);
+      if (normalizedCuit.length !== 11) {
+        setMessage("Ingresá un CUIT argentino válido de 11 dígitos antes de consultar.");
+        return;
+      }
       setMessage("");
       setCompanyLookup(null);
-      const response = await fetch(`${API_BASE_URL}/api/v1/company-lookup/cuit/${encodeURIComponent(form.cuit)}`, {
+      const response = await fetch(`${API_BASE_URL}/api/v1/company-lookup/cuit/${encodeURIComponent(normalizedCuit)}`, {
         credentials: "include",
       });
       const payload = await response.json().catch(() => null);
@@ -50,6 +59,7 @@ export function SignupForm() {
       setCompanyLookup(lookup);
       setForm((current) => ({
         ...current,
+        cuit: normalizedCuit,
         company_name: lookup.company_name,
       }));
     });
@@ -57,12 +67,31 @@ export function SignupForm() {
 
   function submit() {
     startTransition(async () => {
+      const normalizedCuit = normalizeCuit(form.cuit);
+      if (normalizedCuit.length !== 11) {
+        setMessage("Ingresá un CUIT argentino válido de 11 dígitos.");
+        return;
+      }
+      if (companyLookup?.cuit !== normalizedCuit) {
+        setMessage("Validá el CUIT antes de crear la cuenta para precargar la empresa correctamente.");
+        return;
+      }
+      if (!form.full_name.trim() || !form.email.trim() || !form.password.trim() || !form.company_name.trim()) {
+        setMessage("Completá nombre, empresa, email y contraseña para continuar.");
+        return;
+      }
       setMessage("");
       const response = await fetch(`${API_BASE_URL}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          cuit: normalizedCuit,
+          email: form.email.trim(),
+          full_name: form.full_name.trim(),
+          company_name: form.company_name.trim(),
+        }),
       });
       const payload = await response.json().catch(() => null);
       if (!response.ok) {
@@ -101,7 +130,10 @@ export function SignupForm() {
             id="signup-cuit"
             name="cuit"
             value={form.cuit}
-            onChange={(event) => updateField("cuit", event.target.value)}
+            onChange={(event) => {
+              setCompanyLookup(null);
+              updateField("cuit", normalizeCuit(event.target.value));
+            }}
             autoComplete="off"
             inputMode="numeric"
             placeholder="30712345678…"
