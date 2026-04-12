@@ -8,6 +8,7 @@ import httpx
 
 from app.config import get_settings
 from app.services.connectors.base import BaseConnector, RawTenderRecord
+from app.services.http_safety import assert_public_https_url
 
 
 class PbacConnector(BaseConnector):
@@ -18,6 +19,7 @@ class PbacConnector(BaseConnector):
     table_id = "ctl00_CPH1_CtrlTablasPortal_gridPliegoAperturaProxima"
 
     def fetch(self) -> list[RawTenderRecord]:
+        assert_public_https_url(self.home_url, label="pbac.home_url")
         settings = get_settings()
         with httpx.Client(
             timeout=settings.connector_timeout_seconds,

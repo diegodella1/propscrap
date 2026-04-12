@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 
-import type { SourceCreateInput } from "../lib/api";
+import { formatFastApiDetail, KNOWN_CONNECTOR_SLUGS, type SourceCreateInput } from "../lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -38,7 +38,7 @@ export function SourceForm() {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        setMessage(payload?.detail ?? "No se pudo guardar la fuente.");
+        setMessage(formatFastApiDetail(payload ?? { detail: "No se pudo guardar la fuente." }));
         return;
       }
 
@@ -112,7 +112,13 @@ export function SourceForm() {
             value={form.connector_slug ?? ""}
             onChange={(event) => updateField("connector_slug", event.target.value)}
             placeholder="comprar…"
+            aria-describedby="source-connector-slug-hint"
           />
+          <div className="admin-field-help">
+            <p id="source-connector-slug-hint">
+              Valores admitidos: {KNOWN_CONNECTOR_SLUGS.join(", ")} (vacío si aún no hay conector).
+            </p>
+          </div>
         </div>
       </div>
 

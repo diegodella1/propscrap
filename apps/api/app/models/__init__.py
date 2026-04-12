@@ -1,3 +1,4 @@
+from app.models.admin_audit import AdminAuditEvent
 from app.models.tender import (
     Alert,
     CompanyProfile,
@@ -13,6 +14,7 @@ from app.models.tender import (
 )
 
 __all__ = [
+    "AdminAuditEvent",
     "Source",
     "SourceRun",
     "Tender",

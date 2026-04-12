@@ -14,6 +14,35 @@ function getApiBaseUrl() {
 
 const API_BASE_URL = getApiBaseUrl();
 
+/** Must match API `ALLOWED_CONNECTOR_SLUGS` (apps/api/app/services/source_registry.py). */
+export const KNOWN_CONNECTOR_SLUGS = ["comprar", "boletin-oficial", "pbac"] as const;
+
+export function formatFastApiDetail(payload: unknown): string {
+  if (payload == null) {
+    return "Error desconocido";
+  }
+  if (typeof payload === "string") {
+    return payload;
+  }
+  if (typeof payload === "object" && payload !== null && "detail" in payload) {
+    const detail = (payload as { detail: unknown }).detail;
+    if (typeof detail === "string") {
+      return detail;
+    }
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => {
+          if (item && typeof item === "object" && "msg" in item) {
+            return String((item as { msg: unknown }).msg);
+          }
+          return JSON.stringify(item);
+        })
+        .join(" ");
+    }
+  }
+  return JSON.stringify(payload);
+}
+
 export type Tender = {
   id: number;
   source_id: number;

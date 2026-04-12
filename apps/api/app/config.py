@@ -60,6 +60,8 @@ class Settings(BaseSettings):
     session_secret: str = Field(default="change-me-in-production", alias="SESSION_SECRET")
     session_cookie_name: str = Field(default="propscrap_session", alias="SESSION_COOKIE_NAME")
     session_max_age_seconds: int = Field(default=60 * 60 * 24 * 14, alias="SESSION_MAX_AGE_SECONDS")
+    ocr_pdftoppm_timeout_seconds: int = Field(default=120, alias="OCR_PDFTOPPM_TIMEOUT_SECONDS")
+    ocr_tesseract_timeout_seconds: int = Field(default=120, alias="OCR_TESSERACT_TIMEOUT_SECONDS")
 
     @property
     def cors_origins_list(self) -> list[str]:

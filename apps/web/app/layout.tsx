@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Public_Sans } from "next/font/google";
-import { SiteFooter } from "../components/site-footer";
+import { ConditionalFooter } from "../components/conditional-footer";
 
 const bodyFont = Public_Sans({
   subsets: ["latin"],
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Ir al contenido principal
         </a>
         <div id="main-content">{children}</div>
-        <SiteFooter />
+        <ConditionalFooter />
       </body>
     </html>
   );

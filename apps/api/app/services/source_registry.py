@@ -7,3 +7,5 @@ CONNECTORS = {
     "boletin-oficial": BoletinOficialConnector,
     "pbac": PbacConnector,
 }
+
+ALLOWED_CONNECTOR_SLUGS = frozenset(CONNECTORS.keys())

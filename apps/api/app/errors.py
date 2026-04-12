@@ -25,6 +25,10 @@ class ConflictError(AppError):
     status_code = 409
 
 
+class RateLimitError(AppError):
+    status_code = 429
+
+
 class ConfigurationError(AppError):
     status_code = 503
 

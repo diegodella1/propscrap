@@ -9,6 +9,7 @@ import httpx
 
 from app.config import get_settings
 from app.services.connectors.base import BaseConnector, RawTenderRecord
+from app.services.http_safety import assert_public_https_url
 
 
 class ComprarConnector(BaseConnector):
@@ -19,6 +20,7 @@ class ComprarConnector(BaseConnector):
     table_id = "ctl00_CPH1_CtrlConsultasFrecuentes_gvListadoPliegos"
 
     def fetch(self) -> list[RawTenderRecord]:
+        assert_public_https_url(self.home_url, label="comprar.home_url")
         settings = get_settings()
         headers = {
             "User-Agent": settings.user_agent,

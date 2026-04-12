@@ -1,9 +1,10 @@
 import Link from "next/link";
 
-import { ExecutiveControlIllustration, WorkspaceBoardIllustration } from "../components/landing-ornaments";
-import { SiteHeader } from "../components/site-header";
-import { fetchSources, fetchTenders } from "../lib/api";
-import { getCurrentUserFromSession } from "../lib/session";
+import { PageShell } from "../../components/layout/page-shell";
+import { ExecutiveControlIllustration, WorkspaceBoardIllustration } from "../../components/landing-ornaments";
+import { SiteHeader } from "../../components/site-header";
+import { fetchSources, fetchTenders } from "../../lib/api";
+import { getCurrentUserFromSession } from "../../lib/session";
 
 function formatDeadlineLabel(value: string | null) {
   if (!value) return "Sin cierre informado";
@@ -30,7 +31,7 @@ export default async function LandingPage() {
   const isLoggedIn = Boolean(currentUser);
 
   return (
-    <main className="page-shell landing-shell">
+    <PageShell variant="marketing" className="landing-shell">
       <SiteHeader
         section="landing"
         currentUserName={currentUser?.full_name}
@@ -261,6 +262,6 @@ export default async function LandingPage() {
           <p>Saca a la empresa del desorden manual y la lleva a una operación mucho más gobernable.</p>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from app.config import get_settings
 from app.errors import AppError
+from app.services import ocr as ocr_service
 
 settings = get_settings()
 
@@ -28,4 +29,4 @@ def handle_app_error(_, exc: AppError) -> JSONResponse:
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "env": settings.env}
+    return {"status": "ok", "env": settings.env, "ocr": ocr_service.ocr_health_status()}

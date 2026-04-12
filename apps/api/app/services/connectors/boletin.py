@@ -8,6 +8,7 @@ import httpx
 
 from app.config import get_settings
 from app.services.connectors.base import BaseConnector, RawTenderRecord
+from app.services.http_safety import assert_public_https_url
 
 
 class BoletinOficialConnector(BaseConnector):
@@ -17,6 +18,7 @@ class BoletinOficialConnector(BaseConnector):
     section_url = "https://www.boletinoficial.gob.ar/seccion/tercera"
 
     def fetch(self) -> list[RawTenderRecord]:
+        assert_public_https_url(self.section_url, label="boletin.section_url")
         settings = get_settings()
         with httpx.Client(
             timeout=settings.connector_timeout_seconds,

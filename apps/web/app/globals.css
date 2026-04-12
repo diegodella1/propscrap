@@ -1,3 +1,5 @@
+@import "./layout-system.css";
+
 :root {
   --bg: #e9e5dc;
   --bg-strong: #111418;

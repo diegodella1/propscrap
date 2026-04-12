@@ -1,8 +1,15 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
+
+from app.services.http_safety import assert_public_https_url
+from app.services.source_registry import ALLOWED_CONNECTOR_SLUGS
+
+SourceTypeLiteral = Literal["portal", "boletin", "marketplace", "manual"]
+ScrapingModeLiteral = Literal["coded", "api", "html", "pdf", "hybrid"]
 
 
 class UserRead(BaseModel):
@@ -68,23 +75,83 @@ class SourceAdminRead(BaseModel):
 class SourceCreateRequest(BaseModel):
     name: str
     slug: str
-    source_type: str
-    scraping_mode: str = "coded"
+    source_type: SourceTypeLiteral
+    scraping_mode: ScrapingModeLiteral = "coded"
     connector_slug: str | None = None
     base_url: str
     config_json: dict | None = None
     is_active: bool = True
 
+    @field_validator("name")
+    @classmethod
+    def strip_name(cls, v: str) -> str:
+        return v.strip()
+
+    @field_validator("slug")
+    @classmethod
+    def normalize_slug(cls, v: str) -> str:
+        return v.strip().lower()
+
+    @field_validator("connector_slug")
+    @classmethod
+    def validate_connector_slug(cls, v: str | None) -> str | None:
+        if v is None or not str(v).strip():
+            return None
+        s = v.strip().lower()
+        if s not in ALLOWED_CONNECTOR_SLUGS:
+            allowed = ", ".join(sorted(ALLOWED_CONNECTOR_SLUGS))
+            raise ValueError(f"connector_slug must be one of: {allowed}")
+        return s
+
+    @field_validator("base_url")
+    @classmethod
+    def validate_base_url(cls, v: str) -> str:
+        s = v.strip()
+        assert_public_https_url(s, label="base_url")
+        return s
+
 
 class SourceUpdateRequest(BaseModel):
     name: str | None = None
     slug: str | None = None
-    source_type: str | None = None
-    scraping_mode: str | None = None
+    source_type: SourceTypeLiteral | None = None
+    scraping_mode: ScrapingModeLiteral | None = None
     connector_slug: str | None = None
     base_url: str | None = None
     config_json: dict | None = None
     is_active: bool | None = None
+
+    @field_validator("name")
+    @classmethod
+    def strip_name_opt(cls, v: str | None) -> str | None:
+        return v.strip() if v is not None else None
+
+    @field_validator("slug")
+    @classmethod
+    def normalize_slug_opt(cls, v: str | None) -> str | None:
+        return v.strip().lower() if v is not None else None
+
+    @field_validator("connector_slug")
+    @classmethod
+    def validate_connector_slug_opt(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        if not str(v).strip():
+            return None
+        s = v.strip().lower()
+        if s not in ALLOWED_CONNECTOR_SLUGS:
+            allowed = ", ".join(sorted(ALLOWED_CONNECTOR_SLUGS))
+            raise ValueError(f"connector_slug must be one of: {allowed}")
+        return s
+
+    @field_validator("base_url")
+    @classmethod
+    def validate_base_url_opt(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        s = v.strip()
+        assert_public_https_url(s, label="base_url")
+        return s
 
 
 class UserUpdateRequest(BaseModel):

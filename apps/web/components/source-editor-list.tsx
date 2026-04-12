@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 
-import type { Source } from "../lib/api";
+import { formatFastApiDetail, type Source } from "../lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
@@ -47,7 +47,10 @@ export function SourceEditorList({ sources }: { sources: Source[] }) {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
-        setMessages((current) => ({ ...current, [sourceId]: payload?.detail ?? "No se pudo guardar." }));
+        setMessages((current) => ({
+          ...current,
+          [sourceId]: formatFastApiDetail(payload ?? { detail: "No se pudo guardar." }),
+        }));
         return;
       }
 

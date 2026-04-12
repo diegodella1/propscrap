@@ -5,8 +5,18 @@ import shutil
 import subprocess
 import tempfile
 
+from app.config import get_settings
+
+
+def ocr_health_status() -> dict[str, bool]:
+    return {
+        "pdftoppm_available": shutil.which("pdftoppm") is not None,
+        "tesseract_available": shutil.which("tesseract") is not None,
+    }
+
 
 def run_pdf_ocr(file_path: str) -> tuple[str | None, str, int, float | None]:
+    settings = get_settings()
     if shutil.which("pdftoppm") is None or shutil.which("tesseract") is None:
         return None, "ocr_unavailable", 0, None
 
@@ -22,7 +32,10 @@ def run_pdf_ocr(file_path: str) -> tuple[str | None, str, int, float | None]:
                 check=True,
                 capture_output=True,
                 text=True,
+                timeout=settings.ocr_pdftoppm_timeout_seconds,
             )
+        except subprocess.TimeoutExpired:
+            return None, "ocr_pdftoppm_timeout", 0, None
         except subprocess.CalledProcessError:
             return None, "ocr_render_failed", 0, None
 
@@ -43,15 +56,23 @@ def run_pdf_ocr(file_path: str) -> tuple[str | None, str, int, float | None]:
 
 
 def _run_tesseract(image_path: Path) -> str:
+    settings = get_settings()
     command_options = [
         ["tesseract", str(image_path), "stdout", "-l", "spa+eng"],
         ["tesseract", str(image_path), "stdout"],
     ]
     for command in command_options:
         try:
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            result = subprocess.run(
+                command,
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=settings.ocr_tesseract_timeout_seconds,
+            )
             return result.stdout.strip()
+        except subprocess.TimeoutExpired:
+            continue
         except subprocess.CalledProcessError:
             continue
     return ""
-

@@ -37,6 +37,7 @@ from app.schemas.tender import (
     TenderListResponse,
     TenderRead,
 )
+from app.services.audit import record_admin_audit
 from app.services.automation import run_automation_cycle
 from app.services.alerts import list_recent_alerts
 from app.services.auth import authenticate_user, create_session_token, create_user_account, read_session_user_id
@@ -48,8 +49,9 @@ from app.services.company_profiles import (
 )
 from app.services.company_registry import lookup_company_by_cuit
 from app.services.llm_enrichment import DEFAULT_MASTER_PROMPT
+from app.services.rate_limit import enforce_auth_rate_limit
 from app.services.runtime_settings import get_automation_settings, update_automation_settings
-from app.services.source_registry import CONNECTORS
+from app.services.source_registry import ALLOWED_CONNECTOR_SLUGS
 from app.services.tenders import get_tender_detail, list_saved_tenders, list_tenders
 from app.services.users import ensure_demo_user, update_user
 from app.services.whatsapp import read_whatsapp_outbox
@@ -92,7 +94,12 @@ def require_platform_admin(current_user: User = Depends(get_current_user)) -> Us
 
 
 @router.post("/auth/signup", response_model=AuthResponse)
-def signup(payload: SignupRequest, response: Response, db: Session = Depends(get_db)) -> AuthResponse:
+def signup(
+    payload: SignupRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+    __: None = Depends(enforce_auth_rate_limit),
+) -> AuthResponse:
     user = create_user_account(
         db,
         full_name=payload.full_name,
@@ -108,7 +115,12 @@ def signup(payload: SignupRequest, response: Response, db: Session = Depends(get
 
 
 @router.post("/auth/login", response_model=AuthResponse)
-def login(payload: LoginRequest, response: Response, db: Session = Depends(get_db)) -> AuthResponse:
+def login(
+    payload: LoginRequest,
+    response: Response,
+    db: Session = Depends(get_db),
+    __: None = Depends(enforce_auth_rate_limit),
+) -> AuthResponse:
     user = authenticate_user(db, email=payload.email, password=payload.password)
     _set_session_cookie(response, user)
     return AuthResponse(user=UserRead.model_validate(user))
@@ -296,7 +308,7 @@ def get_admin_sources(
                 "config_json": row.config_json,
                 "is_active": row.is_active,
                 "last_run_at": row.last_run_at,
-                "connector_available": (row.connector_slug or row.slug) in CONNECTORS,
+                "connector_available": (row.connector_slug or row.slug) in ALLOWED_CONNECTOR_SLUGS,
             }
         )
         for row in rows
@@ -307,24 +319,31 @@ def get_admin_sources(
 def create_source(
     payload: SourceCreateRequest,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> SourceAdminRead:
-    slug = payload.slug.strip().lower()
+    slug = payload.slug
     existing = db.execute(select(Source).where(Source.slug == slug)).scalar_one_or_none()
     if existing is not None:
         raise ConflictError(f"Source already exists: {slug}")
 
     source = Source(
-        name=payload.name.strip(),
+        name=payload.name,
         slug=slug,
-        source_type=payload.source_type.strip(),
-        scraping_mode=payload.scraping_mode.strip().lower(),
-        connector_slug=payload.connector_slug.strip().lower() if payload.connector_slug else None,
-        base_url=payload.base_url.strip(),
+        source_type=payload.source_type,
+        scraping_mode=payload.scraping_mode,
+        connector_slug=payload.connector_slug,
+        base_url=payload.base_url,
         config_json=payload.config_json,
         is_active=payload.is_active,
     )
     db.add(source)
+    db.flush()
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.source.create",
+        detail={"source_id": source.id, "slug": source.slug},
+    )
     db.commit()
     db.refresh(source)
     return SourceAdminRead.model_validate(
@@ -339,7 +358,7 @@ def create_source(
             "config_json": source.config_json,
             "is_active": source.is_active,
             "last_run_at": source.last_run_at,
-            "connector_available": (source.connector_slug or source.slug) in CONNECTORS,
+            "connector_available": (source.connector_slug or source.slug) in ALLOWED_CONNECTOR_SLUGS,
         }
     )
 
@@ -349,34 +368,39 @@ def update_source(
     source_id: int,
     payload: SourceUpdateRequest,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> SourceAdminRead:
     source = db.execute(select(Source).where(Source.id == source_id)).scalar_one_or_none()
     if source is None:
         raise NotFoundError(f"Source not found: {source_id}")
 
     if payload.name is not None:
-        source.name = payload.name.strip()
+        source.name = payload.name
     if payload.slug is not None:
-        slug = payload.slug.strip().lower()
+        slug = payload.slug
         existing = db.execute(select(Source).where(Source.slug == slug, Source.id != source_id)).scalar_one_or_none()
         if existing is not None:
             raise ConflictError(f"Source already exists: {slug}")
         source.slug = slug
     if payload.source_type is not None:
-        source.source_type = payload.source_type.strip()
+        source.source_type = payload.source_type
     if payload.scraping_mode is not None:
-        source.scraping_mode = payload.scraping_mode.strip().lower()
+        source.scraping_mode = payload.scraping_mode
     if payload.connector_slug is not None:
-        connector_slug = payload.connector_slug.strip().lower()
-        source.connector_slug = connector_slug or None
+        source.connector_slug = payload.connector_slug
     if payload.base_url is not None:
-        source.base_url = payload.base_url.strip()
+        source.base_url = payload.base_url
     if payload.config_json is not None:
         source.config_json = payload.config_json
     if payload.is_active is not None:
         source.is_active = payload.is_active
 
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.source.update",
+        detail={"source_id": source_id, "slug": source.slug},
+    )
     db.commit()
     db.refresh(source)
     return SourceAdminRead.model_validate(
@@ -391,7 +415,7 @@ def update_source(
             "config_json": source.config_json,
             "is_active": source.is_active,
             "last_run_at": source.last_run_at,
-            "connector_available": (source.connector_slug or source.slug) in CONNECTORS,
+            "connector_available": (source.connector_slug or source.slug) in ALLOWED_CONNECTOR_SLUGS,
         }
     )
 
@@ -430,7 +454,7 @@ def put_company_profile(
     profile_id: int,
     payload: CompanyProfileUpdateRequest,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> CompanyProfileAdminRead:
     profile = get_company_profile(db, profile_id)
     if profile is None:
@@ -452,6 +476,12 @@ def put_company_profile(
         max_amount=payload.max_amount,
         alert_preferences_json=payload.alert_preferences_json,
         tax_status_json=payload.tax_status_json,
+    )
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.company_profile.update",
+        detail={"profile_id": profile_id},
     )
     db.commit()
     db.refresh(profile)
@@ -499,6 +529,12 @@ def patch_user(
         whatsapp_opt_in=payload.whatsapp_opt_in,
         whatsapp_verified=payload.whatsapp_verified,
         alert_preferences_json=payload.alert_preferences_json,
+    )
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.user.update",
+        detail={"target_user_id": user_id},
     )
     db.commit()
     db.refresh(user)
@@ -557,7 +593,7 @@ def get_public_platform_settings(
 def patch_admin_automation(
     payload: AutomationSettingsUpdateRequest,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> AutomationSettingsRead:
     settings_row = get_automation_settings(db)
     settings_row = update_automation_settings(
@@ -576,6 +612,12 @@ def patch_admin_automation(
         resend_from_email=payload.resend_from_email,
         email_delivery_enabled=payload.email_delivery_enabled,
     )
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.automation.update",
+        detail={"automation_settings_id": settings_row.id},
+    )
     db.commit()
     db.refresh(settings_row)
     return _serialize_automation_settings(settings_row)
@@ -584,45 +626,85 @@ def patch_admin_automation(
 @router.post("/admin/automation/run")
 def run_admin_automation(
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return run_automation_cycle(db)
+    result = run_automation_cycle(db)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.automation.run",
+        detail={},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/ingest/{source_slug}")
 def run_ingest(
     source_slug: str,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return ingest_source(db, source_slug)
+    result = ingest_source(db, source_slug)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.ingest",
+        detail={"source_slug": source_slug},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/process/{tender_id}")
 def run_process_tender(
     tender_id: int,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return process_tender(db, tender_id)
+    result = process_tender(db, tender_id)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.process_tender",
+        detail={"tender_id": tender_id},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/enrich/{tender_id}")
 def run_enrich_tender(
     tender_id: int,
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return enrich_tender(db, tender_id)
+    result = enrich_tender(db, tender_id)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.enrich_tender",
+        detail={"tender_id": tender_id},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/enrich-pending")
 def run_enrich_pending_job(
     limit: int | None = Query(default=None, ge=1, le=100),
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return enrich_pending_tenders(db, limit=limit)
+    result = enrich_pending_tenders(db, limit=limit)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.enrich_pending",
+        detail={"limit": limit},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/match/{tender_id}")
@@ -630,34 +712,66 @@ def run_match_tender(
     tender_id: int,
     profile_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return match_tender(db, tender_id, profile_id=profile_id)
+    result = match_tender(db, tender_id, profile_id=profile_id)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.match_tender",
+        detail={"tender_id": tender_id, "profile_id": profile_id},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/match-all")
 def run_match_all(
     profile_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return match_all_tenders(db, profile_id=profile_id)
+    result = match_all_tenders(db, profile_id=profile_id)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.match_all",
+        detail={"profile_id": profile_id},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/alerts/generate")
 def generate_alerts_job(
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return run_alert_generation(db)
+    result = run_alert_generation(db)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.alerts.generate",
+        detail={},
+    )
+    db.commit()
+    return result
 
 
 @router.post("/jobs/alerts/dispatch")
 def dispatch_alerts_job(
     db: Session = Depends(get_db),
-    _: User = Depends(require_platform_admin),
+    current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    return run_alert_dispatch(db)
+    result = run_alert_dispatch(db)
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="job.alerts.dispatch",
+        detail={},
+    )
+    db.commit()
+    return result
 
 
 @router.get("/admin/alerts/outbox", response_model=list[WhatsappOutboxMessageRead])
