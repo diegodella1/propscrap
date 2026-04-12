@@ -206,6 +206,7 @@ class TenderState(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     state: Mapped[str] = mapped_column(String(50))
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    alert_overrides_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     tender: Mapped["Tender"] = relationship(back_populates="states")

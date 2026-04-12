@@ -12,6 +12,11 @@ type Props = {
 };
 
 export function CompanyAdminPage({ currentUserName, companyProfile, users }: Props) {
+  const defaults = companyProfile.alert_preferences_json ?? {};
+  const whatsappReady = users.filter((user) => user.whatsapp_opt_in && user.whatsapp_number).length;
+  const telegramReady = users.filter((user) => user.telegram_opt_in && user.telegram_chat_id).length;
+  const emailReady = users.filter((user) => (user.alert_preferences_json?.channels ?? []).includes("email")).length;
+
   return (
     <main className="page-shell workspace-shell">
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="manager" />
@@ -120,6 +125,55 @@ export function CompanyAdminPage({ currentUserName, companyProfile, users }: Pro
           </section>
 
           <section className="admin-section-stack">
+            <article className="panel table-panel table-panel-upgraded">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Tablero</span>
+                  <h2>Estado actual de alertas de la empresa</h2>
+                </div>
+                <p>Vista rápida para entender si la política de alertas ya puede funcionar en una demo real.</p>
+              </div>
+              <section className="dashboard-executive-band workspace-kpi-band">
+                <article>
+                  <span>Score mínimo</span>
+                  <strong>{defaults.min_score ?? 60}</strong>
+                </article>
+                <article>
+                  <span>WhatsApp listos</span>
+                  <strong>{whatsappReady}</strong>
+                </article>
+                <article>
+                  <span>Email activos</span>
+                  <strong>{emailReady}</strong>
+                </article>
+                <article>
+                  <span>Telegram listos</span>
+                  <strong>{telegramReady}</strong>
+                </article>
+              </section>
+              <div className="admin-overview-grid">
+                <article className="panel admin-overview-card">
+                  <span className="section-kicker">Discovery</span>
+                  <h3>{defaults.receive_relevant ? "Activo" : "Pausado"}</h3>
+                  <p>Nuevas licitaciones con score por encima del umbral definido por la empresa.</p>
+                </article>
+                <article className="panel admin-overview-card">
+                  <span className="section-kicker">Deadlines</span>
+                  <h3>{defaults.receive_deadlines ? "Activo" : "Pausado"}</h3>
+                  <p>
+                    {defaults.deadline_only_for_saved
+                      ? "Recordatorios solo sobre licitaciones guardadas o en seguimiento."
+                      : "Recordatorios sobre cualquier licitación con fechas detectadas."}
+                  </p>
+                </article>
+                <article className="panel admin-overview-card">
+                  <span className="section-kicker">Offsets</span>
+                  <h3>{(defaults.deadline_offsets_hours ?? [168, 72, 24]).join(" · ")}h</h3>
+                  <p>Anticipaciones base para recordatorios por fechas críticas detectadas en scraping o enriquecimiento.</p>
+                </article>
+              </div>
+            </article>
+
             <article className="panel table-panel table-panel-upgraded">
               <div className="results-header">
                 <div>

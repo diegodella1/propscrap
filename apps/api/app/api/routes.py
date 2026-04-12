@@ -67,6 +67,7 @@ class TenderStateUpdateRequest(BaseModel):
     state: str
     notes: str | None = None
     user_id: int | None = None
+    alert_overrides_json: dict | None = None
 
 
 def get_current_user(
@@ -832,9 +833,15 @@ def update_tender_state(
         user_id=user.id,
         state=payload.state,
         notes=payload.notes,
+        alert_overrides_json=payload.alert_overrides_json,
     )
     db.commit()
-    return {"tender_id": tender_id, "state": state.state, "user_id": user.id}
+    return {
+        "tender_id": tender_id,
+        "state": state.state,
+        "user_id": user.id,
+        "alert_overrides_json": state.alert_overrides_json,
+    }
 
 
 def _set_session_cookie(response: Response, user: User) -> None:

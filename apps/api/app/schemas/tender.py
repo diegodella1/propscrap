@@ -84,6 +84,7 @@ class TenderStateRead(BaseModel):
     user_id: int
     state: str
     notes: str | None = None
+    alert_overrides_json: dict | None = None
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 
 from app.models.tender import Alert, Tender, TenderMatch, TenderState, User
 from app.services.users import get_user_alert_preferences, has_verified_telegram, has_verified_whatsapp
+from app.services.workflow import normalize_tender_alert_overrides
 
 DISPATCHABLE_STATUSES = ("pending", "retrying", "blocked")
 SAVED_STATES = {"saved", "evaluating", "presenting"}
@@ -88,7 +89,11 @@ def _ensure_relevance_alerts(db: Session, tender: Tender, user: User, *, prefere
 def _ensure_deadline_alerts(db: Session, tender: Tender, user: User, *, preferences: dict) -> int:
     if not preferences.get("receive_deadlines", True):
         return 0
-    if preferences.get("deadline_only_for_saved", True) and not _is_saved_for_user(db, tender, user):
+    state = _get_tender_state_for_user(db, tender, user)
+    if preferences.get("deadline_only_for_saved", True) and not (state and state.state in SAVED_STATES):
+        return 0
+    effective_deadline_preferences = _merge_tender_deadline_overrides(preferences, state)
+    if not effective_deadline_preferences.get("receive_deadlines", True):
         return 0
 
     now = datetime.now(tz=UTC)
@@ -96,7 +101,7 @@ def _ensure_deadline_alerts(db: Session, tender: Tender, user: User, *, preferen
     for event_key, event_date in _iter_detected_deadlines(tender):
         if event_date <= now:
             continue
-        for offset_hours in preferences.get("deadline_offsets_hours", [168, 72, 24]):
+        for offset_hours in effective_deadline_preferences.get("deadline_offsets_hours", [168, 72, 24]):
             scheduled_for = event_date - timedelta(hours=int(offset_hours))
             if scheduled_for <= now:
                 continue
@@ -209,14 +214,23 @@ def _get_effective_alert_preferences(user: User, *, company_preferences: dict) -
     }
 
 
-def _is_saved_for_user(db: Session, tender: Tender, user: User) -> bool:
-    state = db.execute(
+def _get_tender_state_for_user(db: Session, tender: Tender, user: User) -> TenderState | None:
+    return db.execute(
         select(TenderState)
         .where(TenderState.tender_id == tender.id, TenderState.user_id == user.id)
         .order_by(TenderState.id.desc())
         .limit(1)
     ).scalar_one_or_none()
-    return bool(state and state.state in SAVED_STATES)
+
+
+def _merge_tender_deadline_overrides(preferences: dict, state: TenderState | None) -> dict:
+    merged = dict(preferences)
+    overrides = normalize_tender_alert_overrides(state.alert_overrides_json if state is not None else None)
+    if overrides.get("inherit_company_defaults", True):
+        return merged
+    merged["receive_deadlines"] = bool(overrides.get("receive_deadlines", True))
+    merged["deadline_offsets_hours"] = overrides.get("deadline_offsets_hours", []) or preferences.get("deadline_offsets_hours", [168, 72, 24])
+    return merged
 
 
 def _iter_detected_deadlines(tender: Tender) -> list[tuple[str, datetime]]:

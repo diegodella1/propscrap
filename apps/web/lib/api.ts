@@ -83,6 +83,11 @@ export type Tender = {
     user_id: number;
     state: string;
     notes: string | null;
+    alert_overrides_json: {
+      inherit_company_defaults?: boolean;
+      receive_deadlines?: boolean;
+      deadline_offsets_hours?: number[];
+    } | null;
     updated_at: string;
   }[];
 };

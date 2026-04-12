@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { PageShell } from "../../../components/layout/page-shell";
+import { SavedTenderAlertOverrides } from "../../../components/saved-tender-alert-overrides";
 import { SiteHeader } from "../../../components/site-header";
 import { fetchSavedTenders } from "../../../lib/api";
 import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
@@ -101,6 +102,12 @@ export default async function SavedTendersPage() {
                     {item.matches[0]?.reasons_json?.summary?.[0] ? (
                       <p className="muted">{item.matches[0].reasons_json?.summary?.[0]}</p>
                     ) : null}
+                    <SavedTenderAlertOverrides
+                      tenderId={item.id}
+                      state={item.states[0]?.state ?? "saved"}
+                      notes={item.states[0]?.notes ?? null}
+                      alertOverrides={item.states[0]?.alert_overrides_json ?? null}
+                    />
                     <div className="pipeline-card-footer">
                       <span className="muted">{item.states[0]?.notes ?? "Sin nota interna todavía"}</span>
                       <Link href={`/tenders/${item.id}`} className="linkish">
