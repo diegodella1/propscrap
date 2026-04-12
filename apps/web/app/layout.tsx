@@ -1,19 +1,19 @@
 import "./globals.css";
 import "./product-hardening.css";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, IBM_Plex_Sans, Public_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Inter, Manrope } from "next/font/google";
 import { ConditionalFooter } from "../components/conditional-footer";
 
-const bodyFont = Public_Sans({
+const bodyFont = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
 });
 
-const displayFont = IBM_Plex_Sans({
+const displayFont = Manrope({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
 });
 

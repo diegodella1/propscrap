@@ -1228,3 +1228,565 @@ body::after {
     max-width: 100%;
   }
 }
+
+/* Visual demo system pass: aligns the product with the editorial blue-on-blue
+   references in /visual demos while preserving square geometry. */
+:root {
+  --bg: #eef4fb !important;
+  --bg-strong: #001430 !important;
+  --bg-soft: #f5faff !important;
+  --panel: #ffffff !important;
+  --panel-strong: #001b3d !important;
+  --panel-alt: #edf4fb !important;
+  --text: #151c21 !important;
+  --text-inverse: #f5faff !important;
+  --muted: #5a6674 !important;
+  --line: rgba(21, 28, 33, 0.1) !important;
+  --line-strong: rgba(255, 255, 255, 0.12) !important;
+  --accent: #0056c5 !important;
+  --accent-soft: #d9e7ff !important;
+  --accent-deep: #001430 !important;
+  --signal: #002855 !important;
+  --signal-soft: #dce9f5 !important;
+  --warning: #9a6330 !important;
+  --warning-soft: #f6e3d0 !important;
+  --danger: #b42318 !important;
+  --danger-soft: #fde2de !important;
+  --success: #0c7a4a !important;
+  --success-soft: #dcf4e7 !important;
+  --calm: #375d88 !important;
+  --calm-soft: #dfebf7 !important;
+  --teal-deep: #17324f !important;
+  --shadow: 0 18px 50px rgba(0, 40, 85, 0.08) !important;
+  --shadow-tight: 0 10px 24px rgba(0, 40, 85, 0.06) !important;
+  --app-shell-width: 1320px !important;
+  --app-shell-padding-x: 28px !important;
+}
+
+html,
+body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(170, 199, 253, 0.34), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(46, 111, 228, 0.12), transparent 18%),
+    linear-gradient(180deg, #f7fbff 0%, #eef4fb 45%, #e7eef6 100%) !important;
+  color: #151c21 !important;
+  font-family: var(--font-body) !important;
+}
+
+body::before,
+body::after {
+  display: none !important;
+}
+
+.page-shell {
+  max-width: 1320px !important;
+  padding: 26px 28px 88px !important;
+}
+
+.site-header {
+  position: sticky;
+  top: 16px;
+  z-index: 40;
+  margin-bottom: 32px !important;
+  padding: 14px 16px !important;
+  background: rgba(245, 250, 255, 0.92) !important;
+  border: 1px solid rgba(21, 28, 33, 0.08) !important;
+  box-shadow: 0 10px 24px rgba(0, 40, 85, 0.05) !important;
+  backdrop-filter: blur(16px) saturate(1.02) !important;
+}
+
+.brand-lockup strong {
+  font-family: var(--font-display) !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  color: #001430 !important;
+}
+
+.brand-lockup small {
+  color: #5a6674 !important;
+  font-size: 0.74rem !important;
+}
+
+.brand-mark {
+  background: linear-gradient(180deg, #002855 0%, #001430 100%) !important;
+  border-color: rgba(0, 40, 85, 0.12) !important;
+  color: #f5faff !important;
+  box-shadow: none !important;
+}
+
+.site-nav a,
+.button-primary,
+.button-secondary,
+.button-block,
+.linkish,
+.badge,
+.source-chip,
+.mini-pill,
+.filter-pill,
+.score-chip,
+.section-kicker,
+.eyebrow {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.site-nav a {
+  color: #5a6674 !important;
+}
+
+.site-nav a[data-active='true'] {
+  background: #001430 !important;
+  color: #f5faff !important;
+  border-color: #001430 !important;
+}
+
+.button-primary {
+  background: linear-gradient(180deg, #0056c5 0%, #0048a6 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(0, 86, 197, 0.15) !important;
+  box-shadow: 0 12px 24px rgba(0, 86, 197, 0.18) !important;
+}
+
+.button-primary:hover {
+  background: linear-gradient(180deg, #005dcf 0%, #004093 100%) !important;
+}
+
+.button-secondary {
+  background: #ffffff !important;
+  color: #001430 !important;
+  border: 1px solid rgba(0, 40, 85, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.linkish {
+  color: #0056c5 !important;
+}
+
+.section-kicker,
+.eyebrow,
+.mini-pill,
+.filter-pill,
+.source-chip,
+.badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: #edf4fb !important;
+  color: #375d88 !important;
+  border: 1px solid rgba(55, 93, 136, 0.12) !important;
+  padding: 7px 10px !important;
+  font-size: 0.72rem !important;
+  text-transform: uppercase !important;
+}
+
+.badge.tone-success,
+.score-chip.tone-success,
+.wizard-step-meta .tone-success {
+  background: #dcf4e7 !important;
+  color: #0c7a4a !important;
+  border-color: rgba(12, 122, 74, 0.16) !important;
+}
+
+.badge.tone-warning,
+.score-chip.tone-warning {
+  background: #f6e3d0 !important;
+  color: #9a6330 !important;
+  border-color: rgba(154, 99, 48, 0.16) !important;
+}
+
+.badge.tone-danger,
+.score-chip.tone-danger {
+  background: #fde2de !important;
+  color: #b42318 !important;
+  border-color: rgba(180, 35, 24, 0.16) !important;
+}
+
+.workspace-header,
+.hero-app,
+.landing-hero,
+.auth-page-header,
+.about-hero,
+.contact-shell > .panel:first-child {
+  margin-bottom: 22px !important;
+}
+
+.hero h1,
+.landing-hero h1,
+.workspace-header h1,
+.results-header h2,
+.section-heading h2,
+.signup-form-header h2,
+.dispatch-panel h2,
+.table-panel h2,
+.table-panel-upgraded h2 {
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.05em !important;
+  color: #001430 !important;
+  max-width: 18ch !important;
+}
+
+.hero p,
+.landing-hero p,
+.workspace-header p,
+.results-header p,
+.section-heading p,
+.signup-form-header p,
+.muted,
+.form-flow-hint,
+.form-message,
+.detail-note-card p,
+.source-card p,
+.admin-overview-card p,
+.admin-quick-list p,
+.pipeline-card p,
+.opportunity-list-card p {
+  color: #5a6674 !important;
+  line-height: 1.65 !important;
+}
+
+.landing-masterhead,
+.hero-app,
+.about-hero,
+.auth-page-header,
+.cta-band {
+  background: linear-gradient(180deg, rgba(237, 244, 251, 0.9) 0%, rgba(245, 250, 255, 0.95) 100%) !important;
+  border: 1px solid rgba(0, 40, 85, 0.08) !important;
+  padding: 24px !important;
+}
+
+.board-frame,
+.panel,
+.proof-card,
+.editorial-callout,
+.experience-card,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.auth-form-card,
+.detail-note-card,
+.pipeline-column,
+.opportunity-list-card,
+.source-card,
+.admin-rail,
+.admin-overview-card,
+.workspace-empty-state,
+.workspace-adoption-main,
+.workspace-adoption-step {
+  background: #ffffff !important;
+  border: 1px solid rgba(21, 28, 33, 0.08) !important;
+  box-shadow: 0 10px 24px rgba(0, 40, 85, 0.04) !important;
+}
+
+.editorial-callout-dark,
+.experience-card-dark,
+.ops-priority-card-strong,
+.signal-card.signal-accent,
+.admin-rail,
+.workspace-board-illustration .workspace-shell,
+.executive-control-illustration .executive-shell {
+  background: linear-gradient(180deg, #002855 0%, #001430 100%) !important;
+  color: #f5faff !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.editorial-callout-dark h2,
+.experience-card-dark h3,
+.ops-priority-card-strong h3,
+.signal-card.signal-accent strong,
+.admin-rail strong,
+.admin-rail .section-kicker {
+  color: #f5faff !important;
+}
+
+.editorial-callout-dark p,
+.experience-card-dark p,
+.ops-priority-card-strong p,
+.signal-card.signal-accent p,
+.admin-rail p,
+.admin-rail a,
+.admin-rail .section-kicker {
+  color: rgba(245, 250, 255, 0.78) !important;
+}
+
+.dashboard-executive-band,
+.hero-inline-metrics,
+.results-ribbon,
+.detail-date-strip,
+.signup-confidence-bar {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.dashboard-executive-band,
+.hero-inline-metrics,
+.detail-date-strip {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.results-ribbon,
+.signup-confidence-bar {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+}
+
+.dashboard-executive-band article,
+.hero-inline-metrics article,
+.detail-date-strip article,
+.results-ribbon span,
+.signup-confidence-bar span {
+  background: #edf4fb !important;
+  border: 1px solid rgba(0, 40, 85, 0.08) !important;
+  padding: 14px !important;
+  color: #001430 !important;
+}
+
+.dashboard-executive-band article span,
+.hero-inline-metrics article span,
+.detail-date-strip article span {
+  color: #5a6674 !important;
+  text-transform: uppercase !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+.dashboard-executive-band article strong,
+.hero-inline-metrics article strong,
+.detail-date-strip article strong {
+  font-family: var(--font-display) !important;
+  font-size: clamp(1.4rem, 2vw, 2rem) !important;
+  letter-spacing: -0.05em !important;
+  color: #001430 !important;
+}
+
+.decision-row,
+.pipeline-card,
+.opportunity-list-card,
+.document-card,
+.alert-row {
+  padding: 16px !important;
+}
+
+.decision-row-head,
+.pipeline-card-footer,
+.decision-row-footer,
+.opportunity-list-head,
+.opportunity-list-aside,
+.source-card-header {
+  gap: 10px !important;
+}
+
+.opportunity-list-card,
+.pipeline-card,
+.decision-row {
+  display: grid !important;
+  gap: 12px !important;
+  border-left: 4px solid #0056c5 !important;
+}
+
+.pipeline-column-head,
+.source-card-header,
+.results-header,
+.section-heading,
+.workspace-header {
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid rgba(21, 28, 33, 0.08) !important;
+}
+
+.auth-layout,
+.dashboard-focus-grid,
+.layout-grid,
+.admin-shell-grid,
+.admin-control-grid,
+.admin-data-grid,
+.admin-overview-grid,
+.ops-proof-grid,
+.workspace-preview-grid,
+.editorial-grid,
+.landing-system-grid,
+.about-logic-grid,
+.profile-workbench-grid {
+  gap: 18px !important;
+}
+
+.auth-form-card,
+.contact-request-card,
+.login-form-card,
+.signup-companion,
+.onboarding-companion,
+.company-profile-form,
+.state-form {
+  padding: 22px !important;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px !important;
+  color: #001430 !important;
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.field input,
+.field select,
+.field textarea,
+.state-form input,
+.state-form select,
+.state-form textarea {
+  min-height: 48px !important;
+  background: #f5faff !important;
+  border: 1px solid rgba(0, 40, 85, 0.12) !important;
+  color: #151c21 !important;
+  padding: 12px 14px !important;
+  box-shadow: none !important;
+}
+
+.field textarea,
+.state-form textarea {
+  min-height: 120px !important;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.state-form input:focus,
+.state-form select:focus,
+.state-form textarea:focus {
+  outline: none !important;
+  border-color: rgba(0, 86, 197, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(0, 86, 197, 0.12) !important;
+}
+
+.table-wrap table {
+  background: #ffffff !important;
+}
+
+.table-wrap thead th {
+  background: #edf4fb !important;
+  color: #375d88 !important;
+  font-family: var(--font-display) !important;
+  font-size: 0.72rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+.table-wrap tbody tr:nth-child(even) {
+  background: #f8fbff !important;
+}
+
+.admin-rail {
+  padding: 18px !important;
+}
+
+.admin-anchor-nav a {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f5faff !important;
+}
+
+.admin-anchor-nav a:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.workspace-adoption-bar {
+  max-width: 1320px !important;
+}
+
+.workspace-adoption-main,
+.workspace-adoption-step {
+  box-shadow: 0 10px 24px rgba(0, 40, 85, 0.04) !important;
+}
+
+.executive-control-illustration svg,
+.workspace-board-illustration svg,
+.process-flow-editorial-illustration svg {
+  width: 100%;
+  height: auto;
+}
+
+.executive-control-illustration .executive-shell,
+.workspace-board-illustration .workspace-shell,
+.process-flow-editorial-illustration .process-flow-shell {
+  fill: #001430 !important;
+}
+
+.executive-control-illustration .executive-band,
+.workspace-board-illustration .workspace-strip,
+.process-flow-editorial-illustration .process-flow-panel {
+  fill: rgba(255, 255, 255, 0.08) !important;
+}
+
+.executive-control-illustration text,
+.workspace-board-illustration text,
+.process-flow-editorial-illustration text {
+  fill: #f5faff !important;
+}
+
+.workspace-board-illustration .workspace-strip-copy,
+.workspace-board-illustration .workspace-copy,
+.process-flow-editorial-illustration .process-flow-copy,
+.executive-control-illustration .executive-band-copy,
+.executive-control-illustration .executive-card-copy,
+.executive-control-illustration .executive-path-label {
+  fill: rgba(245, 250, 255, 0.78) !important;
+}
+
+.cta-band {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: 18px !important;
+  align-items: center !important;
+}
+
+.site-footer,
+.site-footer-compact {
+  background: #001430 !important;
+  color: rgba(245, 250, 255, 0.82) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+@media (max-width: 960px) {
+  .landing-hero,
+  .hero-app,
+  .cta-band,
+  .workspace-adoption-bar,
+  .admin-shell-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dashboard-executive-band,
+  .hero-inline-metrics,
+  .detail-date-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    padding: 18px 14px 76px !important;
+  }
+
+  .dashboard-executive-band,
+  .hero-inline-metrics,
+  .detail-date-strip,
+  .results-ribbon,
+  .signup-confidence-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-masterhead,
+  .hero-app,
+  .about-hero,
+  .auth-page-header,
+  .cta-band,
+  .auth-form-card,
+  .dispatch-panel,
+  .table-panel,
+  .table-panel-upgraded,
+  .company-profile-form,
+  .state-form {
+    padding: 16px !important;
+  }
+}
