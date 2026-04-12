@@ -23,9 +23,9 @@ export default async function ContactPage() {
       <section className="hero hero-app about-hero">
         <div>
           <span className="eyebrow">Solicitar Demo</span>
-          <h1>La demo muestra cómo pasar del trabajo manual a una operación ordenada.</h1>
+          <h1>La demo tiene que dejar una prueba de 30 días lista para usar.</h1>
         </div>
-        <p>En pocos minutos se ve cómo entra la empresa, cómo aparece el discovery y cómo se sigue una licitación.</p>
+        <p>En pocos minutos se ve cómo entra la empresa, cómo aparece el discovery y qué tendría que pasar para que el equipo adopte el producto de verdad.</p>
       </section>
 
       <section className="auth-layout auth-layout-upgraded signup-shell contact-shell">
@@ -33,7 +33,7 @@ export default async function ContactPage() {
 
         <article className="panel dispatch-panel onboarding-companion signup-companion contact-companion">
           <span className="section-kicker">Qué se ve en la demo</span>
-          <h2>El flujo completo del producto.</h2>
+          <h2>El flujo completo de una prueba útil.</h2>
           <div className="onboarding-proof-list">
             <article>
               <strong>Empresa por CUIT</strong>
@@ -45,7 +45,7 @@ export default async function ContactPage() {
             </article>
             <article>
               <strong>Seguimiento real</strong>
-              <p>Pipeline, notas, alertas y control de fuentes dentro de la misma plataforma.</p>
+              <p>Pipeline, notas, alertas y rutina diaria dentro de la misma plataforma.</p>
             </article>
           </div>
           <div className="hero-actions">
@@ -84,7 +84,7 @@ export default async function ContactPage() {
             </article>
             <article className="source-card">
               <strong>Resultado</strong>
-              <p>Menos tiempo perdido y una operación diaria mucho más visible.</p>
+              <p>Menos tiempo perdido y una operación diaria que un cliente pueda sostener durante 30 días.</p>
             </article>
           </div>
 

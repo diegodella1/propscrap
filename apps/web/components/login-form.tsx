@@ -30,7 +30,7 @@ const VARIANT_COPY: Record<
   company: {
     eyebrow: "Acceso empresa",
     title: "Entrá al workspace comercial",
-    description: "Usá tu email de trabajo para volver a oportunidades, seguimiento y operación diaria.",
+    description: "Usá tu email de trabajo para volver a oportunidades, seguimiento y alertas de la prueba.",
     submitLabel: "Ingresar como cliente",
     pendingLabel: "Ingresando cliente…",
     hint: ["Oportunidades", "Seguimiento", "Empresa"],
@@ -41,7 +41,7 @@ const VARIANT_COPY: Record<
   superadmin: {
     eyebrow: "Acceso plataforma",
     title: "Entrá a la consola superadmin",
-    description: "Usá la cuenta de plataforma para gobernar fuentes, automatización, alertas y usuarios globales.",
+    description: "Usá la cuenta de plataforma para gobernar fuentes, automatización, alertas y usuarios del piloto.",
     submitLabel: "Ingresar como superadmin",
     pendingLabel: "Ingresando superadmin…",
     hint: ["Fuentes", "Automatización", "Usuarios"],

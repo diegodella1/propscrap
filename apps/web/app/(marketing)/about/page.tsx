@@ -19,18 +19,18 @@ export default async function AboutPage() {
       <section className="hero hero-app about-hero">
         <div>
           <span className="eyebrow">Cómo Funciona</span>
-          <h1>Del CUIT al seguimiento, en un solo flujo.</h1>
+          <h1>Del CUIT al seguimiento, en un flujo que se puede probar 30 días.</h1>
         </div>
-        <p>La lógica es simple: completar la empresa, ordenar el discovery y sostener la ejecución.</p>
+        <p>La lógica es simple: completar la empresa, ordenar el discovery y sostener la ejecución hasta que el equipo ya no quiera volver al proceso manual.</p>
       </section>
 
       <section className="how-it-works-stage">
         <div className="results-header">
           <div>
             <span className="section-kicker">Recorrido</span>
-            <h2>Un flujo simple para un trabajo que hoy suele hacerse a mano.</h2>
+            <h2>Un flujo simple para convertir una prueba en hábito operativo.</h2>
           </div>
-          <p>Primero entra la empresa. Después aparece el discovery. Por último se ordena la ejecución.</p>
+          <p>Primero entra la empresa. Después aparece el discovery. Por último se ordena la ejecución diaria.</p>
         </div>
 
         <article className="panel how-it-works-diagram">
@@ -128,8 +128,8 @@ export default async function AboutPage() {
       <section className="cta-band">
         <div>
           <span className="section-kicker">Siguiente Paso</span>
-          <h2>La propuesta se entiende mejor cuando se recorre el flujo completo.</h2>
-          <p>Pedí demo o registrá una empresa por CUIT para recorrer el producto desde adentro.</p>
+          <h2>La propuesta se entiende mejor cuando el cliente la usa con su operación real.</h2>
+          <p>Pedí demo o registrá una empresa por CUIT para probar el flujo completo con un equipo real durante 30 días.</p>
         </div>
         <div className="hero-actions">
           <Link href="/contact" className="button-primary">

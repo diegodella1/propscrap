@@ -57,7 +57,7 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
         <span className="brand-mark">ET</span>
         <span>
           <strong translate="no">EasyTaciones</strong>
-          <small>Infraestructura operativa para ventas al Estado</small>
+          <small>Discovery, seguimiento y alertas para licitaciones</small>
         </span>
       </Link>
 
@@ -142,10 +142,10 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
                 data-active={active.login}
                 onClick={closeNav}
               >
-                Accesos
+                Ingresar
               </Link>
-              <Link href="/contact" className="button-primary site-auth-button" onClick={closeNav}>
-                Hablar con Ventas
+              <Link href="/signup" className="button-primary site-auth-button" onClick={closeNav}>
+                Alta por CUIT
               </Link>
             </>
           )}

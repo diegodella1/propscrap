@@ -20,7 +20,7 @@ export default async function SignupPage() {
       <PageHero
         eyebrow="Onboarding por CUIT"
         title="Registrá tu empresa por CUIT."
-        description="Ingresás CUIT, validás identidad legal y arrancás con un perfil comercial inicial."
+        description="Ingresás CUIT, validás identidad legal y arrancás una prueba de 30 días con un workspace listo para usar."
         className="workspace-header auth-page-header"
       />
 
@@ -29,11 +29,11 @@ export default async function SignupPage() {
 
         <article className="panel dispatch-panel onboarding-companion signup-companion">
           <span className="section-kicker">Qué se resuelve en el alta</span>
-          <h2>Alta inicial de la empresa</h2>
+          <h2>Alta inicial para una prueba seria</h2>
           <div className="signup-path">
             <p>1. Consultamos el CUIT y precargamos la identidad legal de la empresa.</p>
             <p>2. Confirmás cómo vende tu empresa: rubros, buyers, keywords y jurisdicciones.</p>
-            <p>3. Entrás al workspace con una base comercial lista para trabajar.</p>
+            <p>3. Entrás al workspace con una base comercial lista para que el equipo lo use de verdad durante 30 días.</p>
           </div>
 
           <div className="onboarding-proof-list">
@@ -47,7 +47,7 @@ export default async function SignupPage() {
             </article>
             <article>
               <strong>Primer valor</strong>
-              <p>El objetivo del alta es llegar rápido a oportunidades relevantes.</p>
+              <p>El objetivo del alta es que la prueba llegue rápido a oportunidades, pipeline y alertas reales.</p>
             </article>
           </div>
 

@@ -54,13 +54,13 @@ export default async function LandingPage() {
           <span className="eyebrow">Plataforma para proveedores del Estado</span>
           <h1>
             {isLoggedIn
-              ? "La operación comercial de licitaciones, en una sola vista."
-              : "La infraestructura operativa para empresas que venden al Estado."}
+              ? "La mesa de control comercial de tus licitaciones."
+              : "La forma seria de operar licitaciones sin portales, PDFs y planillas dispersas."}
           </h1>
           <p className="hero-lead">
             {isLoggedIn
-              ? "EasyTaciones concentra discovery, scoring, seguimiento y próximas acciones para que el equipo decida con contexto y ejecute sin dispersión."
-              : "EasyTaciones reemplaza portales, PDFs, planillas y memoria informal por un sistema claro. La empresa entra por CUIT, se arma el perfil comercial y el equipo trabaja con prioridades, fechas y alertas."}
+              ? "EasyTaciones concentra discovery, scoring, seguimiento y próximas acciones para que el equipo trabaje sobre una sola lectura de prioridad, fecha y próximo paso."
+              : "EasyTaciones convierte un proceso manual y fragmentado en una herramienta de trabajo. La empresa entra por CUIT, el perfil se completa con criterio comercial y el equipo opera sobre oportunidades priorizadas."}
           </p>
           <div className="hero-actions">
             {currentUser ? (
@@ -101,19 +101,19 @@ export default async function LandingPage() {
           ) : (
             <div className="hero-inline-metrics hero-inline-splash">
               <article>
-                <span>Paso 1</span>
+                <span>Alta</span>
                 <strong>Alta por CUIT</strong>
-                <p>Alta legal y perfil inicial en el primer paso.</p>
+                <p>Identidad legal y base inicial en minutos.</p>
               </article>
               <article>
-                <span>Paso 2</span>
+                <span>Discovery</span>
                 <strong>Discovery priorizado</strong>
-                <p>Una sola vista con fit, contexto y fecha.</p>
+                <p>Una sola cola con score, motivo y cierre.</p>
               </article>
               <article>
-                <span>Paso 3</span>
+                <span>Seguimiento</span>
                 <strong>Seguimiento trazable</strong>
-                <p>Pipeline, notas y alertas con trazabilidad.</p>
+                <p>Pipeline, notas y alertas sin depender de memoria humana.</p>
               </article>
             </div>
           )}
@@ -130,13 +130,13 @@ export default async function LandingPage() {
 
             <div className="board-score">
               <div>
-                <small>{isLoggedIn ? "Resultado operativo" : "Propuesta de valor"}</small>
-                <strong>{isLoggedIn ? "Menos ruido. Más foco. Mejor ejecución." : "La empresa entra por CUIT. El equipo opera con criterio."}</strong>
+                <small>{isLoggedIn ? "Resultado operativo" : "Resultado del sistema"}</small>
+                <strong>{isLoggedIn ? "Menos ruido, más control y mejor timing." : "La empresa entra por CUIT. El equipo opera con criterio compartido."}</strong>
               </div>
               <p>
                 {isLoggedIn
                   ? "La operación deja de vivir entre tabs, PDFs y planillas y pasa a una superficie única con prioridad, fecha, estado y próxima acción."
-                  : "La propuesta no es mostrar más portales. Es bajar desorden y darle al equipo una lectura común de qué apareció, qué importa y qué hay que seguir."}
+                  : "La propuesta no es mostrar más portales. Es darle al equipo una lectura común de qué apareció, qué importa y qué vale seguir hoy."}
               </p>
             </div>
 
@@ -193,17 +193,17 @@ export default async function LandingPage() {
         <article className="proof-card">
           <span className="section-kicker">Problema</span>
           <h2>Buscar no es operar.</h2>
-          <p>Portales, pliegos y planillas rompen continuidad y criterio comercial.</p>
+          <p>Portales, pliegos y planillas rompen continuidad, timing y criterio comercial.</p>
         </article>
         <article className="proof-card">
           <span className="section-kicker">Solución</span>
-          <h2>Una sola superficie operativa.</h2>
-          <p>Fuentes, oportunidades y seguimiento entran en la misma lógica.</p>
+          <h2>Una sola superficie de trabajo.</h2>
+          <p>Fuentes, oportunidades, pipeline y alertas entran en la misma lógica operativa.</p>
         </article>
         <article className="proof-card">
           <span className="section-kicker">Resultado</span>
           <h2>Menos pérdida por timing.</h2>
-          <p>Más claridad sobre qué mover hoy y qué sostener en seguimiento.</p>
+          <p>Más claridad sobre qué mover hoy, qué descartar y qué sostener en seguimiento.</p>
         </article>
       </section>
 
@@ -221,10 +221,9 @@ export default async function LandingPage() {
         <div className="landing-system-grid">
           <article className="panel landing-system-copy">
             <span className="section-kicker">Vista operativa</span>
-            <h3>Inbox, calendario y pipeline en una misma superficie.</h3>
+            <h3>Inbox, prioridades y pipeline en una misma superficie.</h3>
             <p>
-              Cada oportunidad aparece con motivo de match, deadline, estado y siguiente acción. No hay que perseguir
-              contexto entre herramientas.
+              Cada oportunidad aparece con motivo de match, deadline, estado y siguiente acción. La lectura del equipo deja de estar repartida entre herramientas.
             </p>
             <div className="landing-system-points">
               <article>
@@ -251,8 +250,8 @@ export default async function LandingPage() {
       <section className="editorial-grid landing-editorial-grid">
         <article className="editorial-callout editorial-callout-dark">
           <span className="section-kicker">Oferta</span>
-          <h2>No vendemos scraping. Vendemos orden operativo.</h2>
-          <p>El diferencial está en transformar información dispersa en un sistema de trabajo para empresas proveedoras.</p>
+          <h2>No vendemos scraping. Vendemos control operativo.</h2>
+          <p>El diferencial está en transformar información dispersa en un sistema de trabajo serio para empresas proveedoras.</p>
         </article>
 
         <article className="editorial-callout">
@@ -269,17 +268,17 @@ export default async function LandingPage() {
         <article className="experience-card experience-card-dark">
           <span className="section-kicker">Para la empresa</span>
           <h3>Discovery, pipeline y alertas en un mismo lugar.</h3>
-          <p>La empresa entra por CUIT y empieza a trabajar con una base inicial ya ordenada.</p>
+          <p>La empresa entra por CUIT y empieza a trabajar con una base inicial ya ordenada y accionable.</p>
         </article>
         <article className="experience-card">
           <span className="section-kicker">Para el equipo</span>
           <h3>Un criterio compartido</h3>
-          <p>Todos miran la misma oportunidad con el mismo estado y el mismo contexto.</p>
+          <p>Todos miran la misma oportunidad con el mismo score, el mismo estado y el mismo contexto.</p>
         </article>
         <article className="experience-card">
           <span className="section-kicker">Para la gestión</span>
           <h3>Menos fricción y menos pérdida.</h3>
-          <p>Saca a la empresa del desorden manual y la lleva a una operación mucho más gobernable.</p>
+          <p>Saca a la empresa del desorden manual y la lleva a una operación más gobernable y más defendible frente a cliente interno.</p>
         </article>
       </section>
     </PageShell>

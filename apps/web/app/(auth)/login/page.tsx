@@ -19,7 +19,7 @@ export default async function LoginPage() {
       <PageHero
         eyebrow="Acceso"
         title="Elegí el tipo de acceso."
-        description="Separá el ingreso operativo de clientes del acceso de plataforma para superadmin."
+        description="Separá el ingreso operativo de clientes del acceso de plataforma para que la prueba sea clara y sin mezcla de roles."
         className="workspace-header auth-page-header"
       />
 
@@ -27,7 +27,7 @@ export default async function LoginPage() {
         <article className="panel dispatch-panel auth-choice-card">
           <span className="section-kicker">Clientes</span>
           <h2>Ingreso empresa</h2>
-          <p>Para usuarios de empresas que buscan licitaciones, guardan oportunidades y trabajan seguimiento.</p>
+          <p>Para usuarios de empresas que van a usar la demo 30 días en discovery, seguimiento y alertas.</p>
           <div className="signup-confidence-bar">
             <span>Dashboard</span>
             <span>Seguimiento</span>
@@ -46,7 +46,7 @@ export default async function LoginPage() {
         <article className="panel dispatch-panel auth-choice-card">
           <span className="section-kicker">Plataforma</span>
           <h2>Ingreso superadmin</h2>
-          <p>Para operación global: fuentes, jobs, automatización, credenciales y administración transversal.</p>
+          <p>Para operación global: fuentes, jobs, automatización, credenciales y administración transversal del piloto.</p>
           <div className="signup-confidence-bar">
             <span>Fuentes</span>
             <span>Jobs</span>

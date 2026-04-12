@@ -6,8 +6,8 @@ import { WorkspaceBoardIllustration } from "../../../components/landing-ornament
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { TendersTable } from "../../../components/tenders-table";
-import { fetchAlerts, fetchSources, fetchTenders } from "../../../lib/api";
-import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
+import { fetchAlerts, fetchSavedTenders, fetchSources, fetchTenders } from "../../../lib/api";
+import { getCookieHeaderFromSession, getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../../lib/session";
 
 type Props = {
   searchParams: Promise<{
@@ -57,7 +57,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     redirect("/login");
   }
 
-  const [sources, tenders, alerts] = await Promise.all([
+  const [sources, tenders, alerts, profile, saved] = await Promise.all([
     fetchSources(),
     fetchTenders({
       source: params.source,
@@ -65,6 +65,8 @@ export default async function DashboardPage({ searchParams }: Props) {
       min_score: params.min_score,
     }),
     fetchAlerts(cookieHeader || undefined),
+    getMyCompanyProfileFromSession(),
+    fetchSavedTenders(cookieHeader || undefined).catch(() => null),
   ]);
 
   const topPriority = [...tenders.items]
@@ -79,6 +81,54 @@ export default async function DashboardPage({ searchParams }: Props) {
     return state === "saved" || state === "evaluating" || state === "presenting";
   }).length;
   const visibleAlerts = alerts.slice(0, 4);
+  const alertChannels = currentUser.alert_preferences_json?.channels ?? ["dashboard"];
+  const alertChannelReady =
+    alertChannels.includes("email") ||
+    (alertChannels.includes("whatsapp") && Boolean(currentUser.whatsapp_number)) ||
+    (alertChannels.includes("telegram") && Boolean(currentUser.telegram_chat_id));
+  const profileReady = Boolean(
+    profile?.company_description?.trim() &&
+      ((profile?.include_keywords?.length ?? 0) > 0 ||
+        (profile?.preferred_buyers?.length ?? 0) > 0 ||
+        (profile?.jurisdictions?.length ?? 0) > 0),
+  );
+  const savedCount = saved?.total ?? 0;
+  const activationSteps = [
+    {
+      label: "Semana 1",
+      title: "Perfil comercial",
+      body: "Dejá claro qué vende la empresa, a quién le vende y qué vale filtrar.",
+      href: "/company-profile",
+      cta: "Completar perfil",
+      complete: profileReady,
+    },
+    {
+      label: "Semana 2",
+      title: "Primera cartera",
+      body: "Guardá licitaciones relevantes para que el pipeline deje de ser abstracto.",
+      href: "/dashboard",
+      cta: "Explorar oportunidades",
+      complete: savedCount > 0,
+    },
+    {
+      label: "Semana 3",
+      title: "Alertas reales",
+      body: "Sacá el flujo del navegador y validá email, WhatsApp o Telegram.",
+      href: "/mi-cuenta",
+      cta: "Configurar alertas",
+      complete: alertChannelReady,
+    },
+    {
+      label: "Semana 4",
+      title: "Rutina de seguimiento",
+      body: "Revisá el pipeline todos los días y dejá notas o cambios de estado.",
+      href: "/saved",
+      cta: "Abrir pipeline",
+      complete: savedCount > 0,
+    },
+  ];
+  const completedActivation = activationSteps.filter((step) => step.complete).length;
+  const nextActivationStep = activationSteps.find((step) => !step.complete) ?? activationSteps[activationSteps.length - 1];
 
   return (
     <PageShell variant="workspace" className="workspace-shell">
@@ -117,6 +167,59 @@ export default async function DashboardPage({ searchParams }: Props) {
           <span>Alertas activas</span>
           <strong>{alerts.length}</strong>
         </article>
+      </section>
+
+      <section className="ops-priority-grid dashboard-activation-grid">
+        <article className="panel ops-priority-card ops-priority-card-strong">
+          <span className="section-kicker">Demo 30 días</span>
+          <h3>Objetivo: que el equipo cambie su rutina, no solo vea una interfaz.</h3>
+          <p>
+            La prueba se vuelve valiosa cuando la empresa carga su criterio comercial, guarda oportunidades reales y empieza a seguir fechas desde la plataforma.
+          </p>
+        </article>
+        <article className="panel ops-priority-card">
+          <span className="section-kicker">Progreso</span>
+          <h3>{completedActivation}/4 hitos cumplidos</h3>
+          <p>{nextActivationStep.complete ? "La base de uso ya está armada." : `Siguiente paso recomendado: ${nextActivationStep.title}.`}</p>
+        </article>
+        <article className="panel ops-priority-card">
+          <span className="section-kicker">Acción siguiente</span>
+          <h3>{nextActivationStep.title}</h3>
+          <p>{nextActivationStep.body}</p>
+          <Link href={nextActivationStep.href} className="linkish">
+            {nextActivationStep.cta}
+          </Link>
+        </article>
+      </section>
+
+      <section className="panel workspace-briefing-panel">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Plan de activación</span>
+            <h2>Qué tendría que pasar en la demo para que el producto se vuelva indispensable</h2>
+          </div>
+          <p>No hace falta usar todo el sistema el primer día. Sí hace falta que el equipo vea valor real en menos tiempo y menos desorden.</p>
+        </div>
+        <div className="decision-rows">
+          {activationSteps.map((step) => (
+            <article key={step.label} className="decision-row decision-row-dense">
+              <div className="decision-row-head">
+                <span className="source-chip">{step.label}</span>
+                <span className={`badge ${step.complete ? "tone-success" : "tone-calm"}`}>
+                  {step.complete ? "Cumplido" : "Pendiente"}
+                </span>
+              </div>
+              <strong>{step.title}</strong>
+              <p>{step.body}</p>
+              <div className="decision-row-footer">
+                <span className="muted">{step.complete ? "Ya está cubierto en esta cuenta." : "Conviene resolverlo para sostener la prueba."}</span>
+                <Link href={step.href} className="linkish">
+                  {step.cta}
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="panel dashboard-hero-board workspace-briefing-panel">
