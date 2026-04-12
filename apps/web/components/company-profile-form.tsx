@@ -42,15 +42,20 @@ export function CompanyProfileForm({
   });
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const includeKeywords = fromCsv(form.include_keywords);
+  const excludeKeywords = fromCsv(form.exclude_keywords);
+  const jurisdictions = fromCsv(form.jurisdictions);
+  const preferredBuyers = fromCsv(form.preferred_buyers);
+  const sectors = fromCsv(form.sectors);
 
   const summary = useMemo(() => {
     return [
-      `${fromCsv(form.include_keywords).length} keywords positivas`,
-      `${fromCsv(form.exclude_keywords).length} keywords negativas`,
-      `${fromCsv(form.jurisdictions).length} jurisdicciones`,
-      `${fromCsv(form.preferred_buyers).length} compradores`,
+      `${includeKeywords.length} keywords positivas`,
+      `${excludeKeywords.length} keywords negativas`,
+      `${jurisdictions.length} jurisdicciones`,
+      `${preferredBuyers.length} compradores`,
     ].join(" · ");
-  }, [form.exclude_keywords, form.include_keywords, form.jurisdictions, form.preferred_buyers]);
+  }, [excludeKeywords.length, includeKeywords.length, jurisdictions.length, preferredBuyers.length]);
 
   function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -102,150 +107,197 @@ export function CompanyProfileForm({
 
   return (
     <div className="company-profile-form" id="company-profile-form">
-      <div className="profile-summary-bar">{summary}</div>
+      <div className="profile-summary-bar profile-summary-bar-strong">{summary}</div>
       <div className="signup-form-header">
         <span className="section-kicker">Perfil</span>
         <h2>Empresa y reglas de matching</h2>
-        <p>Completá identidad, keywords, compradores y alcance de búsqueda.</p>
+        <p>Ordená la identidad comercial, lo que sí querés captar y lo que conviene excluir del radar.</p>
       </div>
 
-      <div className="field">
-        <label htmlFor="company-name">Empresa</label>
-        <input
-          id="company-name"
-          value={form.company_name}
-          onChange={(event) => updateField("company_name", event.target.value)}
-        />
-      </div>
-      <div className="source-form-grid">
-        <div className="field">
-          <label htmlFor="company-cuit">CUIT</label>
-          <input id="company-cuit" value={form.cuit} disabled />
+      <section className="profile-section-card">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Base legal</span>
+            <h3>Identidad de empresa</h3>
+          </div>
+          <p>El CUIT fija la entidad legal. Después podés afinar cómo se presenta comercialmente la empresa.</p>
         </div>
+
+        <div className="source-form-grid">
+          <div className="field">
+            <label htmlFor="company-cuit">CUIT</label>
+            <input id="company-cuit" value={form.cuit} disabled />
+          </div>
+          <div className="field">
+            <label htmlFor="company-legal-name">Razón social</label>
+            <input
+              id="company-legal-name"
+              value={form.legal_name}
+              onChange={(event) => updateField("legal_name", event.target.value)}
+            />
+          </div>
+        </div>
+
         <div className="field">
-          <label htmlFor="company-legal-name">Razón social</label>
+          <label htmlFor="company-name">Nombre comercial</label>
           <input
-            id="company-legal-name"
-            value={form.legal_name}
-            onChange={(event) => updateField("legal_name", event.target.value)}
+            id="company-name"
+            value={form.company_name}
+            onChange={(event) => updateField("company_name", event.target.value)}
           />
         </div>
-      </div>
-      {profile.company_data_source ? (
+
+        {profile.company_data_source ? (
+          <div className="detail-note-card">
+            <span className="section-kicker">Fuente legal</span>
+            <p>
+              {profile.company_data_source}
+              {profile.company_data_updated_at ? ` · ${new Date(profile.company_data_updated_at).toLocaleString("es-AR")}` : ""}
+            </p>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="profile-section-card">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Posicionamiento</span>
+            <h3>Qué vende la empresa</h3>
+          </div>
+          <p>Esta capa ayuda al matching a entender rubro, foco comercial y tipo de pliego que vale revisar.</p>
+        </div>
+
+        <div className="field">
+          <label htmlFor="company-description">Descripción de la empresa</label>
+          <textarea
+            id="company-description"
+            rows={5}
+            value={form.company_description}
+            onChange={(event) => updateField("company_description", event.target.value)}
+            placeholder="Qué vende, a quién le vende, cómo compite y qué documentación suele presentar…"
+          />
+        </div>
+
+        <div className="source-form-grid">
+          <div className="field">
+            <label htmlFor="company-sectors">Sectores</label>
+            <input
+              id="company-sectors"
+              value={form.sectors}
+              onChange={(event) => updateField("sectors", event.target.value)}
+              placeholder="software, salud, infraestructura IT"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="profile-min-score">Umbral de alerta</label>
+            <input
+              id="profile-min-score"
+              value={form.min_score}
+              onChange={(event) => updateField("min_score", event.target.value)}
+              placeholder="60"
+            />
+          </div>
+        </div>
+
         <div className="detail-note-card">
-          <span className="section-kicker">Fuente legal</span>
-          <p>
-            {profile.company_data_source}
-            {profile.company_data_updated_at ? ` · ${new Date(profile.company_data_updated_at).toLocaleString("es-AR")}` : ""}
-          </p>
+          <span className="section-kicker">Resumen rápido</span>
+          <p>{sectors.length ? `Sectores: ${sectors.join(", ")}.` : "Todavía no definiste sectores."}</p>
         </div>
-      ) : null}
+      </section>
 
-      <div className="field">
-        <label htmlFor="company-description">Descripción de la empresa</label>
-        <textarea
-          id="company-description"
-          rows={5}
-          value={form.company_description}
-          onChange={(event) => updateField("company_description", event.target.value)}
-          placeholder="Qué vende, a quién le vende, cómo compite y qué documentación suele presentar…"
-        />
-      </div>
+      <section className="profile-section-card">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Señales positivas</span>
+            <h3>Qué debería entrar al radar</h3>
+          </div>
+          <p>Usá keywords, jurisdicciones, buyers y montos para subir relevancia en oportunidades parecidas a las que sí querés trabajar.</p>
+        </div>
 
-      <div className="source-form-grid">
         <div className="field">
-          <label htmlFor="company-sectors">Sectores</label>
-          <input
-            id="company-sectors"
-            value={form.sectors}
-            onChange={(event) => updateField("sectors", event.target.value)}
-            placeholder="software, salud, infraestructura IT"
+          <label htmlFor="include-keywords">Keywords positivas</label>
+          <textarea
+            id="include-keywords"
+            rows={4}
+            value={form.include_keywords}
+            onChange={(event) => updateField("include_keywords", event.target.value)}
+            placeholder="software, licencias, soporte, digitalizacion, mantenimiento, mesa de ayuda…"
           />
         </div>
+
         <div className="field">
-          <label htmlFor="profile-min-score">Umbral de alerta</label>
+          <label htmlFor="jurisdictions">Jurisdicciones preferidas</label>
           <input
-            id="profile-min-score"
-            value={form.min_score}
-            onChange={(event) => updateField("min_score", event.target.value)}
-            placeholder="60"
+            id="jurisdictions"
+            value={form.jurisdictions}
+            onChange={(event) => updateField("jurisdictions", event.target.value)}
+            placeholder="Nación, Provincia de Buenos Aires"
           />
         </div>
-      </div>
 
-      <div className="field">
-        <label htmlFor="include-keywords">Keywords positivas</label>
-        <textarea
-          id="include-keywords"
-          rows={4}
-          value={form.include_keywords}
-          onChange={(event) => updateField("include_keywords", event.target.value)}
-          placeholder="software, licencias, soporte, digitalizacion, mantenimiento, mesa de ayuda…"
-        />
-      </div>
-
-      <div className="field">
-        <label htmlFor="exclude-keywords">Keywords negativas</label>
-        <textarea
-          id="exclude-keywords"
-          rows={3}
-          value={form.exclude_keywords}
-          onChange={(event) => updateField("exclude_keywords", event.target.value)}
-          placeholder="textiles, panificados, avícolas"
-        />
-      </div>
-
-      <div className="field">
-        <label htmlFor="jurisdictions">Jurisdicciones preferidas</label>
-        <input
-          id="jurisdictions"
-          value={form.jurisdictions}
-          onChange={(event) => updateField("jurisdictions", event.target.value)}
-          placeholder="Nación, Provincia de Buenos Aires"
-        />
-      </div>
-
-      <div className="field">
-        <label htmlFor="preferred-buyers">Compradores preferidos</label>
-        <textarea
-          id="preferred-buyers"
-          rows={3}
-          value={form.preferred_buyers}
-          onChange={(event) => updateField("preferred_buyers", event.target.value)}
-          placeholder="Ministerio de Salud, ANSES, Hospital"
-        />
-      </div>
-
-      <div className="source-form-grid">
         <div className="field">
-          <label htmlFor="min-amount">Monto mínimo</label>
-          <input
-            id="min-amount"
-            value={form.min_amount}
-            onChange={(event) => updateField("min_amount", event.target.value)}
-            placeholder="1000000"
+          <label htmlFor="preferred-buyers">Compradores preferidos</label>
+          <textarea
+            id="preferred-buyers"
+            rows={3}
+            value={form.preferred_buyers}
+            onChange={(event) => updateField("preferred_buyers", event.target.value)}
+            placeholder="Ministerio de Salud, ANSES, Hospital"
           />
         </div>
+
+        <div className="source-form-grid">
+          <div className="field">
+            <label htmlFor="min-amount">Monto mínimo</label>
+            <input
+              id="min-amount"
+              value={form.min_amount}
+              onChange={(event) => updateField("min_amount", event.target.value)}
+              placeholder="1000000"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="max-amount">Monto máximo</label>
+            <input
+              id="max-amount"
+              value={form.max_amount}
+              onChange={(event) => updateField("max_amount", event.target.value)}
+              placeholder="100000000"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="profile-section-card">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Exclusiones</span>
+            <h3>Qué conviene filtrar</h3>
+          </div>
+          <p>Si un rubro, producto o tipo de contratación nunca aplica, dejalo explícito para bajar ruido operativo.</p>
+        </div>
+
         <div className="field">
-          <label htmlFor="max-amount">Monto máximo</label>
-          <input
-            id="max-amount"
-            value={form.max_amount}
-            onChange={(event) => updateField("max_amount", event.target.value)}
-            placeholder="100000000"
+          <label htmlFor="exclude-keywords">Keywords negativas</label>
+          <textarea
+            id="exclude-keywords"
+            rows={3}
+            value={form.exclude_keywords}
+            onChange={(event) => updateField("exclude_keywords", event.target.value)}
+            placeholder="textiles, panificados, avícolas"
           />
         </div>
-      </div>
+      </section>
 
       <button type="button" onClick={saveProfile} disabled={isPending} className="button-primary button-block">
         {isPending ? "Guardando y recalculando…" : "Guardar perfil y recalcular relevancia"}
       </button>
 
       <div className="signup-confidence-bar">
-        <span>Fit comercial</span>
-        <span>Buyers</span>
-        <span>Jurisdicción</span>
-        <span>Umbral</span>
+        <span>{includeKeywords.length} señales positivas</span>
+        <span>{excludeKeywords.length} exclusiones</span>
+        <span>{jurisdictions.length} jurisdicciones</span>
+        <span>{preferredBuyers.length} buyers</span>
       </div>
 
       {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}

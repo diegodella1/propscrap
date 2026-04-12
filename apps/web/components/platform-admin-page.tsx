@@ -40,6 +40,12 @@ export function PlatformAdminPage({
   const activeAdmins = users.filter((user) => user.role === "admin" && user.is_active).length;
   const activeManagers = users.filter((user) => user.role === "manager" && user.is_active).length;
   const activeAnalysts = users.filter((user) => user.role === "analyst" && user.is_active).length;
+  const inactiveSources = sources.length - activeSources;
+  const sourcesWithoutConnector = sources.length - connectorReady;
+  const latestRun = recentRuns[0] ?? null;
+  const latestAuditEvent = auditEvents[0] ?? null;
+  const platformStatus =
+    failedRuns > 0 ? "Atención operativa" : pendingAlerts > 0 ? "Operación en cola" : "Operación estable";
 
   return (
     <main className="page-shell workspace-shell">
@@ -83,6 +89,20 @@ export function PlatformAdminPage({
       <section className="admin-shell-grid admin-workbench-grid">
         <aside className="panel admin-rail">
           <div className="admin-rail-block">
+            <span className="section-kicker">Estado</span>
+            <div className="ops-status-card">
+              <strong>{platformStatus}</strong>
+              <p>
+                {failedRuns > 0
+                  ? `Hay ${failedRuns} corridas con error que conviene revisar antes de sumar nuevas fuentes.`
+                  : pendingAlerts > 0
+                    ? `La ingesta está sana, pero hay ${pendingAlerts} alertas todavía en cola.`
+                    : "Fuentes, matching y delivery están sin señales críticas inmediatas."}
+              </p>
+            </div>
+          </div>
+
+          <div className="admin-rail-block">
             <span className="section-kicker">Secciones</span>
             <nav className="admin-anchor-nav" aria-label="Navegación interna de superadmin">
               <a href="#admin-overview">Resumen</a>
@@ -99,15 +119,15 @@ export function PlatformAdminPage({
             <div className="admin-quick-list">
               <article>
                 <strong>Salud de fuentes</strong>
-                <p>Verificá estado, conector, scraping y últimas corridas.</p>
+                <p>{inactiveSources} inactivas y {sourcesWithoutConnector} sin conector disponible.</p>
               </article>
               <article>
                 <strong>LLM y automatización</strong>
-                <p>Confirmá ciclo activo, modelo, prompt maestro y credenciales.</p>
+                <p>Confirmá ciclo activo, modelo, prompt maestro y credenciales antes de correr jobs manuales.</p>
               </article>
               <article>
                 <strong>Usuarios y ABM</strong>
-                <p>Revisá altas, roles, actividad y cola de alertas por empresa.</p>
+                <p>{users.length} cuentas globales entre admins, managers y analistas.</p>
               </article>
             </div>
           </div>
@@ -139,31 +159,63 @@ export function PlatformAdminPage({
             <div className="results-header">
               <div>
                 <span className="section-kicker">Resumen</span>
-                <h2>Qué resuelve esta consola</h2>
+                <h2>Consola operativa de plataforma</h2>
               </div>
-              <p>No es una página de settings. Es una consola para operar la plataforma con criterio y contexto.</p>
+              <p>Ordená prioridades, ejecutá cambios con criterio y verificá si discovery, matching y entrega están sanos.</p>
+            </div>
+
+            <div className="ops-priority-grid">
+              <article className="panel ops-priority-card ops-priority-card-strong">
+                <span className="section-kicker">Prioridad ahora</span>
+                <h3>{failedRuns > 0 ? "Revisar corridas con error" : pendingAlerts > 0 ? "Destrabar entrega" : "Expandir cobertura"}</h3>
+                <p>
+                  {failedRuns > 0
+                    ? "Empezá por delivery y corridas recientes. Si falla la ingesta, todo lo demás queda desalineado."
+                    : pendingAlerts > 0
+                      ? "La infraestructura central respondió, pero todavía quedan entregas pendientes para usuarios."
+                      : "Sin incidentes inmediatos. El siguiente foco razonable es sumar o ajustar fuentes útiles."}
+                </p>
+              </article>
+              <article className="panel ops-priority-card">
+                <span className="section-kicker">Último run</span>
+                <h3>{latestRun ? sourceMap.get(latestRun.source_id)?.name ?? `Fuente #${latestRun.source_id}` : "Sin runs recientes"}</h3>
+                <p>
+                  {latestRun
+                    ? `${latestRun.status} · ${new Date(latestRun.started_at).toLocaleString("es-AR")}`
+                    : "Todavía no hubo corridas registradas."}
+                </p>
+              </article>
+              <article className="panel ops-priority-card">
+                <span className="section-kicker">Última auditoría</span>
+                <h3>{latestAuditEvent ? latestAuditEvent.action : "Sin eventos"}</h3>
+                <p>
+                  {latestAuditEvent
+                    ? new Date(latestAuditEvent.created_at).toLocaleString("es-AR")
+                    : "Cuando haya cambios sensibles, van a aparecer acá."}
+                </p>
+              </article>
             </div>
 
             <div className="admin-overview-grid">
               <article className="panel admin-overview-card">
                 <span className="section-kicker">Discovery</span>
                 <h3>Fuentes y conectores</h3>
-                <p>Alta, edición y gobierno del inventario completo de orígenes y modos de parseo.</p>
+                <p>Alta, edición y gobierno del inventario de orígenes, conectores y modos de parseo.</p>
               </article>
               <article className="panel admin-overview-card">
                 <span className="section-kicker">Motor</span>
                 <h3>LLM y automatización</h3>
-                <p>Ciclo de ingesta, modelo, prompt maestro y credenciales sensibles.</p>
+                <p>Ciclo de ingesta, modelo, prompt maestro y credenciales sensibles de la plataforma.</p>
               </article>
               <article className="panel admin-overview-card">
                 <span className="section-kicker">Entrega</span>
                 <h3>Alertas y dispatch</h3>
-                <p>Generación de alertas, colas y verificación del contenido final.</p>
+                <p>Generación de alertas, colas, outbox y verificación del contenido final enviado.</p>
               </article>
               <article className="panel admin-overview-card">
                 <span className="section-kicker">Acceso</span>
                 <h3>Usuarios globales y ABM</h3>
-                <p>Control de roles, altas, bajas y configuración de cuentas de todas las empresas.</p>
+                <p>Control de roles, altas, bajas y configuración transversal de cuentas de empresas.</p>
               </article>
             </div>
 
@@ -197,7 +249,7 @@ export function PlatformAdminPage({
                 <span className="section-kicker">Fuentes</span>
                 <h2>Alta e inventario de orígenes</h2>
               </div>
-              <p>Primero se crea el origen. Después se ajusta modo, conector, estado y configuración.</p>
+              <p>Primero se da de alta el origen. Después se ajusta modo de scraping, conector, estado y configuración.</p>
             </div>
 
             <div className="admin-control-grid admin-main-grid">
@@ -218,7 +270,7 @@ export function PlatformAdminPage({
                     <span className="section-kicker">Editar</span>
                     <h2>Fuentes existentes</h2>
                   </div>
-                  <p>Cada tarjeta concentra estado, URL, conector y JSON de configuración.</p>
+                  <p>Cada bloque concentra estado, URL base, conector y configuración editable.</p>
                 </div>
                 <SourceEditorList sources={sources} />
               </article>
@@ -250,7 +302,14 @@ export function PlatformAdminPage({
                 <span className="section-kicker">Entregas</span>
                 <h2>Corridas, cola y outbox</h2>
               </div>
-              <p>Monitoreo rápido para ver qué corrió, qué quedó pendiente y qué se intentó entregar.</p>
+              <p>Monitoreo rápido para ver qué corrió, qué quedó pendiente y qué contenido salió hacia usuarios.</p>
+            </div>
+
+            <div className="results-ribbon">
+              <span>{recentRuns.length} runs recientes</span>
+              <span>{pendingAlerts} alertas pendientes</span>
+              <span>{whatsappOutbox.length} mensajes en outbox</span>
+              <span>{deliveredAlerts} alertas entregadas</span>
             </div>
 
             <div className="admin-delivery-kpis">
@@ -430,7 +489,7 @@ export function PlatformAdminPage({
                   <span className="section-kicker">Usuarios</span>
                   <h2>Usuarios de todas las empresas</h2>
                 </div>
-                <p>Administración global de cuentas y permisos sin mezclarlo con fuentes ni automatización.</p>
+                <p>ABM global de cuentas y permisos, separado de fuentes, LLM y automatización.</p>
               </div>
               <UserEditorList users={users} canManagePlatformRoles />
             </article>

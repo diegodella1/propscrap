@@ -63,15 +63,25 @@ export default async function LandingPage() {
               : "EasyTaciones reemplaza portales, PDFs, planillas y memoria informal por un sistema claro. La empresa entra por CUIT, se arma el perfil comercial y el equipo trabaja con prioridades, fechas y alertas."}
           </p>
           <div className="hero-actions">
-            <Link href="/contact" className="button-primary">
-              Hablar con Ventas
-            </Link>
-            <Link href={currentUser ? "/dashboard" : "/signup"} className="button-secondary">
-              {currentUser ? "Abrir Workspace" : "Registrar Empresa"}
-            </Link>
-            <Link href="/about" className="button-secondary">
-              Ver Cómo Funciona
-            </Link>
+            {currentUser ? (
+              <>
+                <Link href="/dashboard" className="button-primary">
+                  Abrir workspace
+                </Link>
+                <Link href="/saved" className="button-secondary">
+                  Ver pipeline
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/signup" className="button-primary">
+                  Registrar empresa
+                </Link>
+                <Link href="/about" className="button-secondary">
+                  Ver cómo funciona
+                </Link>
+              </>
+            )}
           </div>
           {isLoggedIn ? (
             <div className="hero-inline-metrics">

@@ -10,7 +10,7 @@ import { getCurrentUserFromSession } from "../../../lib/session";
 export default async function SignupPage() {
   const currentUser = await getCurrentUserFromSession();
   if (currentUser) {
-    redirect("/mi-cuenta");
+    redirect(currentUser.role === "admin" ? "/admin/platform" : "/dashboard");
   }
 
   return (
@@ -55,7 +55,7 @@ export default async function SignupPage() {
             <Link href="/about" className="button-secondary">
               Ver el flujo completo
             </Link>
-            <Link href="/login" className="linkish">
+            <Link href="/login/empresa" className="linkish">
               Ya tengo cuenta
             </Link>
           </div>

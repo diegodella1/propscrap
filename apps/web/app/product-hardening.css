@@ -518,7 +518,463 @@ textarea.code-textarea,
   color: #0f172a;
 }
 
+.ops-status-card,
+.ops-priority-card,
+.profile-section-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  padding: 16px;
+}
+
+.ops-status-card strong,
+.ops-priority-card h3,
+.profile-section-card h3 {
+  margin: 0;
+  color: #0f172a;
+  font-family: var(--font-display);
+  font-size: 1.04rem;
+  line-height: 1.1;
+}
+
+.ops-status-card p,
+.ops-priority-card p,
+.profile-section-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.55;
+}
+
+.ops-status-card {
+  background: #f8fbff;
+  border-color: rgba(11, 92, 173, 0.12);
+}
+
+.ops-priority-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ops-priority-card-strong {
+  background: #0f172a;
+  border-color: #0f172a;
+}
+
+.ops-priority-card-strong .section-kicker,
+.ops-priority-card-strong h3,
+.ops-priority-card-strong p {
+  color: #f8fafc;
+}
+
+.profile-workbench-grid {
+  margin-bottom: 16px;
+}
+
+.profile-summary-bar-strong {
+  border: 1px solid rgba(11, 92, 173, 0.12);
+  background: #f8fbff;
+  color: #0f3f75;
+}
+
+.profile-section-card .results-header {
+  margin-bottom: 0;
+}
+
+.profile-section-card + .profile-section-card {
+  margin-top: 2px;
+}
+
+/* System-wide geometry pass: single width rhythm, square corners,
+   consistent padding, cleaner headers, and flatter UI across marketing,
+   auth, workspace, and admin. */
+:root {
+  --app-shell-width: 1240px;
+  --app-shell-padding-x: 28px;
+  --app-shell-padding-y: 24px;
+  --app-surface-padding: 20px;
+  --app-block-gap: 16px;
+}
+
+html,
+body {
+  background: #eef3f8 !important;
+}
+
+body::before,
+body::after {
+  display: none !important;
+}
+
+.page-shell {
+  max-width: var(--app-shell-width) !important;
+  padding: var(--app-shell-padding-y) var(--app-shell-padding-x) 72px !important;
+}
+
+.site-header {
+  margin-bottom: 24px !important;
+  padding: 14px 16px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.brand-mark,
+.site-nav a,
+.button-primary,
+.button-secondary,
+.mini-pill,
+.badge,
+.source-chip,
+.filter-pill,
+.score-chip,
+.section-kicker,
+.eyebrow,
+.hero-inline-metrics article,
+.dashboard-executive-band article,
+.workspace-preview-grid article,
+.proof-card,
+.experience-card,
+.editorial-callout,
+.feature-panel,
+.workspace-panel,
+.executive-panel,
+.process-flow-panel,
+.detail-note-card,
+.table-wrap,
+.table-wrap table,
+.table-wrap th,
+.table-wrap td,
+.table-wrap table tbody tr,
+.field input,
+.field select,
+.field textarea,
+.state-form input,
+.state-form select,
+.state-form textarea {
+  border-radius: 0 !important;
+}
+
+.brand-mark {
+  width: 40px !important;
+  height: 40px !important;
+  background: #eff6ff !important;
+  color: #0b5cad !important;
+  border-color: rgba(11, 92, 173, 0.16) !important;
+  box-shadow: none !important;
+}
+
+.site-nav {
+  gap: 6px !important;
+}
+
+.site-nav a {
+  min-height: 40px;
+  padding: 9px 12px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+}
+
+.site-nav a[data-active="true"] {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #0f172a !important;
+  box-shadow: none !important;
+}
+
+.button-primary,
+.button-secondary {
+  min-height: 44px !important;
+  padding: 0 14px !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+.button-primary {
+  background: #0b5cad !important;
+  border-color: #0b5cad !important;
+  color: #ffffff !important;
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #094b8c !important;
+  border-color: #094b8c !important;
+}
+
+.button-secondary {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: #f8fafc !important;
+  border-color: rgba(11, 92, 173, 0.2) !important;
+  color: #0b5cad !important;
+}
+
+.hero,
+.landing-hero,
+.hero-app,
+.workspace-header,
+.results-header,
+.dashboard-focus-grid,
+.admin-focus-grid,
+.company-admin-focus-grid,
+.admin-control-grid,
+.admin-data-grid,
+.admin-shell-grid,
+.workspace-detail-grid,
+.layout-grid,
+.auth-layout {
+  gap: var(--app-block-gap) !important;
+}
+
+.landing-hero,
+.hero-app,
+.workspace-header,
+.results-header,
+.dashboard-executive-band,
+.hero-inline-metrics,
+.admin-overview-grid,
+.admin-ops-snapshot,
+.ops-priority-grid,
+.admin-delivery-kpis,
+.workspace-preview-grid,
+.ops-proof-grid,
+.landing-experience-grid,
+.landing-proof-grid,
+.landing-editorial-grid,
+.editorial-grid,
+.about-logic-grid,
+.landing-system-grid {
+  margin-bottom: 16px !important;
+}
+
+.hero-copy,
+.about-hero > div,
+.landing-hero-refined,
+.signup-form-header,
+.section-heading,
+.results-header > div {
+  gap: 10px !important;
+}
+
+.hero-app,
+.landing-hero,
+.workspace-header {
+  align-items: start !important;
+}
+
+.hero-actions,
+.workspace-header-actions,
+.site-auth-actions {
+  gap: 10px !important;
+}
+
+.hero-actions .button-primary,
+.hero-actions .button-secondary,
+.workspace-header-actions .button-primary,
+.workspace-header-actions .button-secondary,
+.site-auth-actions .button-primary,
+.site-auth-actions .button-secondary {
+  min-width: 168px;
+  justify-content: center;
+}
+
+.hero-actions .linkish,
+.workspace-header-actions .linkish {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.results-header {
+  align-items: start !important;
+  padding-bottom: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.results-header p {
+  max-width: 40ch !important;
+  text-align: left !important;
+}
+
+.panel,
+.feature-panel,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.dashboard-filter-panel,
+.admin-rail,
+.source-card,
+.detail-note-card,
+.auth-form-card,
+.workspace-empty-state,
+.hero-inline-metrics article,
+.dashboard-executive-band article,
+.workspace-preview-grid article,
+.proof-card,
+.experience-card,
+.editorial-callout,
+.ops-status-card,
+.ops-priority-card,
+.profile-section-card {
+  padding: var(--app-surface-padding) !important;
+}
+
+.panel,
+.feature-panel,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.dashboard-filter-panel,
+.admin-rail,
+.source-card,
+.auth-form-card,
+.workspace-empty-state,
+.hero-inline-metrics article,
+.dashboard-executive-band article,
+.workspace-preview-grid article,
+.proof-card,
+.experience-card,
+.editorial-callout,
+.ops-status-card,
+.ops-priority-card,
+.profile-section-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.hero-inline-metrics article,
+.dashboard-executive-band article {
+  min-height: 108px;
+  align-content: start;
+}
+
+.dashboard-executive-band article strong,
+.hero-inline-metrics article strong,
+.ops-priority-card h3,
+.admin-overview-card h3,
+.source-card strong {
+  letter-spacing: -0.02em;
+}
+
+.detail-note-card,
+.workspace-empty-state,
+.profile-summary-bar,
+.login-demo-card,
+.ops-status-card {
+  background: #f8fbff !important;
+  border-color: rgba(11, 92, 173, 0.12) !important;
+}
+
+.profile-summary-bar,
+.results-ribbon {
+  padding: 12px 14px !important;
+}
+
+.results-ribbon {
+  gap: 8px !important;
+}
+
+.results-ribbon span,
+.mini-pill,
+.badge,
+.source-chip,
+.filter-pill,
+.score-chip,
+.section-kicker,
+.eyebrow {
+  min-height: 28px;
+  padding: 5px 9px !important;
+  background: #f8fafc !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
+  box-shadow: none !important;
+}
+
+.section-kicker,
+.eyebrow {
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.field {
+  gap: 8px !important;
+  margin-bottom: 16px !important;
+}
+
+.field input,
+.field select,
+.field textarea,
+.state-form input,
+.state-form select,
+.state-form textarea {
+  min-height: 46px !important;
+  padding: 12px 14px !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.field textarea,
+.state-form textarea {
+  min-height: 120px !important;
+}
+
+.table-wrap {
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.table-wrap table {
+  background: #ffffff !important;
+}
+
+.table-wrap th {
+  background: #f8fafc !important;
+  color: #334155 !important;
+}
+
+.table-wrap td {
+  background: #ffffff !important;
+}
+
+.table-wrap table tbody tr:hover td {
+  background: #f8fbff !important;
+}
+
+.source-card-strong,
+.ops-priority-card-strong,
+.editorial-callout-dark,
+.experience-card-dark,
+.feature-panel-dark {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  box-shadow: none !important;
+}
+
+.source-card-strong strong,
+.source-card-strong p,
+.ops-priority-card-strong h3,
+.ops-priority-card-strong p,
+.feature-panel-dark h2,
+.feature-panel-dark p,
+.feature-panel-dark .section-kicker {
+  color: #f8fafc !important;
+}
+
 @media (max-width: 1120px) {
+  .page-shell {
+    padding: 20px 20px 56px !important;
+  }
+
   .opportunity-list-card,
   .source-card-header,
   .workspace-header,
@@ -547,12 +1003,20 @@ textarea.code-textarea,
     grid-template-columns: 1fr;
   }
 
+  .ops-priority-grid {
+    grid-template-columns: 1fr;
+  }
+
   .auth-choice-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 720px) {
+  .page-shell {
+    padding: 16px 14px 48px !important;
+  }
+
   .dashboard-executive-band,
   .hero-inline-metrics,
   .admin-overview-grid,

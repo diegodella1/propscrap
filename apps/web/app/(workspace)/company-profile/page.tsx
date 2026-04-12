@@ -25,11 +25,11 @@ export default async function CompanyProfilePage() {
         <div>
           <span className="eyebrow">Perfil de empresa</span>
           <h1>Perfil comercial.</h1>
-          <p>Acá definís qué tipo de licitación entra al radar y con qué umbral.</p>
+          <p>Definí qué tipo de licitación entra al radar, con qué señales y con qué nivel de exigencia.</p>
         </div>
         <div className="workspace-header-actions">
           <a href="#company-profile-form" className="button-primary">
-            Editar reglas
+            Editar perfil
           </a>
         </div>
       </section>
@@ -52,6 +52,24 @@ export default async function CompanyProfilePage() {
             <article>
               <span>Compradores</span>
               <strong>{profile.preferred_buyers?.length ?? 0}</strong>
+            </article>
+          </section>
+
+          <section className="ops-priority-grid profile-workbench-grid">
+            <article className="panel ops-priority-card ops-priority-card-strong">
+              <span className="section-kicker">Cómo usa esto EasyTaciones</span>
+              <h3>Matching con criterio comercial real</h3>
+              <p>La plataforma cruza identidad, descripción, buyers, keywords, exclusiones y umbral para priorizar qué vale mirar primero.</p>
+            </article>
+            <article className="panel ops-priority-card">
+              <span className="section-kicker">Conviene completar</span>
+              <h3>Dossier y documentación base</h3>
+              <p>Usá la descripción y los buyers para reflejar antecedentes, documentación típica y foco comercial real de la empresa.</p>
+            </article>
+            <article className="panel ops-priority-card">
+              <span className="section-kicker">Impacto operativo</span>
+              <h3>Menos ruido, mejores alertas</h3>
+              <p>Si el perfil está bien armado, mejora discovery, ranking inicial y la calidad de alertas por email, WhatsApp y dashboard.</p>
             </article>
           </section>
 
@@ -82,7 +100,7 @@ export default async function CompanyProfilePage() {
               <div className="source-stack">
                 <article className="source-card source-card-strong">
                   <strong>{profile.company_name}</strong>
-                  <p>{profile.company_description}</p>
+                  <p>{profile.company_description || "Todavía no cargaste una descripción comercial."}</p>
                 </article>
                 <article className="source-card">
                   <span className="section-kicker">Identidad legal</span>
