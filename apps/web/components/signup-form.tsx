@@ -77,7 +77,7 @@ export function SignupForm() {
   const taxStatus = renderTaxStatus(companyLookup);
 
   return (
-    <div className="auth-form-card auth-form-card-upgraded">
+    <div className="auth-form-card auth-form-card-upgraded auth-form-card--surface">
       <div className="signup-form-header">
         <span className="section-kicker">Paso 1 · Identidad legal</span>
         <h2>Registrá la empresa con base legal verificable.</h2>
@@ -87,12 +87,12 @@ export function SignupForm() {
         </p>
       </div>
 
-      <div className="signup-stage-strip">
-        <span className="mini-pill">CUIT</span>
-        <span className="mini-pill">Empresa</span>
-        <span className="mini-pill">Perfil inicial</span>
-        <span className="mini-pill">Workspace</span>
-      </div>
+      <ol className="step-track" aria-label="Pasos del registro">
+        <li className="is-active">CUIT</li>
+        <li>Empresa</li>
+        <li>Perfil</li>
+        <li>Workspace</li>
+      </ol>
 
       <div className="field">
         <label htmlFor="signup-cuit">CUIT de la empresa</label>
@@ -200,12 +200,9 @@ export function SignupForm() {
         </div>
       </div>
 
-      <div className="signup-confidence-bar">
-        <span>Datos legales</span>
-        <span>Empresa inicial</span>
-        <span>Perfil comercial base</span>
-        <span>Workspace listo</span>
-      </div>
+      <p className="form-flow-hint">
+        Después del alta vas a poder afinar perfil comercial y alertas desde tu cuenta.
+      </p>
 
       <button type="button" onClick={submit} disabled={isPending} className="button-primary button-block">
         {isPending ? "Creando workspace…" : "Crear cuenta y abrir workspace"}

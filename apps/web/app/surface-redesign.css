@@ -1,0 +1,258 @@
+/* Surface redesign: depth, rhythm, less border fatigue — loaded after layout-system */
+
+/* --- Forms: soft elevated cards (replace harsh bordered boxes) --- */
+.auth-form-card--surface,
+.contact-request-card--surface {
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  background: linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 12px 40px -12px rgba(15, 23, 42, 0.1) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.auth-form-card--surface .signup-form-header {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+}
+
+.form-flow-hint {
+  margin: 0 0 20px;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.5;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(37, 99, 235, 0.06);
+  border: 1px solid rgba(37, 99, 235, 0.1);
+}
+
+/* --- Signup / onboarding step indicator --- */
+.step-track {
+  display: flex;
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  gap: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.step-track li {
+  flex: 1;
+  text-align: center;
+  padding: 12px 8px 14px;
+  margin-bottom: -1px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.step-track li.is-active {
+  color: var(--accent-deep);
+  border-bottom-color: var(--accent);
+}
+
+.step-track li.is-done {
+  color: #64748b;
+}
+
+/* --- KPI strips (account, dashboard): calmer hierarchy --- */
+.account-summary-band.workspace-kpi-band article,
+.profile-summary-band.workspace-kpi-band article {
+  background: linear-gradient(180deg, #ffffff, #f8fafc) !important;
+  border: 1px solid rgba(15, 23, 42, 0.07) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-tight) !important;
+  padding: 14px 16px !important;
+  min-height: auto;
+}
+
+.account-summary-band article span,
+.profile-summary-band article span {
+  display: block;
+  font-size: 0.68rem !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b !important;
+  margin-bottom: 6px;
+}
+
+.account-summary-band article strong,
+.profile-summary-band article strong {
+  font-size: 1.15rem !important;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+/* --- Account layout: sidebar lighter, not competing --- */
+.account-shell .onboarding-companion {
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: var(--shadow-tight) !important;
+}
+
+.account-shell .onboarding-companion h2 {
+  font-size: 1.15rem !important;
+}
+
+.account-shell .auth-layout {
+  align-items: stretch;
+  gap: 28px;
+}
+
+@media (min-width: 1024px) {
+  .account-shell.auth-layout {
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.85fr);
+  }
+}
+
+/* --- Marketing: section bands (break “wall of same boxes”) --- */
+.surface-band {
+  margin: 28px 0;
+  padding: 36px 28px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(37, 99, 235, 0.05), rgba(255, 255, 255, 0.5));
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.surface-band--alt {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.03), rgba(255, 255, 255, 0.4));
+}
+
+.surface-band .proof-card,
+.surface-band .panel {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* --- Admin console: rail + tables --- */
+.admin-content-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.admin-section-stack {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.admin-section-stack:last-child {
+  border-bottom: none;
+}
+
+.admin-rail {
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.07) !important;
+  box-shadow: var(--shadow-tight) !important;
+}
+
+.admin-anchor-nav a {
+  border-radius: var(--radius-sm);
+  padding: 8px 10px !important;
+  transition: background 0.15s ease;
+}
+
+.admin-anchor-nav a:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.table-wrap {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #fff;
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.table-wrap thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+  background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.table-wrap tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+  vertical-align: top;
+}
+
+.table-wrap tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.8);
+}
+
+.table-wrap tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --- Hero board: slightly richer mock area --- */
+.refined-board {
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+}
+
+/* --- Contact sidebar CTAs: single hierarchy --- */
+.contact-companion .hero-actions {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.contact-companion .button-primary {
+  order: -1;
+}
+
+/* --- Company profile: primary column emphasis --- */
+.profile-main-grid > .panel:first-child {
+  box-shadow: 0 10px 36px -10px rgba(15, 23, 42, 0.14) !important;
+}
+
+.profile-main-grid > .panel:last-child {
+  opacity: 0.98;
+}
+
+/* --- Workspace headers: slightly tighter title block --- */
+.account-header h1,
+.profile-header h1 {
+  letter-spacing: -0.035em;
+}
+
+/* Contact: channel pills, not a second “form strip” */
+.contact-companion .signup-confidence-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.contact-companion .signup-confidence-bar span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  color: var(--accent-deep);
+}

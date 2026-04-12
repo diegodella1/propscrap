@@ -50,18 +50,15 @@ export function AccountSettingsForm({ user }: { user: User }) {
   }
 
   return (
-    <div className="auth-form-card auth-form-card-upgraded">
+    <div className="auth-form-card auth-form-card-upgraded auth-form-card--surface">
       <div className="signup-form-header">
         <span className="section-kicker">Preferencias personales</span>
         <h2>Canal e intensidad de alertas</h2>
         <p>Definí cómo te avisa la plataforma y con qué nivel de filtro.</p>
       </div>
-      <div className="signup-stage-strip">
-        <span className="mini-pill">Identidad</span>
-        <span className="mini-pill">Canal</span>
-        <span className="mini-pill">Prioridad</span>
-        <span className="mini-pill">Recordatorios</span>
-      </div>
+      <p className="form-flow-hint">
+        Completá identidad y canales acá; el resumen a la derecha se actualiza al guardar.
+      </p>
       <div className="field">
         <label htmlFor="account-name">Tu nombre</label>
         <input
@@ -162,13 +159,6 @@ export function AccountSettingsForm({ user }: { user: User }) {
       <button type="button" onClick={save} disabled={isPending} className="button-primary button-block">
         {isPending ? "Guardando…" : "Guardar preferencias"}
       </button>
-
-      <div className="signup-confidence-bar">
-        <span>Identidad</span>
-        <span>Canal</span>
-        <span>Ruido útil</span>
-        <span>Seguimiento</span>
-      </div>
 
       {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>

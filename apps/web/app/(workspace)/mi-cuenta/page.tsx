@@ -35,7 +35,7 @@ export default async function AccountPage({ searchParams }: Props) {
         : null;
 
   return (
-    <PageShell variant="workspace" className="workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell account-page">
       <SiteHeader
         section="account"
         currentUserName={currentUser.full_name}

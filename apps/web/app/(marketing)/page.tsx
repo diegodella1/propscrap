@@ -179,7 +179,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="ops-proof-grid landing-proof-grid">
+      <section className="ops-proof-grid landing-proof-grid surface-band">
         <article className="proof-card">
           <span className="section-kicker">Problema</span>
           <h2>Buscar no es operar.</h2>
@@ -197,7 +197,7 @@ export default async function LandingPage() {
         </article>
       </section>
 
-      <section className="landing-system-stage">
+      <section className="landing-system-stage surface-band surface-band--alt">
         <div className="results-header landing-system-header">
           <div>
             <span className="section-kicker">Sistema</span>
@@ -255,7 +255,7 @@ export default async function LandingPage() {
         </article>
       </section>
 
-      <section className="workspace-preview-grid landing-experience-grid">
+      <section className="workspace-preview-grid landing-experience-grid surface-band">
         <article className="experience-card experience-card-dark">
           <span className="section-kicker">Para la empresa</span>
           <h3>Discovery, pipeline y alertas en un mismo lugar.</h3>
