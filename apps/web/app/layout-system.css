@@ -115,9 +115,9 @@
   margin: 12px auto 8px;
   padding: 28px 22px;
   text-align: center;
-  border: 1px dashed rgba(15, 23, 42, 0.18);
+  border: 1px dashed rgba(37, 99, 235, 0.22);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.55);
+  background: linear-gradient(180deg, rgba(224, 233, 255, 0.35), rgba(255, 255, 255, 0.9));
 }
 
 .opportunity-list-empty-title {
