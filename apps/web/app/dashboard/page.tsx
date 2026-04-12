@@ -80,18 +80,26 @@ export default async function DashboardPage({ searchParams }: Props) {
   const visibleAlerts = alerts.slice(0, 4);
 
   return (
-    <main className="page-shell">
+    <main className="page-shell workspace-shell">
       <SiteHeader section="dashboard" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
-      <section className="hero hero-app dashboard-hero">
+      <section className="workspace-header dashboard-header">
         <div>
           <span className="eyebrow">Workspace empresa</span>
           <h1>Oportunidades.</h1>
+          <p>Inbox operativo con relevancia, urgencia y acceso inmediato al dossier.</p>
         </div>
-        <p>Revisá qué apareció, qué vence y qué ya está en seguimiento.</p>
+        <div className="workspace-header-actions">
+          <Link href="/saved" className="button-secondary">
+            Ver seguimiento
+          </Link>
+          <Link href="/company-profile" className="button-primary">
+            Ajustar perfil
+          </Link>
+        </div>
       </section>
 
-      <section className="dashboard-executive-band dashboard-summary-band">
+      <section className="dashboard-executive-band dashboard-summary-band workspace-kpi-band">
         <article>
           <span>Oportunidades visibles</span>
           <strong>{tenders.total}</strong>
@@ -110,13 +118,13 @@ export default async function DashboardPage({ searchParams }: Props) {
         </article>
       </section>
 
-      <section className="panel dashboard-hero-board">
+      <section className="panel dashboard-hero-board workspace-briefing-panel">
         <div className="results-header">
           <div>
-            <span className="section-kicker">Orientación</span>
-            <h2>Qué mirar hoy.</h2>
+            <span className="section-kicker">Briefing</span>
+            <h2>Qué mirar hoy</h2>
           </div>
-          <p>Inbox, calendario y pipeline sobre la misma vista.</p>
+          <p>Usá esta vista para decidir qué entra al pipeline y qué necesita revisión inmediata.</p>
         </div>
         <WorkspaceBoardIllustration />
       </section>

@@ -41,18 +41,23 @@ export default async function SavedTendersPage() {
   }));
 
   return (
-    <main className="page-shell">
+    <main className="page-shell workspace-shell">
       <SiteHeader section="saved" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
-      <section className="hero hero-app">
+      <section className="workspace-header">
         <div>
           <span className="eyebrow">Seguimiento comercial</span>
           <h1>Pipeline.</h1>
+          <p>Cartera activa ordenada por etapa para no perder timing ni contexto.</p>
         </div>
-        <p>Licitaciones guardadas, en revisión o preparando oferta.</p>
+        <div className="workspace-header-actions">
+          <Link href="/dashboard" className="button-secondary">
+            Volver a oportunidades
+          </Link>
+        </div>
       </section>
 
-      <section className="dashboard-executive-band">
+      <section className="dashboard-executive-band workspace-kpi-band">
         {grouped.map((column) => (
           <article key={column.key}>
             <span>{column.label}</span>
@@ -65,7 +70,7 @@ export default async function SavedTendersPage() {
         </article>
       </section>
 
-      <section className="pipeline-board">
+      <section className="pipeline-board workspace-pipeline-board">
         {grouped.map((column) => (
           <article key={column.key} className="pipeline-column">
             <div className="pipeline-column-head">
@@ -94,7 +99,7 @@ export default async function SavedTendersPage() {
                   </article>
                 ))
               ) : (
-                <div className="pipeline-empty">
+                <div className="pipeline-empty workspace-empty-state">
                   <p>No hay licitaciones en esta etapa.</p>
                 </div>
               )}

@@ -39,18 +39,26 @@ export function PlatformAdminPage({
   const activeAnalysts = users.filter((user) => user.role === "analyst" && user.is_active).length;
 
   return (
-    <main className="page-shell">
+    <main className="page-shell workspace-shell">
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="admin" />
 
-      <section className="hero hero-app admin-hero">
+      <section className="workspace-header admin-header">
         <div>
           <span className="eyebrow">Superadmin</span>
           <h1>Consola de plataforma.</h1>
+          <p>Gobierno de fuentes, automatización, alertas y acceso global.</p>
         </div>
-        <p>Estado global, puntos de intervención y acceso a configuración crítica.</p>
+        <div className="workspace-header-actions">
+          <a href="#admin-sources" className="button-secondary">
+            Ir a fuentes
+          </a>
+          <a href="#admin-automation" className="button-primary">
+            Ir a automatización
+          </a>
+        </div>
       </section>
 
-      <section className="dashboard-executive-band admin-summary-band">
+      <section className="dashboard-executive-band admin-summary-band workspace-kpi-band">
         <article>
           <span>Fuentes activas</span>
           <strong>{activeSources}</strong>
@@ -69,7 +77,7 @@ export function PlatformAdminPage({
         </article>
       </section>
 
-      <section className="admin-shell-grid">
+      <section className="admin-shell-grid admin-workbench-grid">
         <aside className="panel admin-rail">
           <div className="admin-rail-block">
             <span className="section-kicker">Secciones</span>

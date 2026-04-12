@@ -7352,3 +7352,236 @@ textarea:focus-visible {
     font-size: clamp(2.4rem, 10vw, 4rem) !important;
   }
 }
+
+/* Workspace and admin pass: product-first headers and denser interior rhythm */
+
+.workspace-shell {
+  display: grid;
+  gap: 22px;
+}
+
+.workspace-shell > section {
+  margin: 0 !important;
+}
+
+.workspace-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: end;
+  padding: 0 0 6px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.workspace-header h1 {
+  margin: 8px 0 0;
+  font-size: clamp(2.1rem, 4vw, 3.4rem) !important;
+  line-height: 0.96 !important;
+}
+
+.workspace-header p {
+  margin: 10px 0 0;
+  max-width: 64ch;
+  color: #475569 !important;
+  font-size: 0.98rem !important;
+}
+
+.workspace-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.workspace-kpi-band {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.workspace-kpi-band article {
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-kpi-band article span {
+  font-size: 0.76rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.workspace-kpi-band article strong {
+  font-size: 1.7rem;
+  line-height: 1;
+}
+
+.workspace-briefing-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.workspace-briefing-panel svg {
+  width: 100%;
+  height: auto;
+}
+
+.workspace-pipeline-board {
+  align-items: start;
+  gap: 16px !important;
+}
+
+.workspace-pipeline-board .pipeline-column {
+  min-height: 100%;
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.workspace-pipeline-board .pipeline-column-head {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.workspace-empty-state {
+  min-height: 140px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(15, 23, 42, 0.12);
+  background: #f8fbff;
+}
+
+.workspace-detail-grid {
+  align-items: start;
+}
+
+.admin-workbench-grid {
+  align-items: start;
+}
+
+.admin-workbench-grid .admin-rail {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.admin-workbench-grid .admin-content-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-workbench-grid .admin-section-stack {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-workbench-grid .admin-anchor-nav a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-weight: 600;
+}
+
+.admin-workbench-grid .admin-anchor-nav a:hover,
+.admin-workbench-grid .admin-anchor-nav a:focus-visible {
+  background: #eef6ff !important;
+  color: #0f3f75 !important;
+}
+
+.dashboard-filter-panel {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+}
+
+.dashboard-filter-panel .section-heading h2 {
+  font-size: 1.15rem !important;
+}
+
+.opportunity-list {
+  gap: 12px !important;
+}
+
+.opportunity-list-card {
+  grid-template-columns: minmax(0, 1fr) 220px !important;
+  align-items: start !important;
+  padding: 16px !important;
+}
+
+.opportunity-list-main {
+  display: grid;
+  gap: 10px;
+}
+
+.opportunity-list-main > p:last-child {
+  margin-bottom: 0;
+}
+
+.opportunity-list-aside {
+  border-left: 1px solid rgba(15, 23, 42, 0.08);
+  padding-left: 14px;
+  gap: 10px !important;
+}
+
+.company-profile-form {
+  display: grid;
+  gap: 14px;
+}
+
+.company-profile-form .signup-form-header {
+  padding-bottom: 4px;
+}
+
+.profile-main-grid .source-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-main-grid .source-card {
+  display: grid;
+  gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .workspace-header,
+  .opportunity-list-card {
+    grid-template-columns: 1fr !important;
+  }
+
+  .opportunity-list-aside {
+    border-left: 0;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    padding-left: 0;
+    padding-top: 12px;
+  }
+
+  .workspace-header-actions {
+    justify-content: flex-start;
+  }
+
+  .workspace-kpi-band {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-workbench-grid .admin-rail,
+  .dashboard-filter-panel {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace-shell {
+    gap: 18px;
+  }
+
+  .workspace-header h1 {
+    font-size: clamp(1.85rem, 8vw, 2.6rem) !important;
+  }
+
+  .workspace-kpi-band {
+    grid-template-columns: 1fr;
+  }
+}

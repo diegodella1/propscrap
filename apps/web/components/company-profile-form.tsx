@@ -101,7 +101,7 @@ export function CompanyProfileForm({
   }
 
   return (
-    <div className="company-profile-form">
+    <div className="company-profile-form" id="company-profile-form">
       <div className="profile-summary-bar">{summary}</div>
       <div className="signup-form-header">
         <span className="section-kicker">Perfil</span>

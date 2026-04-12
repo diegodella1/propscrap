@@ -11,18 +11,26 @@ type Props = {
 
 export function CompanyAdminPage({ currentUserName, users }: Props) {
   return (
-    <main className="page-shell">
+    <main className="page-shell workspace-shell">
       <SiteHeader section="admin" currentUserName={currentUserName} currentUserRole="manager" />
 
-      <section className="hero hero-app admin-hero company-admin-hero">
+      <section className="workspace-header admin-header company-admin-header">
         <div>
           <span className="eyebrow">Administración de empresa</span>
           <h1>Equipo y perfil comercial.</h1>
+          <p>Gestión compacta del equipo y del criterio comercial de la empresa.</p>
         </div>
-        <p>Gestioná usuarios y mantené el criterio de matching de tu empresa.</p>
+        <div className="workspace-header-actions">
+          <Link href="/company-profile" className="button-primary">
+            Perfil comercial
+          </Link>
+          <Link href="/dashboard" className="button-secondary">
+            Workspace
+          </Link>
+        </div>
       </section>
 
-      <section className="dashboard-executive-band admin-summary-band company-admin-summary-band">
+      <section className="dashboard-executive-band admin-summary-band company-admin-summary-band workspace-kpi-band">
         <article>
           <span>Usuarios</span>
           <strong>{users.length}</strong>
@@ -41,7 +49,7 @@ export function CompanyAdminPage({ currentUserName, users }: Props) {
         </article>
       </section>
 
-      <section className="admin-shell-grid company-admin-shell-grid">
+      <section className="admin-shell-grid company-admin-shell-grid admin-workbench-grid">
         <aside className="panel admin-rail">
           <div className="admin-rail-block">
             <span className="section-kicker">Qué hacer acá</span>

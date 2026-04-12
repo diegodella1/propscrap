@@ -67,9 +67,9 @@ export function TendersTable({ tenders, total }: Props) {
         <div>
           <span className="section-kicker">Resultados</span>
           <h2>Oportunidades disponibles</h2>
-          <p>{total} registros visibles en esta instancia.</p>
+          <p>{total} registros visibles con score, urgencia y acceso a fuente original.</p>
         </div>
-        <p className="muted">Cada fila muestra fuente, urgencia, score y acceso al dossier.</p>
+        <p className="muted">Usá esta lista como inbox de revisión, no como catálogo.</p>
       </div>
 
       <div className="results-ribbon">

@@ -13,24 +13,29 @@ export default async function CompanyProfilePage() {
   const profile = await getMyCompanyProfileFromSession();
 
   return (
-    <main className="page-shell">
+    <main className="page-shell workspace-shell">
       <SiteHeader
         section="profile"
         currentUserName={currentUser.full_name}
         currentUserRole={currentUser.role}
       />
 
-      <section className="hero hero-app about-hero profile-hero">
+      <section className="workspace-header profile-header">
         <div>
           <span className="eyebrow">Perfil de empresa</span>
           <h1>Perfil comercial.</h1>
+          <p>Acá definís qué tipo de licitación entra al radar y con qué umbral.</p>
         </div>
-        <p>Configurá rubros, keywords, compradores, jurisdicciones y umbrales de matching.</p>
+        <div className="workspace-header-actions">
+          <a href="#company-profile-form" className="button-primary">
+            Editar reglas
+          </a>
+        </div>
       </section>
 
       {profile ? (
         <>
-          <section className="dashboard-executive-band profile-summary-band">
+          <section className="dashboard-executive-band profile-summary-band workspace-kpi-band">
             <article>
               <span>CUIT</span>
               <strong>{profile.cuit ?? "n/d"}</strong>
@@ -49,7 +54,7 @@ export default async function CompanyProfilePage() {
             </article>
           </section>
 
-          <section className="admin-control-grid admin-profile-layout profile-main-grid">
+          <section className="admin-control-grid admin-profile-layout profile-main-grid workspace-detail-grid">
             <article className="panel dispatch-panel">
               <div className="results-header">
                 <div>
