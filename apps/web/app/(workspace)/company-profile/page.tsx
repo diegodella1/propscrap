@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { CompanyProfileForm } from "../../../components/company-profile-form";
+import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../../lib/session";
 
@@ -13,7 +14,7 @@ export default async function CompanyProfilePage() {
   const profile = await getMyCompanyProfileFromSession();
 
   return (
-    <main className="page-shell workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell">
       <SiteHeader
         section="profile"
         currentUserName={currentUser.full_name}
@@ -116,6 +117,6 @@ export default async function CompanyProfilePage() {
           </section>
         </>
       ) : null}
-    </main>
+    </PageShell>
   );
 }

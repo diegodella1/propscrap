@@ -14,7 +14,7 @@ export function FilterPanel({
   sources,
 }: Props) {
   return (
-    <form className="panel filters dashboard-filter-panel">
+    <form className="panel filters dashboard-filter-panel" method="get" action="/dashboard">
       <div className="section-heading">
         <span className="section-kicker">Filtros</span>
         <h2>Acotar resultados</h2>
@@ -65,7 +65,7 @@ export function FilterPanel({
       </div>
 
       <button type="submit" className="button-primary button-block">
-        Aplicar filtros
+        Aplicar y actualizar lista
       </button>
 
       <div className="filter-legend">
@@ -74,7 +74,7 @@ export function FilterPanel({
       </div>
 
       <p className="muted filter-tip">
-        Empezá por `60+` y después acotá por fuente o jurisdicción.
+        Empezá por “60+” y después acotá por fuente o jurisdicción.
       </p>
     </form>
   );

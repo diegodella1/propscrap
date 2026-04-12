@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ProcessFlowEditorialIllustration, WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
+import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { getCurrentUserFromSession } from "../../../lib/session";
 
@@ -8,7 +9,7 @@ export default async function AboutPage() {
   const currentUser = await getCurrentUserFromSession();
 
   return (
-    <main className="page-shell">
+    <PageShell variant="marketing">
       <SiteHeader
         section="about"
         currentUserName={currentUser?.full_name}
@@ -139,6 +140,6 @@ export default async function AboutPage() {
           </Link>
         </div>
       </section>
-    </main>
+    </PageShell>
   );
 }

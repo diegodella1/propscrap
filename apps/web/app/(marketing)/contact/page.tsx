@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ContactRequestForm } from "../../../components/contact-request-form";
+import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { fetchPublicPlatformSettings } from "../../../lib/api";
 import { getCurrentUserFromSession } from "../../../lib/session";
@@ -12,7 +13,7 @@ export default async function ContactPage() {
   ]);
 
   return (
-    <main className="page-shell">
+    <PageShell variant="marketing">
       <SiteHeader
         section="contact"
         currentUserName={currentUser?.full_name}
@@ -93,6 +94,6 @@ export default async function ContactPage() {
           </div>
         </article>
       </section>
-    </main>
+    </PageShell>
   );
 }

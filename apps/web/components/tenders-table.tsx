@@ -61,25 +61,44 @@ function getScoreTone(score: number | null) {
 }
 
 export function TendersTable({ tenders, total }: Props) {
+  const isEmpty = tenders.length === 0;
+
   return (
     <section className="panel table-panel table-panel-upgraded">
       <div className="results-header">
         <div>
           <span className="section-kicker">Resultados</span>
           <h2>Oportunidades disponibles</h2>
-          <p>{total} registros visibles con score, urgencia y acceso a fuente original.</p>
+          <p>
+            {isEmpty
+              ? "No hay coincidencias con los filtros actuales."
+              : `${total} registros visibles con score, urgencia y acceso a fuente original.`}
+          </p>
         </div>
         <p className="muted">Usá esta lista como inbox de revisión, no como catálogo.</p>
       </div>
 
+      {!isEmpty ? (
       <div className="results-ribbon">
         <span>Score y motivo</span>
         <span>Deadline</span>
         <span>Workflow</span>
         <span>Fuente original</span>
       </div>
+      ) : null}
 
       <div className="opportunity-list">
+        {isEmpty ? (
+          <div className="opportunity-list-empty workspace-empty-state">
+            <p className="opportunity-list-empty-title">Nada por aquí todavía</p>
+            <p className="muted">
+              Probá bajar el umbral de relevancia, sacar la jurisdicción o elegir otra fuente.
+            </p>
+            <Link href="/dashboard" className="button-primary">
+              Ver todas las oportunidades
+            </Link>
+          </div>
+        ) : null}
         {tenders.map((tender) => {
           const match = tender.matches[0];
           const state = tender.states[0];
@@ -122,3 +141,4 @@ export function TendersTable({ tenders, total }: Props) {
     </section>
   );
 }
+

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { FilterPanel } from "../../../components/filter-panel";
 import { WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
+import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { TendersTable } from "../../../components/tenders-table";
 import { fetchAlerts, fetchSources, fetchTenders } from "../../../lib/api";
@@ -80,7 +81,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const visibleAlerts = alerts.slice(0, 4);
 
   return (
-    <main className="page-shell workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell">
       <SiteHeader section="dashboard" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
       <section className="workspace-header dashboard-header">
@@ -201,6 +202,6 @@ export default async function DashboardPage({ searchParams }: Props) {
         />
         <TendersTable tenders={tenders.items} total={tenders.total} />
       </section>
-    </main>
+    </PageShell>
   );
 }

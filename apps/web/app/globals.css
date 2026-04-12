@@ -1,5 +1,11 @@
 @import "./layout-system.css";
 
+/*
+  Design tokens (Gestalt / consistencia): fondos --bg / --panel; texto --text / --muted;
+  acento --accent / --accent-deep; estado --success / --warning / --danger; línea --line;
+  sombra --shadow. Radios y espaciado: preferir repetir los mismos patrones de .panel / .page-shell.
+*/
+
 :root {
   --bg: #e9e5dc;
   --bg-strong: #111418;

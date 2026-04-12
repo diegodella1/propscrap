@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { fetchSavedTenders } from "../../../lib/api";
 import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
@@ -41,7 +42,7 @@ export default async function SavedTendersPage() {
   }));
 
   return (
-    <main className="page-shell workspace-shell">
+    <PageShell variant="workspace" className="workspace-shell">
       <SiteHeader section="saved" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
       <section className="workspace-header">
@@ -107,6 +108,6 @@ export default async function SavedTendersPage() {
           </article>
         ))}
       </section>
-    </main>
+    </PageShell>
   );
 }
