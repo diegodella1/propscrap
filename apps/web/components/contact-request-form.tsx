@@ -69,7 +69,7 @@ export function ContactRequestForm({ platformSettings }: Props) {
   }
 
   return (
-    <article className="auth-form-card auth-form-card-upgraded contact-request-card">
+    <article className="auth-form-card auth-form-card-upgraded contact-request-card contact-request-card--surface">
       <div className="signup-form-header">
         <span className="section-kicker">Solicitud de demo</span>
         <h2>Contanos cómo trabaja hoy tu empresa.</h2>
