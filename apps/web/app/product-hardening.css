@@ -444,6 +444,53 @@ textarea.code-textarea,
   overflow-wrap: anywhere;
 }
 
+.ops-readiness-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ops-readiness-card,
+.job-run-summary {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: #fff;
+  padding: 14px;
+}
+
+.ops-readiness-card h3 {
+  margin: 8px 0 6px;
+  color: #0f172a;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  line-height: 1.1;
+}
+
+.ops-readiness-card p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.job-run-summary {
+  display: grid;
+  gap: 10px;
+  background: #f8fbff;
+  border-color: rgba(11, 92, 173, 0.12);
+}
+
+.job-run-summary pre {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 1120px) {
   .opportunity-list-card,
   .source-card-header,
@@ -467,6 +514,10 @@ textarea.code-textarea,
   .source-card-header .meta,
   .workspace-header-actions {
     justify-content: flex-start;
+  }
+
+  .ops-readiness-grid {
+    grid-template-columns: 1fr;
   }
 }
 

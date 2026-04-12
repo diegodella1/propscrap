@@ -25,6 +25,12 @@ export function AutomationSettingsPanel({ settings }: Props) {
   const [emailDeliveryEnabled, setEmailDeliveryEnabled] = useState(settings.email_delivery_enabled);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const lastRunLabel = settings.last_run_started_at
+    ? new Date(settings.last_run_started_at).toLocaleString("es-AR")
+    : "Todavía no ejecutó";
+  const lastSuccessLabel = settings.last_success_at
+    ? new Date(settings.last_success_at).toLocaleString("es-AR")
+    : "Sin éxito registrado";
 
   function saveSettings() {
     startTransition(async () => {
@@ -105,7 +111,7 @@ export function AutomationSettingsPanel({ settings }: Props) {
         <article className="admin-overview-card">
           <span className="section-kicker">Estado</span>
           <h3>{isEnabled ? "Ciclo activo" : "Ciclo pausado"}</h3>
-          <p>{settings.last_run_started_at ? new Date(settings.last_run_started_at).toLocaleString("es-AR") : "Todavía no ejecutó."}</p>
+          <p>Última corrida: {lastRunLabel}</p>
         </article>
         <article className="admin-overview-card">
           <span className="section-kicker">IA</span>
@@ -121,6 +127,24 @@ export function AutomationSettingsPanel({ settings }: Props) {
           <span className="section-kicker">Contacto</span>
           <h3>Canales públicos</h3>
           <p>{contactEmail || contactWhatsappNumber || contactTelegramHandle || "Todavía no configurados."}</p>
+        </article>
+      </div>
+
+      <div className="ops-readiness-grid">
+        <article className="ops-readiness-card">
+          <span className="section-kicker">Readiness</span>
+          <h3>Motor de IA</h3>
+          <p>{settings.openai_api_key_configured ? "Listo para enriquecer y resumir." : "Falta API key de OpenAI."}</p>
+        </article>
+        <article className="ops-readiness-card">
+          <span className="section-kicker">Readiness</span>
+          <h3>Email</h3>
+          <p>{settings.resend_api_key_configured && emailDeliveryEnabled ? "Listo para delivery transaccional." : "Canal incompleto o pausado."}</p>
+        </article>
+        <article className="ops-readiness-card">
+          <span className="section-kicker">Ejecución</span>
+          <h3>Último éxito</h3>
+          <p>{lastSuccessLabel}</p>
         </article>
       </div>
 
@@ -175,6 +199,10 @@ export function AutomationSettingsPanel({ settings }: Props) {
             <span>Modelo</span>
             <input value={openaiModel} onChange={(event) => setOpenaiModel(event.target.value)} placeholder="gpt-4.1-mini" />
           </label>
+        </div>
+        <div className="detail-note-card">
+          <span className="section-kicker">Qué controla esto</span>
+          <p>El modelo y el master prompt impactan resúmenes, requisitos, riesgos y explicaciones de match en toda la plataforma.</p>
         </div>
 
         <label className="form-field">
