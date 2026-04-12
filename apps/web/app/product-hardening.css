@@ -678,6 +678,67 @@ textarea.code-textarea,
   align-items: center;
 }
 
+.workspace-adoption-bar {
+  max-width: var(--app-shell-width);
+  margin: 0 auto;
+  padding: 18px var(--app-shell-padding-x) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: start;
+}
+
+.workspace-adoption-main,
+.workspace-adoption-step {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 16px;
+}
+
+.workspace-adoption-main {
+  display: grid;
+  gap: 8px;
+}
+
+.workspace-adoption-main strong,
+.workspace-adoption-step strong {
+  color: #0f172a;
+}
+
+.workspace-adoption-main p,
+.workspace-adoption-step span {
+  margin: 0;
+  color: #475569;
+}
+
+.workspace-adoption-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.workspace-adoption-step {
+  display: grid;
+  gap: 6px;
+  background: #f8fbff;
+  border-color: rgba(11, 92, 173, 0.12);
+}
+
+.workspace-adoption-step--complete {
+  background: #f0fdf4;
+  border-color: rgba(22, 101, 52, 0.18);
+}
+
+.workspace-adoption-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.state-form-suggestions {
+  display: grid;
+  gap: 8px;
+}
+
 .workspace-empty-state-strong {
   display: grid;
   gap: 12px;
@@ -758,7 +819,9 @@ body::after {
 .state-form textarea,
 .wizard-card,
 .wizard-progress-step,
-.wizard-step-card {
+.wizard-step-card,
+.workspace-adoption-main,
+.workspace-adoption-step {
   border-radius: 0 !important;
 }
 
@@ -1128,6 +1191,15 @@ body::after {
 
   .wizard-card {
     padding: 18px;
+  }
+
+  .workspace-adoption-bar {
+    grid-template-columns: 1fr;
+    padding: 12px 14px 0;
+  }
+
+  .workspace-adoption-steps {
+    grid-template-columns: 1fr;
   }
 
   .dashboard-executive-band,

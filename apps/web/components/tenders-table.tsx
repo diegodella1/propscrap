@@ -75,7 +75,7 @@ export function TendersTable({ tenders, total }: Props) {
               : `${total} registros visibles con score, urgencia y acceso a fuente original.`}
           </p>
         </div>
-        <p className="muted">Usá esta lista como inbox de revisión, no como catálogo.</p>
+        <p className="muted">Usá esta lista como inbox de revisión. El objetivo no es mirar todo: es guardar rápido lo que sí amerita seguimiento.</p>
       </div>
 
       {!isEmpty ? (
@@ -141,4 +141,3 @@ export function TendersTable({ tenders, total }: Props) {
     </section>
   );
 }
-

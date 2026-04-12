@@ -5,6 +5,11 @@ import { useState, useTransition } from "react";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 const STATES = ["new", "seen", "saved", "discarded", "evaluating", "presenting"];
+const NOTE_SUGGESTIONS = [
+  "Validar encaje comercial y documentación base.",
+  "Guardar y revisar condiciones con el equipo.",
+  "Descartar por bajo fit o jurisdicción fuera de foco.",
+];
 
 function formatStateLabel(value: string) {
   switch (value) {
@@ -73,6 +78,13 @@ export function StateForm({
         placeholder="Próximo paso, riesgo o contexto interno…"
         rows={4}
       />
+      <div className="state-form-suggestions">
+        {NOTE_SUGGESTIONS.map((suggestion) => (
+          <button key={suggestion} type="button" className="button-secondary" onClick={() => setNotes(suggestion)}>
+            {suggestion}
+          </button>
+        ))}
+      </div>
       <button type="button" onClick={submit} disabled={isPending} className="button-primary button-block">
         {isPending ? "Guardando…" : "Guardar estado"}
       </button>

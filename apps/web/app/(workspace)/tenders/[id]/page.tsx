@@ -105,6 +105,13 @@ export default async function TenderDetailPage({ params }: Props) {
           <StateForm tenderId={tender.id} initialState={state?.state} />
 
           <div className="detail-note-card">
+            <span className="section-kicker">Recomendado</span>
+            <p>
+              Si esta oportunidad tiene fit, guardala o pasala a revisión con una nota concreta. El valor del trial aparece cuando el pipeline empieza a reflejar trabajo real.
+            </p>
+          </div>
+
+          <div className="detail-note-card">
             <span className="section-kicker">Fuente original</span>
             <a href={tender.source_url} className="linkish" target="_blank" rel="noreferrer">
               Abrir publicación
@@ -144,6 +151,12 @@ export default async function TenderDetailPage({ params }: Props) {
                 <strong>Qué hacer ahora</strong>
                 <p>{state?.notes ?? "Definir si se guarda, se evalúa o se descarta con una nota clara."}</p>
               </div>
+            </div>
+            <div className="results-ribbon">
+              <span>1. Leer fit</span>
+              <span>2. Decidir estado</span>
+              <span>3. Dejar nota</span>
+              <span>4. Pasar al pipeline</span>
             </div>
           </article>
 
