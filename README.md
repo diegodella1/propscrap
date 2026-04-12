@@ -1,6 +1,6 @@
-# Licitaciones IA
+# EasyTaciones
 
-POC funcional para inteligencia de licitaciones en Argentina. El foco es consolidar fuentes reales, normalizar registros y priorizar oportunidades.
+Producto operativo para empresas argentinas que venden al Estado. El foco es consolidar fuentes reales, registrar la empresa por CUIT, priorizar oportunidades y sostener el seguimiento con alertas y administración usable.
 
 - setup local de backend y frontend
 - esquema inicial de base de datos
@@ -45,12 +45,16 @@ Phase 5:
 - alerts persistidos por relevancia y vencimientos
 - admin/debug funcional
 
-Phase 6:
+Phase 6+:
 
 - landing comercial separada del dashboard operativo
 - dashboard, detalle y admin con sistema visual unificado
 - frontend preparado para proxy local `/api` hacia FastAPI
 - script simple de arranque para demo local
+- split de login entre empresa y superadmin
+- alta de empresa por CUIT con perfil comercial inicial
+- superadmin con fuentes, automatización, auditoría y ABM global
+- release checklist y smoke listos para salida a campo
 
 ## Stack
 
@@ -175,6 +179,13 @@ Si `OPENAI_API_KEY` no está definido, el job de enriquecimiento falla explícit
 - con `WHATSAPP_PROVIDER=mock` y `WHATSAPP_ENABLED=true`, los mensajes quedan persistidos en `data/outbox/whatsapp_messages.jsonl`
 - con `WHATSAPP_PROVIDER=meta`, configurar `WHATSAPP_META_TOKEN` y `WHATSAPP_META_PHONE_NUMBER_ID`
 
+## Telegram alerts
+
+- cada usuario puede definir `telegram_chat_id`, opt-in y preferencias de canal
+- el dispatch de Telegram usa bot API
+- configurar `TELEGRAM_ENABLED=true` y `TELEGRAM_BOT_TOKEN`
+- desde superadmin también se puede sobrescribir la configuración sin tocar `.env`
+
 ## Auth y perfil propio
 
 - `POST /api/v1/auth/signup` crea usuario y abre sesión
@@ -182,24 +193,37 @@ Si `OPENAI_API_KEY` no está definido, el job de enriquecimiento falla explícit
 - `POST /api/v1/auth/logout` cierra sesión
 - `GET /api/v1/me` devuelve el usuario autenticado
 - `PATCH /api/v1/me` deja editar nombre, empresa, WhatsApp y preferencias simples
-- el flujo público vive en `/signup`, `/login` y `/mi-cuenta`
+- el flujo público vive en `/signup`, `/login`, `/login/empresa`, `/login/superadmin` y `/mi-cuenta`
 
 ## Nota sobre Supabase local
 
 La app usa PostgreSQL estándar. Si preferís apuntar al Postgres de Supabase local, cambiá `DATABASE_URL` y listo. En esta fase no dependemos de Auth, Storage ni Realtime.
 
-## Demo hardening
+## Release readiness
 
-- `/` es landing comercial
-- `/dashboard` es la app operativa
-- `/signup`, `/login` y `/mi-cuenta` cubren alta, acceso y preferencias personales
-- `/admin/source-runs` es el área interna de observabilidad mínima
-- `scripts/start_demo_stack.sh` levanta frontend y backend en puertos locales listos para publicar con `cloudflared`
+- checklist operativa: [docs/launch-readiness.md](docs/launch-readiness.md)
+- validación reproducible: `bash scripts/release_readiness_check.sh`
+- smoke funcional: `bash scripts/smoke_easytaciones.sh`
+- arranque demo local: `bash scripts/start_demo_stack.sh`
+
+## Rutas principales
+
+- `/` landing comercial
+- `/about` cómo funciona
+- `/signup` alta por CUIT
+- `/login/empresa` acceso cliente
+- `/login/superadmin` acceso plataforma
+- `/dashboard` discovery operativo
+- `/saved` pipeline de seguimiento
+- `/company-profile` perfil comercial
+- `/admin/company` administración de empresa
+- `/admin/platform` consola superadmin
 
 ## Servicios persistentes
 
 - `deploy/propscrap-api.service` publica la API en `127.0.0.1:8001`
 - `deploy/propscrap-web.service` publica el frontend en `127.0.0.1:3000`
+- `deploy/propscrap-scheduler.service` publica el worker de automatización
 - ambos usan `Restart=always` para reiniciar automáticamente después de un reboot o corte de luz
 - después de cambios en frontend, reconstruí `apps/web` con `npm run build` antes de reiniciar `propscrap-web`
 

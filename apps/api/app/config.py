@@ -52,6 +52,8 @@ class Settings(BaseSettings):
         default="data/outbox/whatsapp_messages.jsonl",
         alias="WHATSAPP_OUTBOX_PATH",
     )
+    telegram_enabled: bool = Field(default=False, alias="TELEGRAM_ENABLED")
+    telegram_bot_token: str | None = Field(default=None, alias="TELEGRAM_BOT_TOKEN")
     resend_api_key: str | None = Field(default=None, alias="RESEND_API_KEY")
     resend_from_email: str | None = Field(default=None, alias="RESEND_FROM_EMAIL")
     alert_dispatch_batch_size: int = Field(default=50, alias="ALERT_DISPATCH_BATCH_SIZE")

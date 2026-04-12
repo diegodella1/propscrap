@@ -19,7 +19,10 @@ export function AccountSettingsForm({ user }: { user: User }) {
     company_name: user.company_name ?? "",
     whatsapp_number: user.whatsapp_number ?? "",
     whatsapp_opt_in: user.whatsapp_opt_in,
+    telegram_chat_id: user.telegram_chat_id ?? "",
+    telegram_opt_in: user.telegram_opt_in,
     email_opt_in: user.alert_preferences_json?.channels?.includes("email") ?? false,
+    telegram_opt_in_alerts: user.alert_preferences_json?.channels?.includes("telegram") ?? false,
     alert_priority: alertPriorityFromMinScore(user.alert_preferences_json?.min_score),
     receive_relevant: user.alert_preferences_json?.receive_relevant ?? true,
     receive_deadlines: user.alert_preferences_json?.receive_deadlines ?? true,
@@ -104,6 +107,18 @@ export function AccountSettingsForm({ user }: { user: User }) {
           placeholder="+5491123456789…"
         />
       </div>
+      <div className="field">
+        <label htmlFor="account-telegram">Tu Telegram chat id</label>
+        <input
+          id="account-telegram"
+          name="telegram_chat_id"
+          value={form.telegram_chat_id}
+          onChange={(event) => updateField("telegram_chat_id", event.target.value)}
+          autoComplete="off"
+          inputMode="numeric"
+          placeholder="123456789 o -1001234567890…"
+        />
+      </div>
 
       <label className="checkbox-row">
         <input
@@ -121,6 +136,24 @@ export function AccountSettingsForm({ user }: { user: User }) {
           onChange={(event) => updateField("whatsapp_opt_in", event.target.checked)}
         />
         <span>Quiero recibir alertas por WhatsApp</span>
+      </label>
+
+      <label className="checkbox-row">
+        <input
+          type="checkbox"
+          checked={form.telegram_opt_in}
+          onChange={(event) => updateField("telegram_opt_in", event.target.checked)}
+        />
+        <span>Habilitar Telegram para mi usuario</span>
+      </label>
+
+      <label className="checkbox-row">
+        <input
+          type="checkbox"
+          checked={form.telegram_opt_in_alerts}
+          onChange={(event) => updateField("telegram_opt_in_alerts", event.target.checked)}
+        />
+        <span>Quiero recibir alertas por Telegram</span>
       </label>
 
       <div className="field">

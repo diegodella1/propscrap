@@ -214,6 +214,9 @@ export type User = {
   whatsapp_number: string | null;
   whatsapp_opt_in: boolean;
   whatsapp_verified_at: string | null;
+  telegram_chat_id: string | null;
+  telegram_opt_in: boolean;
+  telegram_verified_at: string | null;
   alert_preferences_json: {
     min_score?: number;
     channels?: string[];
@@ -228,7 +231,10 @@ export type MeUpdateInput = {
   cuit?: string;
   whatsapp_number?: string;
   whatsapp_opt_in?: boolean;
+  telegram_chat_id?: string;
+  telegram_opt_in?: boolean;
   email_opt_in?: boolean;
+  telegram_opt_in_alerts?: boolean;
   alert_priority?: "alta" | "media" | "todas";
   receive_deadlines?: boolean;
   receive_relevant?: boolean;
@@ -260,6 +266,13 @@ export type AutomationSettings = {
   openai_api_key_configured: boolean;
   resend_api_key_configured: boolean;
   email_delivery_enabled: boolean;
+  whatsapp_enabled: boolean;
+  whatsapp_provider: string | null;
+  whatsapp_api_version: string | null;
+  whatsapp_meta_token_configured: boolean;
+  whatsapp_meta_phone_number_id: string | null;
+  telegram_enabled: boolean;
+  telegram_bot_token_configured: boolean;
   openai_model: string | null;
   llm_master_prompt: string | null;
   contact_email: string | null;

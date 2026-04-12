@@ -147,6 +147,8 @@ def patch_me(
 ) -> UserRead:
     final_whatsapp_number = payload.whatsapp_number if payload.whatsapp_number is not None else current_user.whatsapp_number
     final_whatsapp_opt_in = payload.whatsapp_opt_in if payload.whatsapp_opt_in is not None else current_user.whatsapp_opt_in
+    final_telegram_chat_id = payload.telegram_chat_id if payload.telegram_chat_id is not None else current_user.telegram_chat_id
+    final_telegram_opt_in = payload.telegram_opt_in if payload.telegram_opt_in is not None else current_user.telegram_opt_in
     user = update_user(
         db,
         current_user,
@@ -156,12 +158,16 @@ def patch_me(
         whatsapp_number=payload.whatsapp_number,
         whatsapp_opt_in=payload.whatsapp_opt_in,
         whatsapp_verified=bool(final_whatsapp_number and final_whatsapp_opt_in),
+        telegram_chat_id=payload.telegram_chat_id,
+        telegram_opt_in=payload.telegram_opt_in,
+        telegram_verified=bool(final_telegram_chat_id and final_telegram_opt_in),
         alert_preferences_json=_build_me_alert_preferences(
             payload.alert_priority,
             payload.receive_relevant,
             payload.receive_deadlines,
             payload.whatsapp_opt_in,
             payload.email_opt_in,
+            payload.telegram_opt_in_alerts,
             current_user.alert_preferences_json,
         ),
     )
@@ -530,6 +536,9 @@ def patch_user(
         whatsapp_number=payload.whatsapp_number,
         whatsapp_opt_in=payload.whatsapp_opt_in,
         whatsapp_verified=payload.whatsapp_verified,
+        telegram_chat_id=payload.telegram_chat_id,
+        telegram_opt_in=payload.telegram_opt_in,
+        telegram_verified=payload.telegram_verified,
         alert_preferences_json=payload.alert_preferences_json,
     )
     record_admin_audit(
@@ -613,6 +622,13 @@ def patch_admin_automation(
         resend_api_key=payload.resend_api_key,
         resend_from_email=payload.resend_from_email,
         email_delivery_enabled=payload.email_delivery_enabled,
+        whatsapp_enabled=payload.whatsapp_enabled,
+        whatsapp_provider=payload.whatsapp_provider,
+        whatsapp_meta_token=payload.whatsapp_meta_token,
+        whatsapp_meta_phone_number_id=payload.whatsapp_meta_phone_number_id,
+        whatsapp_api_version=payload.whatsapp_api_version,
+        telegram_enabled=payload.telegram_enabled,
+        telegram_bot_token=payload.telegram_bot_token,
     )
     record_admin_audit(
         db,
@@ -839,6 +855,7 @@ def _build_me_alert_preferences(
     receive_deadlines: bool | None,
     whatsapp_opt_in: bool | None,
     email_opt_in: bool | None,
+    telegram_opt_in_alerts: bool | None,
     existing: dict | None,
 ) -> dict:
     priority_map = {
@@ -854,6 +871,9 @@ def _build_me_alert_preferences(
     wants_whatsapp = whatsapp_opt_in if whatsapp_opt_in is not None else "whatsapp" in (preferences.get("channels") or [])
     if wants_whatsapp:
         channels.append("whatsapp")
+    wants_telegram = telegram_opt_in_alerts if telegram_opt_in_alerts is not None else "telegram" in (preferences.get("channels") or [])
+    if wants_telegram:
+        channels.append("telegram")
     if alert_priority is not None:
         normalized_priority = alert_priority.strip().lower()
         if normalized_priority not in priority_map:
@@ -893,14 +913,36 @@ def _serialize_company_profile(profile: CompanyProfile) -> CompanyProfileAdminRe
 def _serialize_automation_settings(settings_row) -> AutomationSettingsRead:
     active_model = settings_row.openai_model_override or settings.openai_model
     active_prompt = settings_row.llm_master_prompt or DEFAULT_MASTER_PROMPT
+    whatsapp_enabled = (
+        settings_row.whatsapp_enabled_override
+        if settings_row.whatsapp_enabled_override is not None
+        else settings.whatsapp_enabled
+    )
+    whatsapp_provider = settings_row.whatsapp_provider_override or settings.whatsapp_provider
+    whatsapp_api_version = settings_row.whatsapp_meta_api_version_override or settings.whatsapp_meta_api_version
+    whatsapp_phone_number_id = (
+        settings_row.whatsapp_meta_phone_number_id_override or settings.whatsapp_meta_phone_number_id
+    )
+    telegram_enabled = (
+        settings_row.telegram_enabled_override
+        if settings_row.telegram_enabled_override is not None
+        else settings.telegram_enabled
+    )
     return AutomationSettingsRead.model_validate(
         {
             "id": settings_row.id,
             "is_enabled": settings_row.is_enabled,
             "ingestion_interval_hours": settings_row.ingestion_interval_hours,
             "openai_api_key_configured": bool(settings_row.openai_api_key_override or settings.openai_api_key),
-            "resend_api_key_configured": bool(settings_row.resend_api_key_override),
+            "resend_api_key_configured": bool(settings_row.resend_api_key_override or settings.resend_api_key),
             "email_delivery_enabled": settings_row.email_delivery_enabled,
+            "whatsapp_enabled": bool(whatsapp_enabled),
+            "whatsapp_provider": whatsapp_provider,
+            "whatsapp_api_version": whatsapp_api_version,
+            "whatsapp_meta_token_configured": bool(settings_row.whatsapp_meta_token_override or settings.whatsapp_meta_token),
+            "whatsapp_meta_phone_number_id": whatsapp_phone_number_id,
+            "telegram_enabled": bool(telegram_enabled),
+            "telegram_bot_token_configured": bool(settings_row.telegram_bot_token_override or settings.telegram_bot_token),
             "openai_model": active_model,
             "llm_master_prompt": active_prompt,
             "contact_email": settings_row.contact_email,

@@ -17,6 +17,14 @@ function alertPriorityLabel(minScore: number | undefined) {
   return "Media o alta";
 }
 
+function primaryChannelLabel(currentUser: Awaited<ReturnType<typeof getCurrentUserFromSession>>) {
+  const channels = currentUser?.alert_preferences_json?.channels ?? ["dashboard"];
+  if (channels.includes("whatsapp")) return "WhatsApp";
+  if (channels.includes("telegram")) return "Telegram";
+  if (channels.includes("email")) return "Email";
+  return "Dashboard";
+}
+
 export default async function AccountPage({ searchParams }: Props) {
   const params = await searchParams;
   const currentUser = await getCurrentUserFromSession();
@@ -67,7 +75,7 @@ export default async function AccountPage({ searchParams }: Props) {
       <section className="dashboard-executive-band account-summary-band workspace-kpi-band">
         <article>
           <span>Canal principal</span>
-          <strong>{currentUser.whatsapp_opt_in ? "WhatsApp" : "Dashboard"}</strong>
+          <strong>{primaryChannelLabel(currentUser)}</strong>
         </article>
         <article>
           <span>Prioridad</span>
@@ -101,7 +109,13 @@ export default async function AccountPage({ searchParams }: Props) {
           <div className="onboarding-proof-list">
             <article>
               <strong>Canal</strong>
-              <p>{currentUser.whatsapp_number ?? "Todavía no cargaste un número para WhatsApp."}</p>
+              <p>
+                {currentUser.whatsapp_number
+                  ? `WhatsApp ${currentUser.whatsapp_number}`
+                  : currentUser.telegram_chat_id
+                    ? `Telegram ${currentUser.telegram_chat_id}`
+                    : "Todavía no cargaste un canal directo para alertas instantáneas."}
+              </p>
             </article>
             <article>
               <strong>Empresa</strong>

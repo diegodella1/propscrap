@@ -24,6 +24,9 @@ class UserRead(BaseModel):
     whatsapp_number: str | None = None
     whatsapp_opt_in: bool = False
     whatsapp_verified_at: datetime | None = None
+    telegram_chat_id: str | None = None
+    telegram_opt_in: bool = False
+    telegram_verified_at: datetime | None = None
     alert_preferences_json: dict | None = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -173,6 +176,9 @@ class UserUpdateRequest(BaseModel):
     whatsapp_number: str | None = None
     whatsapp_opt_in: bool | None = None
     whatsapp_verified: bool | None = None
+    telegram_chat_id: str | None = None
+    telegram_opt_in: bool | None = None
+    telegram_verified: bool | None = None
     alert_preferences_json: dict | None = None
 
 
@@ -220,6 +226,13 @@ class AutomationSettingsRead(BaseModel):
     openai_api_key_configured: bool = False
     resend_api_key_configured: bool = False
     email_delivery_enabled: bool = False
+    whatsapp_enabled: bool = False
+    whatsapp_provider: str | None = None
+    whatsapp_api_version: str | None = None
+    whatsapp_meta_token_configured: bool = False
+    whatsapp_meta_phone_number_id: str | None = None
+    telegram_enabled: bool = False
+    telegram_bot_token_configured: bool = False
     openai_model: str | None = None
     llm_master_prompt: str | None = None
     contact_email: str | None = None
@@ -249,6 +262,13 @@ class AutomationSettingsUpdateRequest(BaseModel):
     resend_api_key: str | None = None
     resend_from_email: str | None = None
     email_delivery_enabled: bool | None = None
+    whatsapp_enabled: bool | None = None
+    whatsapp_provider: str | None = None
+    whatsapp_meta_token: str | None = None
+    whatsapp_meta_phone_number_id: str | None = None
+    whatsapp_api_version: str | None = None
+    telegram_enabled: bool | None = None
+    telegram_bot_token: str | None = None
 
 
 class PublicPlatformSettingsRead(BaseModel):

@@ -12,6 +12,7 @@ type DraftUser = User & {
   receive_relevant: boolean;
   receive_deadlines: boolean;
   whatsapp_verified: boolean;
+  telegram_verified: boolean;
 };
 
 type DraftState = Record<number, DraftUser>;
@@ -24,6 +25,7 @@ function toDraft(user: User): DraftUser {
     receive_relevant: user.alert_preferences_json?.receive_relevant ?? true,
     receive_deadlines: user.alert_preferences_json?.receive_deadlines ?? true,
     whatsapp_verified: Boolean(user.whatsapp_verified_at),
+    telegram_verified: Boolean(user.telegram_verified_at),
   };
 }
 
@@ -80,6 +82,9 @@ export function UserEditorList({
           whatsapp_number: user.whatsapp_number,
           whatsapp_opt_in: user.whatsapp_opt_in,
           whatsapp_verified: user.whatsapp_verified,
+          telegram_chat_id: user.telegram_chat_id,
+          telegram_opt_in: user.telegram_opt_in,
+          telegram_verified: user.telegram_verified,
           alert_preferences_json: {
             min_score: Number(user.min_score || 60),
             channels: parseChannels(user.channels_csv),
@@ -121,6 +126,9 @@ export function UserEditorList({
                     <span className="badge tone-calm">{formatRoleLabel(draft.role)}</span>
                     <span className={`badge ${draft.whatsapp_verified ? "tone-success" : "tone-warning"}`}>
                       {draft.whatsapp_verified ? "WhatsApp verificado" : "WhatsApp sin verificar"}
+                    </span>
+                    <span className={`badge ${draft.telegram_verified ? "tone-success" : "tone-warning"}`}>
+                      {draft.telegram_verified ? "Telegram verificado" : "Telegram sin verificar"}
                     </span>
                   </div>
                 </div>
@@ -190,6 +198,16 @@ export function UserEditorList({
                       placeholder="60…"
                     />
                   </div>
+                  <div className="field">
+                    <label htmlFor={`user-telegram-${user.id}`}>Telegram chat id</label>
+                    <input
+                      id={`user-telegram-${user.id}`}
+                      name={`user-telegram-${user.id}`}
+                      value={draft.telegram_chat_id ?? ""}
+                      onChange={(event) => updateDraft(user.id, { telegram_chat_id: event.target.value })}
+                      placeholder="123456789…"
+                    />
+                  </div>
                 </div>
 
                 <div className="field">
@@ -198,7 +216,7 @@ export function UserEditorList({
                     id={`user-channels-${user.id}`}
                     value={draft.channels_csv}
                     onChange={(event) => updateDraft(user.id, { channels_csv: event.target.value })}
-                    placeholder="dashboard, email, whatsapp…"
+                    placeholder="dashboard, email, whatsapp, telegram…"
                   />
                 </div>
 
@@ -228,6 +246,24 @@ export function UserEditorList({
                       onChange={(event) => updateDraft(user.id, { whatsapp_verified: event.target.checked })}
                     />
                     <span>Número verificado</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.telegram_opt_in}
+                      onChange={(event) => updateDraft(user.id, { telegram_opt_in: event.target.checked })}
+                    />
+                    <span>Opt-in Telegram</span>
+                  </label>
+
+                  <label className="checkbox-row">
+                    <input
+                      type="checkbox"
+                      checked={draft.telegram_verified}
+                      onChange={(event) => updateDraft(user.id, { telegram_verified: event.target.checked })}
+                    />
+                    <span>Chat verificado</span>
                   </label>
 
                   <label className="checkbox-row">

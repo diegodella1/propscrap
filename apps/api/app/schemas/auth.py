@@ -26,7 +26,10 @@ class MeUpdateRequest(BaseModel):
     cuit: str | None = None
     whatsapp_number: str | None = None
     whatsapp_opt_in: bool | None = None
+    telegram_chat_id: str | None = None
+    telegram_opt_in: bool | None = None
     email_opt_in: bool | None = None
+    telegram_opt_in_alerts: bool | None = None
     alert_priority: str | None = None
     receive_deadlines: bool | None = None
     receive_relevant: bool | None = None

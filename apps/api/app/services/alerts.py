@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.tender import Alert, Tender, TenderMatch, User
-from app.services.users import get_user_alert_preferences, has_verified_whatsapp
+from app.services.users import get_user_alert_preferences, has_verified_telegram, has_verified_whatsapp
 
 DISPATCHABLE_STATUSES = ("pending", "retrying", "blocked")
 
@@ -40,7 +40,7 @@ def list_dispatchable_alerts(db: Session, *, limit: int) -> list[Alert]:
         select(Alert)
         .options(joinedload(Alert.user))
         .where(
-            Alert.delivery_channel.in_(("whatsapp", "email")),
+            Alert.delivery_channel.in_(("whatsapp", "email", "telegram")),
             Alert.delivery_status.in_(DISPATCHABLE_STATUSES),
             Alert.scheduled_for <= now,
         )
@@ -127,6 +127,8 @@ def _eligible_channels(user: User, preferences: dict) -> list[str]:
         channels.append("whatsapp")
     if "email" in requested_channels and user.email:
         channels.append("email")
+    if "telegram" in requested_channels and has_verified_telegram(user):
+        channels.append("telegram")
     return channels
 
 

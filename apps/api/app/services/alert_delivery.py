@@ -10,13 +10,15 @@ from app.models.tender import Alert, User
 from app.services.email import EmailMessage, NullEmailProvider, ResendEmailProvider
 from app.services.alerts import list_dispatchable_alerts
 from app.services.runtime_settings import get_automation_settings
+from app.services.telegram import BotTelegramProvider, NullTelegramProvider, TelegramMessage
 from app.services.whatsapp import WhatsappMessage, get_whatsapp_provider
 
 
 def dispatch_pending_alerts(db: Session) -> dict:
     settings = get_settings()
     runtime_settings = get_automation_settings(db)
-    whatsapp_provider = get_whatsapp_provider()
+    whatsapp_provider = get_whatsapp_provider(runtime_settings)
+    telegram_provider = _build_telegram_provider(runtime_settings)
     email_provider = _build_email_provider(runtime_settings)
     alerts = list_dispatchable_alerts(db, limit=settings.alert_dispatch_batch_size)
 
@@ -36,6 +38,7 @@ def dispatch_pending_alerts(db: Session) -> dict:
                 alert,
                 user,
                 whatsapp_provider=whatsapp_provider,
+                telegram_provider=telegram_provider,
                 email_provider=email_provider,
             )
         except RuntimeError as exc:
@@ -68,6 +71,7 @@ def _dispatch_alert(
     user: User | None,
     *,
     whatsapp_provider,
+    telegram_provider,
     email_provider,
 ):
     if alert.delivery_channel == "whatsapp":
@@ -94,6 +98,18 @@ def _dispatch_alert(
                 subject=subject,
                 html=html,
                 text=text,
+            )
+        )
+
+    if alert.delivery_channel == "telegram":
+        if user is None or not user.telegram_chat_id:
+            raise RuntimeError("Telegram alert has no reachable user or chat id")
+        if not telegram_provider.is_available():
+            raise RuntimeError("Telegram provider not configured")
+        return telegram_provider.send_message(
+            TelegramMessage(
+                chat_id=user.telegram_chat_id,
+                text=_build_alert_message(alert, user),
             )
         )
 
@@ -156,6 +172,23 @@ def _build_email_provider(runtime_settings) -> ResendEmailProvider | NullEmailPr
     if provider.is_available():
         return provider
     return NullEmailProvider()
+
+
+def _build_telegram_provider(runtime_settings) -> BotTelegramProvider | NullTelegramProvider:
+    settings = get_settings()
+    telegram_enabled = (
+        runtime_settings.telegram_enabled_override
+        if runtime_settings.telegram_enabled_override is not None
+        else settings.telegram_enabled
+    )
+    if not telegram_enabled:
+        return NullTelegramProvider()
+
+    bot_token = runtime_settings.telegram_bot_token_override or settings.telegram_bot_token
+    provider = BotTelegramProvider(bot_token=bot_token)
+    if provider.is_available():
+        return provider
+    return NullTelegramProvider()
 
 
 def _mark_retry_or_failed(alert: Alert, error_message: str, *, max_attempts: int) -> None:

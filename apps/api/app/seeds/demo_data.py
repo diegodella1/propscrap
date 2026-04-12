@@ -29,6 +29,26 @@ def seed_demo_data(db: Session) -> None:
         name="COMPR.AR",
         source_type="portal",
         base_url="https://comprar.gob.ar",
+        scraping_mode="coded",
+        connector_slug="comprar",
+    )
+    ensure_source(
+        db,
+        slug="pbac",
+        name="PBAC",
+        source_type="portal",
+        base_url="https://www.pbac.cgp.gba.gov.ar",
+        scraping_mode="coded",
+        connector_slug="pbac",
+    )
+    ensure_source(
+        db,
+        slug="boletin-oficial",
+        name="Boletín Oficial",
+        source_type="boletin",
+        base_url="https://www.boletinoficial.gob.ar",
+        scraping_mode="coded",
+        connector_slug="boletin-oficial",
     )
     db.flush()
 

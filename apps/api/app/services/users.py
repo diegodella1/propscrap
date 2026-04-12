@@ -18,8 +18,9 @@ DEFAULT_ALERT_PREFERENCES = {
     "receive_relevant": True,
     "receive_deadlines": True,
 }
-ALLOWED_ALERT_CHANNELS = {"dashboard", "whatsapp", "email"}
+ALLOWED_ALERT_CHANNELS = {"dashboard", "whatsapp", "email", "telegram"}
 PHONE_PATTERN = re.compile(r"^\+[1-9]\d{7,14}$")
+TELEGRAM_CHAT_PATTERN = re.compile(r"^-?\d{4,}$")
 
 
 def ensure_demo_user(db: Session) -> User:
@@ -111,6 +112,9 @@ def update_user(
     whatsapp_number: str | None = None,
     whatsapp_opt_in: bool | None = None,
     whatsapp_verified: bool | None = None,
+    telegram_chat_id: str | None = None,
+    telegram_opt_in: bool | None = None,
+    telegram_verified: bool | None = None,
     alert_preferences_json: dict | None = None,
 ) -> User:
     _ensure_user_defaults(user)
@@ -139,6 +143,14 @@ def update_user(
     if whatsapp_opt_in is not None:
         user.whatsapp_opt_in = whatsapp_opt_in
 
+    if telegram_chat_id is not None:
+        user.telegram_chat_id = _normalize_telegram_chat_id(telegram_chat_id)
+        if user.telegram_chat_id is None:
+            user.telegram_verified_at = None
+
+    if telegram_opt_in is not None:
+        user.telegram_opt_in = telegram_opt_in
+
     if alert_preferences_json is not None:
         user.alert_preferences_json = normalize_alert_preferences(alert_preferences_json)
 
@@ -150,6 +162,15 @@ def update_user(
         else:
             user.whatsapp_verified_at = None
 
+    if telegram_verified is not None:
+        if telegram_verified:
+            if not user.telegram_chat_id:
+                raise ValidationError("Cannot verify Telegram without a valid chat id")
+            user.telegram_verified_at = user.telegram_verified_at or datetime.now(tz=UTC)
+        else:
+            user.telegram_verified_at = None
+
+    _validate_telegram_configuration(user)
     _validate_whatsapp_configuration(user)
     db.add(user)
     db.flush()
@@ -204,6 +225,10 @@ def has_verified_whatsapp(user: User) -> bool:
     return bool(user.whatsapp_number and user.whatsapp_opt_in and user.whatsapp_verified_at)
 
 
+def has_verified_telegram(user: User) -> bool:
+    return bool(user.telegram_chat_id and user.telegram_opt_in and user.telegram_verified_at)
+
+
 def _ensure_user_defaults(user: User) -> None:
     user.alert_preferences_json = normalize_alert_preferences(user.alert_preferences_json)
 
@@ -220,6 +245,18 @@ def _validate_whatsapp_configuration(user: User) -> None:
         raise ValidationError("WhatsApp channel requires the number to be verified")
 
 
+def _validate_telegram_configuration(user: User) -> None:
+    if user.telegram_opt_in and not user.telegram_chat_id:
+        raise ValidationError("Telegram opt-in requires a valid Telegram chat id")
+
+    channels = set((user.alert_preferences_json or {}).get("channels", []))
+    if "telegram" in channels and not user.telegram_opt_in:
+        raise ValidationError("Telegram channel requires opt-in to be enabled")
+
+    if "telegram" in channels and user.telegram_chat_id and not user.telegram_verified_at:
+        raise ValidationError("Telegram channel requires the chat id to be verified")
+
+
 def _normalize_whatsapp_number(raw_value: str) -> str | None:
     value = raw_value.strip()
     if not value:
@@ -234,3 +271,12 @@ def _normalize_whatsapp_number(raw_value: str) -> str | None:
     if not PHONE_PATTERN.fullmatch(compact):
         raise ValidationError("WhatsApp number must use E.164 format, for example +5491123456789")
     return compact
+
+
+def _normalize_telegram_chat_id(raw_value: str) -> str | None:
+    value = raw_value.strip()
+    if not value:
+        return None
+    if not TELEGRAM_CHAT_PATTERN.fullmatch(value):
+        raise ValidationError("Telegram chat id must be numeric, for example 123456789 or -1001234567890")
+    return value

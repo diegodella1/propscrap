@@ -15,6 +15,8 @@ export function AutomationSettingsPanel({ settings }: Props) {
   const [intervalHours, setIntervalHours] = useState(String(settings.ingestion_interval_hours));
   const [openaiApiKey, setOpenaiApiKey] = useState("");
   const [resendApiKey, setResendApiKey] = useState("");
+  const [whatsappMetaToken, setWhatsappMetaToken] = useState("");
+  const [telegramBotToken, setTelegramBotToken] = useState("");
   const [openaiModel, setOpenaiModel] = useState(settings.openai_model ?? "gpt-4.1-mini");
   const [masterPrompt, setMasterPrompt] = useState(settings.llm_master_prompt ?? "");
   const [contactEmail, setContactEmail] = useState(settings.contact_email ?? "");
@@ -23,6 +25,11 @@ export function AutomationSettingsPanel({ settings }: Props) {
   const [demoBookingUrl, setDemoBookingUrl] = useState(settings.demo_booking_url ?? "");
   const [resendFromEmail, setResendFromEmail] = useState(settings.resend_from_email ?? "");
   const [emailDeliveryEnabled, setEmailDeliveryEnabled] = useState(settings.email_delivery_enabled);
+  const [whatsappEnabled, setWhatsappEnabled] = useState(settings.whatsapp_enabled);
+  const [whatsappProvider, setWhatsappProvider] = useState(settings.whatsapp_provider ?? "mock");
+  const [whatsappApiVersion, setWhatsappApiVersion] = useState(settings.whatsapp_api_version ?? "v23.0");
+  const [whatsappPhoneNumberId, setWhatsappPhoneNumberId] = useState(settings.whatsapp_meta_phone_number_id ?? "");
+  const [telegramEnabled, setTelegramEnabled] = useState(settings.telegram_enabled);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
   const lastRunLabel = settings.last_run_started_at
@@ -53,6 +60,13 @@ export function AutomationSettingsPanel({ settings }: Props) {
           resend_api_key: resendApiKey || undefined,
           resend_from_email: resendFromEmail,
           email_delivery_enabled: emailDeliveryEnabled,
+          whatsapp_enabled: whatsappEnabled,
+          whatsapp_provider: whatsappProvider,
+          whatsapp_meta_token: whatsappMetaToken || undefined,
+          whatsapp_meta_phone_number_id: whatsappPhoneNumberId,
+          whatsapp_api_version: whatsappApiVersion,
+          telegram_enabled: telegramEnabled,
+          telegram_bot_token: telegramBotToken || undefined,
         }),
       });
       const payload = await response.json().catch(() => null);
@@ -64,6 +78,8 @@ export function AutomationSettingsPanel({ settings }: Props) {
       setIsEnabled(payload.is_enabled);
       setOpenaiApiKey("");
       setResendApiKey("");
+      setWhatsappMetaToken("");
+      setTelegramBotToken("");
       setOpenaiModel(payload.openai_model ?? "gpt-4.1-mini");
       setMasterPrompt(payload.llm_master_prompt ?? "");
       setContactEmail(payload.contact_email ?? "");
@@ -72,6 +88,11 @@ export function AutomationSettingsPanel({ settings }: Props) {
       setDemoBookingUrl(payload.demo_booking_url ?? "");
       setResendFromEmail(payload.resend_from_email ?? "");
       setEmailDeliveryEnabled(Boolean(payload.email_delivery_enabled));
+      setWhatsappEnabled(Boolean(payload.whatsapp_enabled));
+      setWhatsappProvider(payload.whatsapp_provider ?? "mock");
+      setWhatsappApiVersion(payload.whatsapp_api_version ?? "v23.0");
+      setWhatsappPhoneNumberId(payload.whatsapp_meta_phone_number_id ?? "");
+      setTelegramEnabled(Boolean(payload.telegram_enabled));
       setMessage("Automatización guardada.");
     });
   }
@@ -124,6 +145,11 @@ export function AutomationSettingsPanel({ settings }: Props) {
           <p>{settings.resend_api_key_configured ? "Resend configurado." : "Falta configurar Resend."}</p>
         </article>
         <article className="admin-overview-card">
+          <span className="section-kicker">WhatsApp</span>
+          <h3>{whatsappEnabled ? `Canal ${whatsappProvider}` : "Canal pausado"}</h3>
+          <p>{settings.whatsapp_meta_token_configured ? "Proveedor listo para despacho." : "Falta token o configuración del proveedor."}</p>
+        </article>
+        <article className="admin-overview-card">
           <span className="section-kicker">Contacto</span>
           <h3>Canales públicos</h3>
           <p>{contactEmail || contactWhatsappNumber || contactTelegramHandle || "Todavía no configurados."}</p>
@@ -140,6 +166,18 @@ export function AutomationSettingsPanel({ settings }: Props) {
           <span className="section-kicker">Readiness</span>
           <h3>Email</h3>
           <p>{settings.resend_api_key_configured && emailDeliveryEnabled ? "Listo para delivery transaccional." : "Canal incompleto o pausado."}</p>
+        </article>
+        <article className="ops-readiness-card">
+          <span className="section-kicker">Readiness</span>
+          <h3>WhatsApp y Telegram</h3>
+          <p>
+            {(
+              (settings.whatsapp_meta_token_configured && whatsappEnabled) ||
+              (settings.telegram_bot_token_configured && telegramEnabled)
+            )
+              ? "Hay al menos un canal instantáneo listo."
+              : "Todavía no hay canal instantáneo configurado."}
+          </p>
         </article>
         <article className="ops-readiness-card">
           <span className="section-kicker">Ejecución</span>
@@ -214,6 +252,68 @@ export function AutomationSettingsPanel({ settings }: Props) {
             placeholder="Instrucción base para resumir, extraer requisitos y riesgos."
           />
         </label>
+      </section>
+
+      <section className="admin-settings-section">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Canales de alerta</span>
+            <h2>WhatsApp y Telegram</h2>
+          </div>
+        </div>
+        <div className="source-edit-grid source-edit-grid-compact">
+          <label className="form-field">
+            <span>WhatsApp habilitado</span>
+            <select value={whatsappEnabled ? "on" : "off"} onChange={(event) => setWhatsappEnabled(event.target.value === "on")}>
+              <option value="off">Pausado</option>
+              <option value="on">Activo</option>
+            </select>
+          </label>
+          <label className="form-field">
+            <span>Proveedor WhatsApp</span>
+            <select value={whatsappProvider} onChange={(event) => setWhatsappProvider(event.target.value)}>
+              <option value="mock">Mock</option>
+              <option value="meta">Meta</option>
+            </select>
+          </label>
+          <label className="form-field">
+            <span>WhatsApp API version</span>
+            <input value={whatsappApiVersion} onChange={(event) => setWhatsappApiVersion(event.target.value)} placeholder="v23.0" />
+          </label>
+          <label className="form-field">
+            <span>Phone number id</span>
+            <input value={whatsappPhoneNumberId} onChange={(event) => setWhatsappPhoneNumberId(event.target.value)} placeholder="123456789…" />
+          </label>
+          <label className="form-field">
+            <span>Meta token</span>
+            <input
+              type="password"
+              value={whatsappMetaToken}
+              onChange={(event) => setWhatsappMetaToken(event.target.value)}
+              placeholder={settings.whatsapp_meta_token_configured ? "Cargado. Escribí uno nuevo para reemplazar." : "EAAG…"}
+            />
+          </label>
+          <label className="form-field">
+            <span>Telegram habilitado</span>
+            <select value={telegramEnabled ? "on" : "off"} onChange={(event) => setTelegramEnabled(event.target.value === "on")}>
+              <option value="off">Pausado</option>
+              <option value="on">Activo</option>
+            </select>
+          </label>
+          <label className="form-field">
+            <span>Telegram bot token</span>
+            <input
+              type="password"
+              value={telegramBotToken}
+              onChange={(event) => setTelegramBotToken(event.target.value)}
+              placeholder={settings.telegram_bot_token_configured ? "Cargado. Escribí uno nuevo para reemplazar." : "123456:ABC…"}
+            />
+          </label>
+        </div>
+        <div className="detail-note-card">
+          <span className="section-kicker">Canales instantáneos</span>
+          <p>WhatsApp usa Meta o mock. Telegram usa bot token y chat id cargado por usuario o por admin de empresa.</p>
+        </div>
       </section>
 
       <section className="admin-settings-section">

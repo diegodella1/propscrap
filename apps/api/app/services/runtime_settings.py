@@ -43,6 +43,13 @@ def update_automation_settings(
     resend_api_key: str | None = None,
     resend_from_email: str | None = None,
     email_delivery_enabled: bool | None = None,
+    whatsapp_enabled: bool | None = None,
+    whatsapp_provider: str | None = None,
+    whatsapp_meta_token: str | None = None,
+    whatsapp_meta_phone_number_id: str | None = None,
+    whatsapp_api_version: str | None = None,
+    telegram_enabled: bool | None = None,
+    telegram_bot_token: str | None = None,
 ) -> AutomationSetting:
     if is_enabled is not None:
         settings.is_enabled = is_enabled
@@ -79,6 +86,27 @@ def update_automation_settings(
         settings.resend_from_email = normalized_from_email or None
     if email_delivery_enabled is not None:
         settings.email_delivery_enabled = email_delivery_enabled
+    if whatsapp_enabled is not None:
+        settings.whatsapp_enabled_override = whatsapp_enabled
+    if whatsapp_provider is not None:
+        normalized_provider = whatsapp_provider.strip().lower()
+        if normalized_provider not in {"mock", "meta"}:
+            raise ValidationError("whatsapp_provider must be one of: mock, meta")
+        settings.whatsapp_provider_override = normalized_provider
+    if whatsapp_meta_token is not None:
+        normalized_whatsapp_token = whatsapp_meta_token.strip()
+        settings.whatsapp_meta_token_override = normalized_whatsapp_token or None
+    if whatsapp_meta_phone_number_id is not None:
+        normalized_phone_id = whatsapp_meta_phone_number_id.strip()
+        settings.whatsapp_meta_phone_number_id_override = normalized_phone_id or None
+    if whatsapp_api_version is not None:
+        normalized_api_version = whatsapp_api_version.strip()
+        settings.whatsapp_meta_api_version_override = normalized_api_version or None
+    if telegram_enabled is not None:
+        settings.telegram_enabled_override = telegram_enabled
+    if telegram_bot_token is not None:
+        normalized_telegram_token = telegram_bot_token.strip()
+        settings.telegram_bot_token_override = normalized_telegram_token or None
     db.add(settings)
     db.flush()
     return settings

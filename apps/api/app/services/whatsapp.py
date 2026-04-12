@@ -101,18 +101,43 @@ class MetaWhatsappProvider(WhatsappProvider):
         return WhatsappSendResult(provider_message_id=provider_message_id, provider_name=self.provider_name)
 
 
-def get_whatsapp_provider() -> WhatsappProvider:
+def get_whatsapp_provider(runtime_settings=None) -> WhatsappProvider:
     settings = get_settings()
     outbox_path = get_whatsapp_outbox_path()
+    whatsapp_enabled = (
+        runtime_settings.whatsapp_enabled_override
+        if runtime_settings is not None and runtime_settings.whatsapp_enabled_override is not None
+        else settings.whatsapp_enabled
+    )
+    whatsapp_provider = (
+        runtime_settings.whatsapp_provider_override
+        if runtime_settings is not None and runtime_settings.whatsapp_provider_override
+        else settings.whatsapp_provider
+    )
+    whatsapp_api_version = (
+        runtime_settings.whatsapp_meta_api_version_override
+        if runtime_settings is not None and runtime_settings.whatsapp_meta_api_version_override
+        else settings.whatsapp_meta_api_version
+    )
+    whatsapp_token = (
+        runtime_settings.whatsapp_meta_token_override
+        if runtime_settings is not None and runtime_settings.whatsapp_meta_token_override
+        else settings.whatsapp_meta_token
+    )
+    whatsapp_phone_number_id = (
+        runtime_settings.whatsapp_meta_phone_number_id_override
+        if runtime_settings is not None and runtime_settings.whatsapp_meta_phone_number_id_override
+        else settings.whatsapp_meta_phone_number_id
+    )
 
-    if not settings.whatsapp_enabled:
-        return MetaWhatsappProvider(api_version=settings.whatsapp_meta_api_version, token=None, phone_number_id=None)
+    if not whatsapp_enabled:
+        return MetaWhatsappProvider(api_version=whatsapp_api_version, token=None, phone_number_id=None)
 
-    if settings.whatsapp_provider == "meta":
+    if whatsapp_provider == "meta":
         return MetaWhatsappProvider(
-            api_version=settings.whatsapp_meta_api_version,
-            token=settings.whatsapp_meta_token,
-            phone_number_id=settings.whatsapp_meta_phone_number_id,
+            api_version=whatsapp_api_version,
+            token=whatsapp_token,
+            phone_number_id=whatsapp_phone_number_id,
         )
 
     return MockWhatsappProvider(outbox_path=outbox_path)
