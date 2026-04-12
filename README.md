@@ -202,6 +202,7 @@ La app usa PostgreSQL estándar. Si preferís apuntar al Postgres de Supabase lo
 ## Release readiness
 
 - checklist operativa: [docs/launch-readiness.md](docs/launch-readiness.md)
+- guía de demo y prueba de 30 días: [docs/demo-guide.md](docs/demo-guide.md)
 - validación reproducible: `bash scripts/release_readiness_check.sh`
 - smoke funcional: `bash scripts/smoke_easytaciones.sh`
 - arranque demo local: `bash scripts/start_demo_stack.sh`
