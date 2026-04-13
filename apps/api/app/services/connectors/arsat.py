@@ -32,25 +32,27 @@ class ArsatConnector(BaseConnector):
 
     def _extract_records(self, html: str) -> list[RawTenderRecord]:
         soup = BeautifulSoup(html, "lxml")
-        text = soup.get_text("\n", strip=True)
-        normalized = re.sub(r"\n{2,}", "\n", text)
-        pattern = re.compile(
-            r"(?P<title>(?:Licitación|Invitación)[^\n]+)\n"
-            r".*?Recepción de ofertas hasta el día\s*(?P<deadline>\d{2}/\d{2}/\d{4})\s*a las\s*(?P<deadline_time>\d{1,2}[.:]\d{2})\s*horas?"
-            r".*?Acto de Apertura de ofertas el día\s*(?P<opening>\d{2}/\d{2}/\d{4})\s*a las\s*(?P<opening_time>\d{1,2}[.:]\d{2})\s*horas?",
-            re.IGNORECASE | re.DOTALL,
-        )
+        lines = [
+            self._clean_text(line)
+            for line in soup.get_text("\n", strip=True).splitlines()
+            if self._clean_text(line)
+        ]
 
         items: list[RawTenderRecord] = []
         seen_ids: set[str] = set()
-        for match in pattern.finditer(normalized):
-            title = self._clean_text(match.group("title"))
-            external_id = self._extract_external_id(title)
+        for block in self._iter_procurement_blocks(lines):
+            title = block[0]
+            deadline_info = self._find_schedule(block, kind="deadline")
+            opening_info = self._find_schedule(block, kind="opening")
+            if deadline_info is None or opening_info is None:
+                continue
+
+            external_id = self._extract_external_id(title, block)
             if external_id in seen_ids:
                 continue
             seen_ids.add(external_id)
-            deadline_date = self._parse_datetime(match.group("deadline"), match.group("deadline_time"))
-            opening_date = self._parse_datetime(match.group("opening"), match.group("opening_time"))
+            deadline_date = self._parse_datetime(deadline_info[0], deadline_info[1])
+            opening_date = self._parse_datetime(opening_info[0], opening_info[1])
             items.append(
                 RawTenderRecord(
                     external_id=external_id,
@@ -74,11 +76,55 @@ class ArsatConnector(BaseConnector):
         return items
 
     @staticmethod
-    def _extract_external_id(title: str) -> str:
-        match = re.search(r"N[°º]\s*([A-Z]*\s*\d+/\d+)", title, re.IGNORECASE)
+    def _iter_procurement_blocks(lines: list[str]) -> list[list[str]]:
+        title_pattern = re.compile(r"^(Licitación|Invitación)\b", re.IGNORECASE)
+        blocks: list[list[str]] = []
+        current: list[str] = []
+        for line in lines:
+            if title_pattern.match(line):
+                if current:
+                    blocks.append(current)
+                current = [line]
+                continue
+            if current:
+                current.append(line)
+        if current:
+            blocks.append(current)
+        return blocks
+
+    @staticmethod
+    def _find_schedule(block: list[str], *, kind: str) -> tuple[str, str] | None:
+        if kind == "deadline":
+            pattern = re.compile(
+                r"Recepción de ofertas hasta el día\s*(\d{2}/\d{2}/\d{4})\s*a las\s*(\d{1,2}[.:]\d{2})",
+                re.IGNORECASE,
+            )
+        else:
+            pattern = re.compile(
+                r"Acto de Apertura de ofertas el día\s*(\d{2}/\d{2}/\d{4})\s*a las\s*(\d{1,2}[.:]\d{2})",
+                re.IGNORECASE,
+            )
+        for line in block[1:]:
+            match = pattern.search(line)
+            if match:
+                return match.group(1), match.group(2)
+        return None
+
+    @staticmethod
+    def _extract_external_id(title: str, block: list[str] | None = None) -> str:
+        normalized = re.sub(r"\s+", " ", title).strip()
+        match = re.search(r"(?:N[°º]\s*|[-–]\s*)(\d+/\d{4})\b", normalized, re.IGNORECASE)
         if match:
-            return re.sub(r"\s+", "", match.group(1).upper())
-        return title[:80]
+            return match.group(1)
+        match = re.search(r"\b(?:LPN|LPri|LP|LicPri|LicPub)[\s-]*(\d+[-/]\d{4})\b", normalized, re.IGNORECASE)
+        if match:
+            return match.group(1).replace("-", "/")
+        if block:
+            for line in block[1:]:
+                match = re.search(r"\b(?:LPN|LPri|LP|LicPri|LicPub)[\s-]*(\d+[-/]\d{4})\b", line, re.IGNORECASE)
+                if match:
+                    return match.group(1).replace("-", "/")
+        return normalized[:80]
 
     @staticmethod
     def _extract_procedure_type(title: str) -> str:

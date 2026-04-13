@@ -2,18 +2,27 @@ from __future__ import annotations
 
 import unittest
 
+from bs4 import BeautifulSoup
+
 from app.services.connectors.arsat import ArsatConnector
 from app.services.connectors.catamarca import CatamarcaConnector
 from app.services.connectors.chaco import ChacoConnector
 from app.services.connectors.cordoba import CordobaConnector
 from app.services.connectors.corrientes import CorrientesConnector
+from app.services.connectors.entre_rios import EntreRiosConnector
+from app.services.connectors.gcba import GcbaConnector
 from app.services.connectors.inta import IntaConnector
+from app.services.connectors.la_rioja import LaRiojaConnector
 from app.services.connectors.mendoza import MendozaConnector
+from app.services.connectors.neuquen import NeuquenConnector
 from app.services.connectors.pami import PamiConnector
+from app.services.connectors.pbac import PbacConnector
 from app.services.connectors.rio_negro import RioNegroConnector
 from app.services.connectors.salta import SaltaConnector
+from app.services.connectors.san_juan import SanJuanConnector
 from app.services.connectors.san_luis import SanLuisConnector
 from app.services.connectors.santa_fe import SantaFeConnector
+from app.services.connectors.tierra_del_fuego import TierraDelFuegoConnector
 from app.services.connectors.tucuman import TucumanConnector
 
 
@@ -38,6 +47,28 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertEqual(items[0].external_id, "10606-0012-LPU26")
         self.assertEqual(items[0].organization, "Ministerio de Salud")
         self.assertIn("/detalle/1", items[0].source_url)
+
+    def test_mendoza_extract_rows_uses_public_detail_redirect(self) -> None:
+        html = """
+        <table>
+          <tr>
+            <th>Número de Proceso</th><th>Nombre descriptivo de Proceso</th><th>Tipo de Procedimiento</th><th>Fecha de Apertura</th><th>Organismo</th>
+          </tr>
+          <tr>
+            <td><a onclick="return redireccionar('PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123');" href="javascript:__doPostBack('x','')">11405-0037-CDI26</a></td>
+            <td>Servicio de iluminación</td>
+            <td>Contratación Directa</td>
+            <td>14/04/2026 10:30</td>
+            <td>Subsecretaría de Cultura</td>
+          </tr>
+        </table>
+        """
+        items = MendozaConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(
+            items[0].source_url,
+            "https://comprar.mendoza.gov.ar/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123",
+        )
 
     def test_salta_extract_records(self) -> None:
         html = """
@@ -85,6 +116,14 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertEqual(items[0].external_id, "02/2025")
         self.assertEqual(items[0].organization, "ARSAT")
 
+    def test_arsat_extract_external_id_from_dash_pattern(self) -> None:
+        title = "Licitación Pública Nacional N° 05/2025 - AMPLIACIÓN DE LA REFEFO EN EL LITORAL PATAGÓNICO"
+        self.assertEqual(ArsatConnector()._extract_external_id(title), "05/2025")
+
+    def test_arsat_extract_external_id_from_abbreviated_pattern(self) -> None:
+        title = "01. LPri 02-2025 – Pliego de Condiciones Generales"
+        self.assertEqual(ArsatConnector()._extract_external_id(title), "02/2025")
+
     def test_santa_fe_extract_records(self) -> None:
         payload = {
             "success": True,
@@ -125,6 +164,38 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertIn("Implante coclear", items[0].title)
         self.assertEqual(items[1].external_id, "301/26")
         self.assertIn("PATISIRAN", items[1].title)
+
+    def test_pami_extract_table_records(self) -> None:
+        html = """
+        <table class="tabla_compras">
+          <tr>
+            <th>Fecha</th><th>Hora</th><th>N&deg; Tramite</th><th>Productos o servicios</th><th>Archivos del pliego</th>
+          </tr>
+          <tr class="gris">
+            <td class="center">13/04/2026</td>
+            <td class="center">10:00</td>
+            <td>Compulsa Abreviada 301/26</td>
+            <td>Provisión, logística y dispensa del principio activo importado: PATISIRAN (MARCA COMERCIAL ONPATTRO)</td>
+            <td class="center"><i class="material-icons active" onClick="verArchivos('624892');">remove_red_eye</i></td>
+          </tr>
+        </table>
+        """
+        items = PamiConnector()._extract_records(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "301/26")
+        self.assertEqual(items[0].procedure_type, "Compulsa Abreviada")
+        self.assertIn("PATISIRAN", items[0].title)
+        self.assertEqual(items[0].source_url, PamiConnector.calendar_url)
+
+    def test_pami_extract_file_id(self) -> None:
+        html = """
+        <td class="center"><i class="material-icons active" onClick="verArchivos('624892');">remove_red_eye</i></td>
+        """
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(html, "lxml")
+        file_id = PamiConnector()._extract_file_id(soup.find("td"))
+        self.assertEqual(file_id, "624892")
 
     def test_inta_extract_records(self) -> None:
         payload = {
@@ -223,6 +294,28 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertEqual(items[0].organization, "Secretaría de Administración")
         self.assertEqual(items[0].status_raw, "En Evaluacion")
 
+    def test_pbac_source_url_uses_expanded_listing(self) -> None:
+        html = """
+        <table id="ctl00_CPH1_CtrlTablasPortal_gridPliegoAperturaProxima">
+          <tr>
+            <th>Número de Proceso</th><th>Nombre de Proceso</th><th>Tipo de Proceso</th><th>Fecha de Apertura</th><th>Estado</th><th>Unidad Ejecutora</th>
+          </tr>
+          <tr>
+            <td><a href="javascript:__doPostBack('ctl00$CPH1$CtrlTablasPortal$gridPliegoAperturaProxima$ctl02$lnkNumeroProceso','')">2026-29-2-350</a></td>
+            <td>Servicio de instalación y puesta en funcionamiento de una Red de Área Local</td>
+            <td><p>Licitación Privada</p></td>
+            <td>13/04/2026 08:00 Hrs.</td>
+            <td><p>Publicado</p></td>
+            <td><p>103.14.12.1 - Hospital Dr. I. Iriarte - Quilmes</p></td>
+          </tr>
+        </table>
+        """
+        connector = PbacConnector()
+        soup = BeautifulSoup(html, "lxml")
+        table = soup.find("table", id=connector.table_id)
+        self.assertIsNotNone(table)
+        self.assertEqual(connector.listing_url, "https://pbac.cgp.gba.gov.ar/ListarAperturaProxima.aspx")
+
     def test_cordoba_extract_records(self) -> None:
         payload = {
             "success": True,
@@ -258,6 +351,219 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertEqual(items[0].organization, "PODER EJECUTIVO MUNICIPAL")
         self.assertIn("SECRETARÍA DE SALUD", items[0].description_raw or "")
         self.assertIn("/apifg/compra/compra/proveedor/288", items[0].source_url)
+
+    def test_gcba_extract_rows(self) -> None:
+        html = """
+        <table>
+          <tr>
+            <th>Número de Proceso</th><th>Nombre de Proceso</th><th>Tipo de Proceso</th><th>Fecha de Apertura</th><th>Estado</th><th>Unidad Ejecutora</th>
+          </tr>
+          <tr>
+            <td><a href="/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123">414-0373-LPU26</a></td>
+            <td>ADQUISICION DE REACTIVOS PARA MARCADORES TUMORALES Y HORMONAS-LABORATORIO CENTRAL</td>
+            <td>Licitación Pública</td>
+            <td>14/04/2026 08:00 Hrs.</td>
+            <td>Publicado</td>
+            <td>414 - HTAL. MARIA CURIE</td>
+          </tr>
+        </table>
+        """
+        items = GcbaConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "414-0373-LPU26")
+        self.assertEqual(items[0].procedure_type, "Licitación Pública")
+        self.assertEqual(items[0].status_raw, "Publicado")
+        self.assertEqual(items[0].organization, "414 - HTAL. MARIA CURIE")
+        self.assertIn("/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123", items[0].source_url)
+
+    def test_gcba_extract_detail_summary(self) -> None:
+        html = """
+        <html>
+          <body>
+            <table>
+              <tr><td>Número del proceso de compra</td><td>434-0826-CME26</td></tr>
+              <tr><td>Nombre del proceso de compra</td><td>Adquisición Cateter Guía y otros - Neurocirugía - LOPEZ PABLO</td></tr>
+              <tr><td>Unidad Operativa de Adquisiciones</td><td>434 - HTAL.DONACION FRANCISCO SANTOJANNI</td></tr>
+              <tr><td>Objeto de la contratación</td><td>Adquisición Cateter Guía y otros - Neurocirugía - LOPEZ PABLO</td></tr>
+              <tr><td>Procedimiento de selección</td><td>Contratación menor</td></tr>
+              <tr><td>Fecha y hora estimada de publicación en el portal</td><td>6/4/2026 15:00:00</td></tr>
+              <tr><td>Fecha y hora acto de apertura</td><td>15/4/2026 12:30:00</td></tr>
+              <tr><td>Monto</td><td>$ 13.300.000,00</td></tr>
+            </table>
+          </body>
+        </html>
+        """
+        item = GcbaConnector().extract_detail_summary(
+            html,
+            "https://www.buenosairescompras.gob.ar/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123",
+        )
+        self.assertEqual(item.external_id, "434-0826-CME26")
+        self.assertEqual(item.procedure_type, "Contratación menor")
+        self.assertEqual(item.organization, "434 - HTAL.DONACION FRANCISCO SANTOJANNI")
+        self.assertEqual(str(item.estimated_amount), "13300000.00")
+        self.assertIn("PLIEGO/VistaPreviaPliegoCiudadano.aspx", item.source_url)
+
+    def test_gcba_extract_total_results(self) -> None:
+        html = """
+        <h4><small>
+          <span id="ctl00_CPH1_lblCantidadListaPliegos">Se han encontrado (203) resultados para su búsqueda.</span>
+        </small></h4>
+        """
+        self.assertEqual(GcbaConnector()._extract_total_results(html), 203)
+
+    def test_gcba_extract_records_from_staged_json_payload(self) -> None:
+        payload = {
+            "source": "licitaciones-caba",
+            "records": [
+                {
+                    "external_id": "434-0826-CME26",
+                    "title": "Adquisición Cateter Guía y otros - Neurocirugía - LOPEZ PABLO",
+                    "description_raw": "Objeto de la contratación",
+                    "organization": "434 - HTAL.DONACION FRANCISCO SANTOJANNI",
+                    "jurisdiction": "Ciudad Autónoma de Buenos Aires",
+                    "procedure_type": "Contratación menor",
+                    "publication_date": "2026-04-06",
+                    "deadline_date": "2026-04-15T12:30:00+00:00",
+                    "opening_date": "2026-04-15T12:30:00+00:00",
+                    "estimated_amount": "13300000.00",
+                    "currency": "ARS",
+                    "source_url": "https://www.buenosairescompras.gob.ar/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=abc123",
+                    "status_raw": "Publicado",
+                }
+            ],
+        }
+        items = GcbaConnector()._extract_records_from_json_payload(payload)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "434-0826-CME26")
+        self.assertEqual(items[0].organization, "434 - HTAL.DONACION FRANCISCO SANTOJANNI")
+        self.assertEqual(str(items[0].estimated_amount), "13300000.00")
+        self.assertEqual(items[0].publication_date.isoformat(), "2026-04-06")
+
+    def test_entre_rios_extract_rows(self) -> None:
+        html = """
+        <table id="tabla-resultados">
+          <thead>
+            <tr>
+              <td>PROCEDIMIENTO DE CONTRATACIÓN</td>
+              <td>OBJETO</td>
+              <td>DESTINO</td>
+              <td>ORGANISMO</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="table-primary">
+              <td><strong>Solicitud De Cotización 24/2025</strong></td>
+              <td>ADQUISICIÓN DE AIRE ACONDICIONADOS</td>
+              <td>DIRECCIÓN PROVINCIAL DE VIALIDAD</td>
+              <td>Dirección Provincial de Vialidad</td>
+            </tr>
+          </tbody>
+        </table>
+        """
+        items = EntreRiosConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "24/2025")
+        self.assertEqual(items[0].procedure_type, "Solicitud De Cotización")
+        self.assertEqual(items[0].organization, "Dirección Provincial de Vialidad")
+        self.assertIn("Destino: DIRECCIÓN PROVINCIAL DE VIALIDAD", items[0].description_raw or "")
+        self.assertEqual(items[0].status_raw, "En proceso de evaluación")
+
+    def test_san_juan_extract_records(self) -> None:
+        html = """
+        <script>
+        var obj={"licitaciones":{"res":[
+          {
+            "ID_PUBLICACION":7199,
+            "F_PUBLICACION":"\\/Date(1776095717000)\\/",
+            "ESTADOS":"Proceso de Apertura",
+            "F_APERTURA":"\\/Date(1777258800000)\\/",
+            "TIPO":"LICITACION PUBLICA",
+            "INSTITUCION":"Secretaría de Seguridad y Orden Público",
+            "OBJETO":"ADQUISICION DE CUBIERTAS VARIAS MEDIDAS",
+            "PRESUPUESTO":301590400,
+            "N_PUB":"04\\/2026",
+            "EXPEDIENTE":"1601-000402-2026-EXP-GC",
+            "INFORMACION":"Sala de licitaciones",
+            "DOMI_APERTURA":"Av. Libertador 750 Oeste",
+            "MAIL":"admin.policia@sanjuan.gov.ar",
+            "H_APERTURA":"09:30 AM",
+            "FPRESENTACION":"\\/Date(1777258800000)\\/",
+            "H_PRESENTACION":"08:30 AM"
+          }
+        ]}};
+        </script>
+        """
+        items = SanJuanConnector()._extract_records(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "04/2026")
+        self.assertEqual(items[0].procedure_type, "LICITACION PUBLICA")
+        self.assertEqual(items[0].organization, "Secretaría de Seguridad y Orden Público")
+        self.assertEqual(str(items[0].estimated_amount), "301590400")
+        self.assertIn("/index.php/detalle?id=7199", items[0].source_url)
+
+    def test_la_rioja_extract_rows(self) -> None:
+        html = """
+        <table id="resultado" class="formulario">
+          <tr>
+            <th>Organismo</th><th>Objeto Contratacion</th><th>Procedimiento</th><th>Modalidad</th><th>Fecha Caducidad</th><th>Cuenta Regresiva</th><th></th>
+          </tr>
+          <tr>
+            <td>Transporte, Transito y Seguridad Vial</td>
+            <td>S/ADQUISICION DE RTOS. P/BICICLETAS</td>
+            <td><img src="img/proced_cont_dir.gif"></td>
+            <td><img src="img/modal_tram_sim.gif"></td>
+            <td>14.04.2026 12:30</td>
+            <td>1 dias</td>
+            <td><a href="prov_aviso_anexo4_detalle.php?xxx2=86486">ver</a></td>
+          </tr>
+        </table>
+        """
+        items = LaRiojaConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "86486")
+        self.assertEqual(items[0].procedure_type, "Contratación Directa")
+        self.assertEqual(items[0].organization, "Transporte, Transito y Seguridad Vial")
+        self.assertIn("Trámite Simplificado", items[0].description_raw or "")
+        self.assertIn("xxx2=86486", items[0].source_url)
+
+    def test_tierra_del_fuego_extract_rows(self) -> None:
+        html = """
+        <article>
+          <div class="mk-blog-meta">
+            <h3 class="the-title"><a href="https://compras.tierradelfuego.gob.ar/?p=267766">LLAMADO A LICITACIÓN PUBLICA N° 01/2026 – EXPEDIENTE ELECTRONICO N° 423/2026</a></h3>
+            <div class="mk-blog-meta-wrapper"><time datetime="2026-03-20"></time></div>
+            <div class="the-excerpt"><p>OBJETO: adquisición de gas cloro envasado.</p></div>
+          </div>
+        </article>
+        <article>
+          <div class="mk-blog-meta">
+            <h3 class="the-title"><a href="https://compras.tierradelfuego.gob.ar/?p=269516">ADJUDICACION - LICITACIÓN PÚBLICA N° 20-2025</a></h3>
+            <div class="mk-blog-meta-wrapper"><time datetime="2026-04-09"></time></div>
+            <div class="the-excerpt"><p>Comunicado de adjudicación.</p></div>
+          </div>
+        </article>
+        """
+        items = TierraDelFuegoConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "01/2026")
+        self.assertEqual(items[0].procedure_type, "Licitación Pública")
+        self.assertEqual(items[0].publication_date.isoformat(), "2026-03-20")
+
+    def test_neuquen_extract_rows(self) -> None:
+        html = """
+        <div class="page-content">
+          <article class="post">
+            <h2 class="entry-title"><a href="https://salud.neuquen.gob.ar/objeto-adquisicion-de-insumos-de-odontologia/">OBJETO: adquisición de INSUMOS DE ODONTOLOGÍA.</a></h2>
+            <p>Licitación Pública Nº571 EX-2025-02421562-NEU-DESP#MS DECTO-2026-260-E-NEU-GPN IMPORTE ESTIMADO: $ 876.102.500,00 Destino: Distintos Servicios Asistenciales Fecha – hora y lugar de apertura: 9 de abril de 2026 – Hora: 10,00 Ministerio de Salud.</p>
+          </article>
+        </div>
+        """
+        items = NeuquenConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "EX-2025-02421562-NEU-DESP#MS")
+        self.assertEqual(items[0].organization, "Ministerio de Salud de la Provincia del Neuquén")
+        self.assertEqual(str(items[0].estimated_amount), "876102500.00")
+        self.assertEqual(items[0].opening_date.strftime("%Y-%m-%d %H:%M"), "2026-04-09 10:00")
 
     def test_tucuman_extract_rows(self) -> None:
         html = """

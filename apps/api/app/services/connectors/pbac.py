@@ -16,6 +16,7 @@ class PbacConnector(BaseConnector):
     name = "Compras PBAC"
     base_url = "https://pbac.cgp.gba.gov.ar"
     home_url = "https://pbac.cgp.gba.gov.ar/Default.aspx"
+    listing_url = "https://pbac.cgp.gba.gov.ar/ListarAperturaProxima.aspx"
     table_id = "ctl00_CPH1_CtrlTablasPortal_gridPliegoAperturaProxima"
 
     def fetch(self) -> list[RawTenderRecord]:
@@ -61,7 +62,7 @@ class PbacConnector(BaseConnector):
                     opening_date=opening_date,
                     estimated_amount=None,
                     currency="ARS",
-                    source_url=self.home_url,
+                    source_url=self.listing_url,
                     status_raw=status_raw,
                 )
             )

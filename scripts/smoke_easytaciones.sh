@@ -112,9 +112,9 @@ HEALTH="$(retry_curl -fsS http://127.0.0.1:8001/health)"
 [[ "$HEALTH" == *'"ocr"'* ]] || { echo "FAIL health missing ocr" >&2; exit 1; }
 
 echo "[2] public pages"
-check_contains "$BASE_WEB/" "Mostrá un producto claro, serio y accionable desde la primera pantalla."
-check_contains "$BASE_WEB/signup" "Registrá tu empresa por CUIT."
-check_contains "$BASE_WEB/login" "Elegí el tipo de acceso."
+check_contains "$BASE_WEB/" "Un solo lugar para decidir qué licitación mirar, seguir y mover."
+check_contains "$BASE_WEB/signup" "Registrá la empresa con base legal verificable."
+check_contains "$BASE_WEB/login" "Entrá por el carril correcto."
 check_contains "$BASE_WEB/login/empresa" "Ingresá como cliente."
 check_contains "$BASE_WEB/login/superadmin" "Ingresá a la consola de plataforma."
 retry_curl -fsS "$BASE_API/public/platform-settings" >/dev/null
@@ -173,10 +173,10 @@ USERS_COMPANY_CODE="$(retry_curl -sS -o /tmp/smoke_users_company.json -w '%{http
 [[ "$USERS_COMPANY_CODE" == "200" ]] || { echo "FAIL company users=$USERS_COMPANY_CODE"; cat /tmp/smoke_users_company.json; exit 1; }
 
 echo "[7] authenticated pages"
-check_auth_page "$COOKIE_USER" "$BASE_WEB/dashboard" "Oportunidades."
-check_auth_page "$COOKIE_USER" "$BASE_WEB/saved" "Pipeline."
-check_auth_page "$COOKIE_USER" "$BASE_WEB/company-profile" "Perfil comercial."
-check_auth_page "$COOKIE_USER" "$BASE_WEB/mi-cuenta" "Preferencias personales."
+check_auth_page "$COOKIE_USER" "$BASE_WEB/dashboard" "Inbox de discovery"
+check_auth_page "$COOKIE_USER" "$BASE_WEB/saved" "Pipeline activo."
+check_auth_page "$COOKIE_USER" "$BASE_WEB/company-profile" "Criterio comercial."
+check_auth_page "$COOKIE_USER" "$BASE_WEB/mi-cuenta" "Alertas, identidad y canales."
 check_auth_page "$COOKIE_USER" "$BASE_WEB/admin/company" "Equipo y perfil comercial."
 
 echo "[8] admin login"

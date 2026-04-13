@@ -6,12 +6,11 @@ import { fetchSources } from "../../lib/api";
 
 export default async function LandingPage() {
   const sources = await fetchSources();
-  const activeSources = sources.filter((source) => source.is_active).length;
   const activeSourceNames = sources
     .filter((source) => source.is_active)
     .map((source) => source.name)
-    .slice(0, 5);
-  const remainingSources = Math.max(activeSources - activeSourceNames.length, 0);
+    .sort((left, right) => left.localeCompare(right, "es"));
+  const activeSources = activeSourceNames.length;
 
   return (
     <PageShell variant="marketing" className="landing-shell page-screen page-screen--home">
@@ -49,10 +48,14 @@ export default async function LandingPage() {
             <article className="landing-stat-card">
               <span>Fuentes activas</span>
               <strong>{activeSources}</strong>
-              <p>
-                {activeSourceNames.join(", ")}
-                {remainingSources > 0 ? ` y ${remainingSources} más.` : "."}
-              </p>
+              <p>Todas visibles desde el primer scroll para mostrar cobertura real y expansión continua.</p>
+              <div className="landing-source-list" aria-label="Listado de fuentes activas">
+                {activeSourceNames.map((sourceName) => (
+                  <span key={sourceName} className="landing-source-pill">
+                    {sourceName}
+                  </span>
+                ))}
+              </div>
             </article>
             <article>
               <span>Gobierno</span>

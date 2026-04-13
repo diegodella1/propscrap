@@ -87,6 +87,33 @@ Fuentes ya activadas y con conector operativo:
 - `licitaciones-tucuman`
 - `licitaciones-corrientes`
 
+## Caso especial: GCBA
+
+GCBA ya no está bloqueada a nivel de modelo de datos ni de ingestión. El bloqueo real es sólo la captura del listado público desde este host.
+
+Estado actual:
+
+- la tabla pública de aperturas próximas fue validada con HTML/HAR real
+- el detalle ciudadano `/PLIEGO/VistaPreviaPliegoCiudadano.aspx?qs=...` es público
+- el backend ya puede consumir `data/staging/gcba.json`
+- ese JSON entra por el mismo pipeline que cualquier otra fuente
+
+Flujo operativo:
+
+1. Un operador o job externo captura `ListarAperturaProxima.aspx` desde un navegador/host que vea la grilla real.
+2. Se guarda `HAR` o `HTML`.
+3. Se ejecuta:
+   - `apps/api/.venv/bin/python scripts/export_gcba_json.py --har ...`
+   - o `apps/api/.venv/bin/python scripts/sync_gcba_staging.py --har ...`
+4. El super admin decide cuándo pasar `licitaciones-caba` a activa globalmente.
+5. Recién ahí los admins de empresa pueden heredarla o incluirla en modo custom.
+
+Regla comercial:
+
+- `implemented=true` no implica `is_active=true`
+- GCBA hoy está implementada en modo `staged_json`
+- queda inactiva globalmente hasta que la captura quede automatizada de forma confiable
+
 ## Nota específica sobre Corrientes
 
 Corrientes expone un backend público en:

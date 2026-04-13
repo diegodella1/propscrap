@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 import re
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 import httpx
@@ -48,7 +49,9 @@ class MendozaConnector(BaseConnector):
             procedure_type = self._clean_text(cells[2].get_text(" ", strip=True))
             opening_date = self._parse_datetime(cells[3].get_text(" ", strip=True))
             organization = self._clean_text(cells[4].get_text(" ", strip=True))
-            source_url = self._extract_source_url(process_link.get("href", "") if process_link else "")
+            source_url = self._extract_source_url(
+                process_link.get("onclick", "") if process_link and process_link.get("onclick") else process_link.get("href", "") if process_link else ""
+            )
 
             if not external_id or not title:
                 continue
@@ -99,5 +102,10 @@ class MendozaConnector(BaseConnector):
 
     def _extract_source_url(self, href: str) -> str:
         if not href:
+            return self.home_url
+        match = re.search(r"redireccionar\('([^']+)'\)", href)
+        if match:
+            return urljoin(f"{self.base_url}/", match.group(1))
+        if href.startswith("javascript:"):
             return self.home_url
         return str(httpx.URL(self.base_url).join(href))

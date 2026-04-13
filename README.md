@@ -55,6 +55,10 @@ Phase 6+:
 - alta de empresa por CUIT con perfil comercial inicial
 - superadmin con fuentes, automatización, auditoría y ABM global
 - release checklist y smoke listos para salida a campo
+- 21 fuentes activas verificadas en catálogo operativo
+- GCBA soportada vía `staged_json` para bypass del bloqueo del listado público desde este host
+- PAMI resuelta con links directos al PDF del pliego
+- smoke end-to-end validado en `127.0.0.1:3000` para empresa y superadmin
 
 ## Stack
 
@@ -161,6 +165,35 @@ curl -X POST http://127.0.0.1:8000/api/v1/jobs/alerts/generate
 curl -X POST http://127.0.0.1:8000/api/v1/jobs/alerts/dispatch
 ```
 
+## GCBA staged ingestion
+
+GCBA quedó soportada con un flujo pragmático para evitar el bloqueo del listado público desde este host.
+
+1. Capturar `ListarAperturaProxima.aspx` desde una máquina o navegador que sí vea la grilla real.
+2. Guardar el resultado como `HAR` o `HTML`.
+3. Generar el staged JSON:
+
+```bash
+apps/api/.venv/bin/python scripts/export_gcba_json.py \
+  --har /ruta/www.buenosairescompras.gob.ar.har \
+  --output data/staging/gcba.json
+```
+
+4. Exportar e ingerir en un solo paso:
+
+```bash
+apps/api/.venv/bin/python scripts/sync_gcba_staging.py \
+  --har /ruta/www.buenosairescompras.gob.ar.har
+```
+
+5. Si querés enriquecer con fichas ciudadanas ya guardadas como HTML, sumar `--detail-html-dir /ruta/al/directorio`.
+
+Notas:
+
+- el conector de `licitaciones-caba` consume `GCBA_STAGING_JSON_PATH`, por defecto `data/staging/gcba.json`
+- el pipeline posterior es el mismo que usa cualquier otra fuente: normalización, dedupe, persistencia y alertas
+- GCBA figura como implementada pero sigue inactiva globalmente hasta automatizar la captura en un host que no rebote a `Default.aspx`
+
 ## Variables LLM
 
 ```bash
@@ -207,6 +240,12 @@ La app usa PostgreSQL estándar. Si preferís apuntar al Postgres de Supabase lo
 - validación reproducible: `bash scripts/release_readiness_check.sh`
 - smoke funcional: `bash scripts/smoke_easytaciones.sh`
 - arranque demo local: `bash scripts/start_demo_stack.sh`
+
+Última validación manual relevante:
+
+- smoke estándar `bash scripts/smoke_easytaciones.sh` pasando sobre `127.0.0.1:3000`
+- flujo empresa cubierto: signup, `/dashboard`, `/saved`, `/company-profile`, `/mi-cuenta`, `/admin/company`
+- flujo superadmin cubierto: login, `/admin/platform`, fuentes, automatización, runs, alertas y auditoría
 
 ## Rutas principales
 

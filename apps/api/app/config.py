@@ -66,6 +66,13 @@ class Settings(BaseSettings):
     alert_dispatch_batch_size: int = Field(default=50, alias="ALERT_DISPATCH_BATCH_SIZE")
     alert_dispatch_max_attempts: int = Field(default=5, alias="ALERT_DISPATCH_MAX_ATTEMPTS")
     automation_poll_seconds: int = Field(default=60, alias="AUTOMATION_POLL_SECONDS")
+    gcba_browser_enabled: bool = Field(default=True, alias="GCBA_BROWSER_ENABLED")
+    gcba_staging_json_path: str = Field(default="data/staging/gcba.json", alias="GCBA_STAGING_JSON_PATH")
+    browser_timeout_ms: int = Field(default=30000, alias="BROWSER_TIMEOUT_MS")
+    playwright_chromium_executable: str = Field(
+        default="/usr/bin/chromium-browser",
+        alias="PLAYWRIGHT_CHROMIUM_EXECUTABLE",
+    )
     session_secret: str = Field(default="change-me-in-production", alias="SESSION_SECRET")
     session_cookie_name: str = Field(default="propscrap_session", alias="SESSION_COOKIE_NAME")
     session_max_age_seconds: int = Field(default=60 * 60 * 24 * 14, alias="SESSION_MAX_AGE_SECONDS")
