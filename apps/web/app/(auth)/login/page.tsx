@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { PageHero } from "../../../components/layout/page-hero";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 
@@ -9,12 +8,30 @@ export default async function LoginPage() {
     <PageShell variant="auth" className="page-screen page-screen--login-selector">
       <SiteHeader section="auth" audience="public" />
 
-      <PageHero
-        eyebrow="Acceso"
-        title="Elegí el tipo de acceso."
-        description="Separá el ingreso operativo de clientes del acceso de plataforma para que la prueba sea clara y sin mezcla de roles."
-        className="workspace-header auth-page-header"
-      />
+      <section className="hero hero-app about-hero about-hero-premium auth-page-header auth-page-header-premium">
+        <div className="premium-hero-copy">
+          <span className="eyebrow">Acceso</span>
+          <h1>Entrá por el carril correcto.</h1>
+          <p>Separar acceso de empresa y acceso de plataforma evita mezcla de roles y hace más clara la prueba desde la primera pantalla.</p>
+        </div>
+        <article className="panel premium-hero-rail">
+          <article>
+            <span>Empresa</span>
+            <strong>Uso operativo</strong>
+            <p>Discovery, pipeline, perfil comercial y alertas.</p>
+          </article>
+          <article>
+            <span>Superadmin</span>
+            <strong>Operación global</strong>
+            <p>Fuentes, jobs, automatización y gobierno de plataforma.</p>
+          </article>
+          <article>
+            <span>Objetivo</span>
+            <strong>Menos confusión</strong>
+            <p>Que cada usuario vea solo el entorno que le corresponde.</p>
+          </article>
+        </article>
+      </section>
 
       <section className="auth-choice-grid">
         <article className="panel dispatch-panel auth-choice-card">

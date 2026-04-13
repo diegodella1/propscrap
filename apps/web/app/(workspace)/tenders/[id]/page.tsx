@@ -77,12 +77,12 @@ export default async function TenderDetailPage({ params }: Props) {
         <article className="signal-card signal-accent">
           <span className="signal-label">Score</span>
           <strong>{matchScore ?? "n/d"}</strong>
-          <p>{match?.score_band ?? "Sin banda de relevancia"}</p>
+          <p>{match?.score_band ?? "Sin banda"}</p>
         </article>
         <article className="signal-card">
           <span className="signal-label">Estado interno</span>
           <strong>{formatStateLabel(state?.state ?? "new")}</strong>
-          <p>{state?.notes ?? "Todavía sin nota del equipo."}</p>
+          <p>{state?.notes ?? "Todavía sin nota interna."}</p>
         </article>
         <article className="signal-card">
           <span className="signal-label">Deadline</span>
@@ -107,7 +107,7 @@ export default async function TenderDetailPage({ params }: Props) {
           <div className="detail-note-card">
             <span className="section-kicker">Recomendado</span>
             <p>
-              Si esta oportunidad tiene fit, guardala o pasala a revisión con una nota concreta. El valor del trial aparece cuando el pipeline empieza a reflejar trabajo real.
+              Si esta oportunidad tiene fit, guardala o pasala a revisión con una nota concreta. El valor aparece cuando el pipeline empieza a reflejar trabajo real.
             </p>
           </div>
 
@@ -153,10 +153,10 @@ export default async function TenderDetailPage({ params }: Props) {
               </div>
             </div>
             <div className="results-ribbon">
-              <span>1. Leer fit</span>
-              <span>2. Decidir estado</span>
-              <span>3. Dejar nota</span>
-              <span>4. Pasar al pipeline</span>
+              <span>Leer fit</span>
+              <span>Decidir estado</span>
+              <span>Dejar nota</span>
+              <span>Pasar al pipeline</span>
             </div>
           </article>
 
@@ -172,7 +172,7 @@ export default async function TenderDetailPage({ params }: Props) {
                   <span className="badge">{match.score_band}</span>
                 </div>
                 {match.reasons_json?.summary?.length ? (
-                  <ul className="muted">
+                  <ul className="muted detail-clean-list">
                     {match.reasons_json.summary.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -246,7 +246,7 @@ export default async function TenderDetailPage({ params }: Props) {
                 {structured?.key_requirements?.length ? (
                   <div>
                     <strong>Requisitos</strong>
-                    <ul className="muted">
+                    <ul className="muted detail-clean-list">
                       {structured.key_requirements.map((item) => (
                         <li key={item}>{item}</li>
                       ))}
@@ -256,7 +256,7 @@ export default async function TenderDetailPage({ params }: Props) {
                 {structured?.risk_flags?.length ? (
                   <div>
                     <strong>Riesgos</strong>
-                    <ul className="muted">
+                    <ul className="muted detail-clean-list">
                       {structured.risk_flags.map((item) => (
                         <li key={item}>{item}</li>
                       ))}

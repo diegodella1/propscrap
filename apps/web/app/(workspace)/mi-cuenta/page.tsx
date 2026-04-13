@@ -221,6 +221,10 @@ export default async function AccountPage({ searchParams }: Props) {
             </Link>
             <LogoutButton />
           </div>
+
+          <p className="muted account-closing-note">
+            La cuenta queda lista cuando el canal principal, el perfil comercial y el pipeline ya reflejan trabajo real.
+          </p>
         </article>
       </section>
     </PageShell>

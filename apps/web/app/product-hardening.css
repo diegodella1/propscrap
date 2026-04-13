@@ -3284,3 +3284,117 @@ textarea:focus {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* Final finish layer: auth selector, tender dossier and footer details. */
+.page-screen--login-selector .auth-choice-grid {
+  gap: 12px !important;
+}
+
+.page-screen--login-selector .auth-choice-card {
+  padding: 20px !important;
+}
+
+.page-screen--login-selector .auth-choice-card h2 {
+  margin: 0 !important;
+  font-family: var(--font-display) !important;
+  font-size: 1.5rem !important;
+  letter-spacing: -0.05em !important;
+}
+
+.page-screen--login-selector .signup-confidence-bar {
+  gap: 8px !important;
+}
+
+.page-screen--account .account-closing-note {
+  margin: 2px 0 0 !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.tender-detail-header .tender-detail-title {
+  max-width: 14ch !important;
+  font-size: clamp(2.8rem, 5vw, 4.6rem) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.08em !important;
+}
+
+.tender-masthead {
+  gap: 12px !important;
+}
+
+.signal-card {
+  border-radius: 22px !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  background: rgba(255, 255, 255, 0.86) !important;
+  box-shadow: none !important;
+}
+
+.signal-card strong {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.05em !important;
+}
+
+.detail-sidebar {
+  position: sticky !important;
+  top: 96px !important;
+  align-self: start !important;
+}
+
+.detail-content {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.content-panel {
+  padding: 18px !important;
+}
+
+.detail-clean-list {
+  margin: 8px 0 0 !important;
+  padding-left: 18px !important;
+  line-height: 1.7 !important;
+}
+
+.document-card {
+  border-radius: 20px !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+  background: #fbfdff !important;
+  box-shadow: none !important;
+}
+
+.text-block {
+  border-radius: 20px !important;
+  background: #fbfdff !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+  padding: 16px !important;
+}
+
+.site-footer {
+  margin-top: 36px !important;
+}
+
+.site-footer-grid {
+  gap: 18px !important;
+}
+
+.footer-brand-block h2 {
+  max-width: 16ch !important;
+  font-size: clamp(2rem, 3vw, 3rem) !important;
+  line-height: 0.94 !important;
+  letter-spacing: -0.07em !important;
+}
+
+.footer-brand-block p {
+  max-width: 46ch !important;
+  color: rgba(241, 245, 249, 0.76) !important;
+}
+
+.footer-metrics span {
+  border-radius: 999px !important;
+}
+
+@media (max-width: 960px) {
+  .detail-sidebar {
+    position: static !important;
+  }
+}

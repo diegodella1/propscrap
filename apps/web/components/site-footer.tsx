@@ -6,14 +6,14 @@ export function SiteFooter() {
       <div className="site-footer-grid">
         <div className="footer-brand-block">
           <span className="section-kicker" translate="no">EasyTaciones</span>
-          <h2>Una interfaz presentable para vender, explicar y operar licitaciones sin fricción.</h2>
+          <h2>Discovery, seguimiento y alertas en una interfaz más clara.</h2>
           <p>
-            EasyTaciones convierte un proceso manual y disperso en una operación clara: entrada por CUIT, fuentes gobernadas, oportunidades priorizadas y seguimiento trazable en un solo sistema.
+            EasyTaciones convierte un proceso manual y disperso en una operación más legible: alta por CUIT, fuentes gobernadas, top priorizado y seguimiento trazable en un solo sistema.
           </p>
           <div className="footer-metrics">
             <span>Alta por CUIT</span>
-            <span>Discovery Priorizado</span>
-            <span>Seguimiento Trazable</span>
+            <span>Top Priorizado</span>
+            <span>Pipeline Activo</span>
           </div>
         </div>
 
