@@ -7,6 +7,11 @@ import { fetchSources } from "../../lib/api";
 export default async function LandingPage() {
   const sources = await fetchSources();
   const activeSources = sources.filter((source) => source.is_active).length;
+  const activeSourceNames = sources
+    .filter((source) => source.is_active)
+    .map((source) => source.name)
+    .slice(0, 5);
+  const remainingSources = Math.max(activeSources - activeSourceNames.length, 0);
 
   return (
     <PageShell variant="marketing" className="landing-shell page-screen page-screen--home">
@@ -44,6 +49,10 @@ export default async function LandingPage() {
             <article className="landing-stat-card">
               <span>Fuentes activas</span>
               <strong>{activeSources}</strong>
+              <p>
+                {activeSourceNames.join(", ")}
+                {remainingSources > 0 ? ` y ${remainingSources} más.` : "."}
+              </p>
             </article>
             <article>
               <span>Gobierno</span>
