@@ -135,11 +135,11 @@ export default async function AccountPage({ searchParams }: Props) {
       <section className="workspace-header account-header">
         <div>
           <span className="eyebrow">Mi cuenta</span>
-          <h1>Preferencias personales.</h1>
+          <h1>Alertas, identidad y canales.</h1>
           <p>
             {onboarding
-              ? "Definí canal y nivel de alerta antes de empezar a operar."
-              : "Ajustá identidad, canal y preferencias de avisos."}
+              ? "Antes de operar, dejá resuelto cómo y por dónde te va a avisar el sistema."
+              : "Configurá tu identidad y los canales que realmente querés usar fuera del dashboard."}
           </p>
         </div>
         <div className="workspace-header-actions">
@@ -160,11 +160,11 @@ export default async function AccountPage({ searchParams }: Props) {
           <strong>{primaryChannelLabel(currentUser)}</strong>
         </article>
         <article>
-          <span>Canales listos</span>
+          <span>Canales disponibles</span>
           <strong>{configuredChannels.join(" · ")}</strong>
         </article>
         <article>
-          <span>Prioridad</span>
+          <span>Umbral</span>
           <strong>{alertPriorityLabel(currentUser.alert_preferences_json?.min_score)}</strong>
         </article>
         <article>
@@ -190,7 +190,7 @@ export default async function AccountPage({ searchParams }: Props) {
 
         <article className="panel dispatch-panel onboarding-companion">
           <span className="section-kicker">Resumen</span>
-          <h2>Configuración actual</h2>
+          <h2>Lectura rápida de la cuenta</h2>
 
           <div className="onboarding-proof-list">
             <article>
@@ -211,7 +211,7 @@ export default async function AccountPage({ searchParams }: Props) {
             </article>
             <article>
               <strong>Pipeline</strong>
-              <p>{savedCount > 0 ? `${savedCount} licitaciones en seguimiento.` : "Todavía no hay oportunidades guardadas."}</p>
+              <p>{savedCount > 0 ? `${savedCount} licitaciones ya están en seguimiento.` : "Todavía no hay oportunidades guardadas."}</p>
             </article>
           </div>
 

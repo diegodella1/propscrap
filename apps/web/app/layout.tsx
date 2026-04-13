@@ -1,18 +1,19 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Inter, Manrope } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 import { ConditionalFooter } from "../components/conditional-footer";
 
-const bodyFont = Inter({
+const bodyFont = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
-const displayFont = Manrope({
+const displayFont = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["500", "600", "700", "800"],
+  weight: ["500", "700"],
   display: "swap",
 });
 

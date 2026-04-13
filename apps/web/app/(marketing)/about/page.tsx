@@ -9,21 +9,38 @@ export default async function AboutPage() {
     <PageShell variant="marketing" className="page-screen page-screen--about">
       <SiteHeader section="about" audience="public" />
 
-      <section className="hero hero-app about-hero">
-        <div>
+      <section className="hero hero-app about-hero about-hero-premium">
+        <div className="premium-hero-copy">
           <span className="eyebrow">Cómo Funciona</span>
-          <h1>Del CUIT al seguimiento, en un flujo que se puede probar 30 días.</h1>
+          <h1>Del alta legal al seguimiento diario, sin cambiar de sistema.</h1>
+          <p>La prueba sirve cuando deja una operación mínima funcionando: empresa cargada, discovery priorizado, pipeline vivo y alertas que salen del dashboard.</p>
         </div>
-        <p>La lógica es simple: completar la empresa, ordenar el discovery y sostener la ejecución hasta que el equipo ya no quiera volver al proceso manual.</p>
+        <article className="panel premium-hero-rail">
+          <article>
+            <span>01</span>
+            <strong>CUIT validado</strong>
+            <p>La empresa entra con identidad legal y base inicial.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <strong>Discovery priorizado</strong>
+            <p>Score, motivo y fecha en la misma cola.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <strong>Seguimiento serio</strong>
+            <p>Estado, notas y alertas sostenibles por 30 días.</p>
+          </article>
+        </article>
       </section>
 
       <section className="how-it-works-stage">
         <div className="results-header">
           <div>
             <span className="section-kicker">Recorrido</span>
-            <h2>Un flujo simple para convertir una prueba en hábito operativo.</h2>
+            <h2>Un recorrido breve para pasar del interés a una rutina operativa real.</h2>
           </div>
-          <p>Primero entra la empresa. Después aparece el discovery. Por último se ordena la ejecución diaria.</p>
+          <p>No es un tour largo. Son tres movimientos concretos para que el equipo deje de trabajar repartido.</p>
         </div>
 
         <article className="panel how-it-works-diagram">
@@ -52,7 +69,7 @@ export default async function AboutPage() {
       <section className="editorial-grid">
         <article className="editorial-callout editorial-callout-dark">
           <span className="section-kicker">Para quién</span>
-          <h2>Empresas proveedoras que hoy trabajan licitaciones con demasiada fricción.</h2>
+          <h2>Empresas proveedoras que ya sienten el costo de operar licitaciones a mano.</h2>
           <p>
             Si hoy el equipo trabaja con portales, pliegos y planillas por separado, EasyTaciones entra para dar
             estructura y criterio compartido.
@@ -60,8 +77,8 @@ export default async function AboutPage() {
         </article>
         <article className="editorial-callout">
           <span className="section-kicker">Qué cambia</span>
-          <h2>Se deja de buscar y acordarse, y se pasa a ver, decidir y seguir.</h2>
-          <p>No es sólo más información. Es una operación más controlada.</p>
+          <h2>Se deja de recolectar links y se pasa a gestionar una cola de trabajo.</h2>
+          <p>No suma ruido. Reduce fricción y vuelve más defendible la operación frente al cliente interno.</p>
         </article>
       </section>
 
@@ -69,7 +86,7 @@ export default async function AboutPage() {
         <div className="results-header about-logic-header">
           <div>
             <span className="section-kicker">Workspace</span>
-            <h2>La promesa del producto se ve en la interfaz.</h2>
+            <h2>La promesa del producto se tiene que entender apenas abrís la pantalla.</h2>
           </div>
           <p>Alta por CUIT, matching con criterio y seguimiento para no depender de memoria humana.</p>
         </div>
@@ -103,7 +120,7 @@ export default async function AboutPage() {
       <section className="workspace-preview-grid">
         <article className="experience-card experience-card-dark">
           <span className="section-kicker">Cliente</span>
-          <h3>Workspace simple y accionable</h3>
+          <h3>Workspace claro y accionable</h3>
           <p>Oportunidades, seguimiento y alertas en un único entorno de trabajo.</p>
         </article>
         <article className="experience-card">
@@ -121,7 +138,7 @@ export default async function AboutPage() {
       <section className="cta-band">
         <div>
           <span className="section-kicker">Siguiente Paso</span>
-          <h2>La propuesta se entiende mejor cuando el cliente la usa con su operación real.</h2>
+          <h2>La propuesta se vuelve clara cuando entra con una operación real.</h2>
           <p>Pedí demo o registrá una empresa por CUIT para probar el flujo completo con un equipo real durante 30 días.</p>
         </div>
         <div className="hero-actions">

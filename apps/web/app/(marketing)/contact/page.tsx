@@ -12,12 +12,29 @@ export default async function ContactPage() {
     <PageShell variant="marketing" className="page-screen page-screen--contact">
       <SiteHeader section="contact" audience="public" />
 
-      <section className="hero hero-app about-hero">
-        <div>
+      <section className="hero hero-app about-hero about-hero-premium">
+        <div className="premium-hero-copy">
           <span className="eyebrow">Solicitar Demo</span>
-          <h1>La demo tiene que dejar una prueba de 30 días lista para usar.</h1>
+          <h1>La demo debería dejar un workspace listo para ser usado al día siguiente.</h1>
+          <p>La conversación comercial vale si termina en una prueba con contexto real: empresa, criterio de relevancia, responsables y canales de alerta.</p>
         </div>
-        <p>En pocos minutos se ve cómo entra la empresa, cómo aparece el discovery y qué tendría que pasar para que el equipo adopte el producto de verdad.</p>
+        <article className="panel premium-hero-rail">
+          <article>
+            <span>Tiempo</span>
+            <strong>30 min</strong>
+            <p>Alcanzan para ver el flujo completo sin dar vueltas.</p>
+          </article>
+          <article>
+            <span>Salida</span>
+            <strong>Prueba usable</strong>
+            <p>La cuenta queda pensada para operar, no para mirar una maqueta.</p>
+          </article>
+          <article>
+            <span>Foco</span>
+            <strong>Proceso real</strong>
+            <p>El punto es mapear cómo trabaja hoy el equipo y dónde pierde timing.</p>
+          </article>
+        </article>
       </section>
 
       <section className="auth-layout auth-layout-upgraded signup-shell contact-shell">
@@ -25,7 +42,7 @@ export default async function ContactPage() {
 
         <article className="panel dispatch-panel onboarding-companion signup-companion contact-companion">
           <span className="section-kicker">Qué se ve en la demo</span>
-          <h2>El flujo completo de una prueba útil.</h2>
+          <h2>El flujo completo de una prueba útil</h2>
           <div className="onboarding-proof-list">
             <article>
               <strong>Empresa por CUIT</strong>
@@ -64,7 +81,7 @@ export default async function ContactPage() {
 
         <article className="panel dispatch-panel contact-qualification-panel">
           <span className="section-kicker">Calce comercial</span>
-          <h2>Cuándo conviene verla.</h2>
+          <h2>Cuándo conviene verla</h2>
           <div className="source-stack">
             <article className="source-card">
               <strong>Volumen</strong>

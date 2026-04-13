@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { PageHero } from "../../../components/layout/page-hero";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SignupForm } from "../../../components/signup-form";
 import { SiteHeader } from "../../../components/site-header";
@@ -10,12 +9,30 @@ export default async function SignupPage() {
     <PageShell variant="auth" className="page-screen page-screen--signup">
       <SiteHeader section="auth" audience="public" />
 
-      <PageHero
-        eyebrow="Onboarding por CUIT"
-        title="Registrá tu empresa por CUIT."
-        description="Ingresás CUIT, validás identidad legal y arrancás una prueba de 30 días con un workspace listo para usar."
-        className="workspace-header auth-page-header"
-      />
+      <section className="hero hero-app about-hero about-hero-premium auth-page-header auth-page-header-premium">
+        <div className="premium-hero-copy">
+          <span className="eyebrow">Onboarding por CUIT</span>
+          <h1>Alta limpia, rápida y con base legal.</h1>
+          <p>Ingresás CUIT, validás identidad legal y arrancás una prueba de 30 días con una cuenta orientada a discovery, seguimiento y alertas.</p>
+        </div>
+        <article className="panel premium-hero-rail">
+          <article>
+            <span>01</span>
+            <strong>Validación</strong>
+            <p>CUIT y empresa precargados desde fuente legal.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <strong>Cuenta lista</strong>
+            <p>El alta no termina en login: termina en workspace.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <strong>Prueba seria</strong>
+            <p>La intención es que el equipo pueda usarla de verdad.</p>
+          </article>
+        </article>
+      </section>
 
       <section className="auth-layout auth-layout-upgraded signup-shell">
         <SignupForm />

@@ -2413,3 +2413,406 @@ body::before {
     padding: 16px !important;
   }
 }
+
+/* Revolut-inspired refinement: denser typography, colder neutrals, restrained
+   premium surfaces and fewer decorative gestures. */
+html,
+body {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(30, 64, 175, 0.04), transparent 22%),
+    linear-gradient(180deg, #f4f7fb 0%, #edf2f7 55%, #e8eef5 100%) !important;
+  color: #0a1220 !important;
+}
+
+body::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 20%) !important;
+  opacity: 1 !important;
+}
+
+.page-shell {
+  max-width: 1540px !important;
+  padding: 24px 28px 88px !important;
+}
+
+.site-header,
+.surface-band,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.auth-form-card,
+.dashboard-filter-panel,
+.company-profile-form,
+.state-form,
+.editorial-callout,
+.experience-card,
+.proof-card,
+.detail-note-card,
+.settings-channel-card,
+.source-card,
+.onboarding-proof-list article,
+.admin-overview-card,
+.decision-row,
+.alert-row,
+.opportunity-list-card {
+  border-radius: 24px !important;
+}
+
+.site-header {
+  padding: 10px 14px !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.05) !important;
+}
+
+.brand-lockup strong {
+  font-family: var(--font-display) !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.brand-lockup small {
+  font-size: 0.72rem !important;
+  color: #66758a !important;
+}
+
+.brand-mark {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%) !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+}
+
+.site-nav a,
+.button-primary,
+.button-secondary,
+.linkish,
+.mini-pill,
+.badge,
+.source-chip {
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.site-nav a {
+  padding: 11px 14px !important;
+  color: #4b5563 !important;
+}
+
+.site-nav a:hover {
+  background: rgba(241, 245, 249, 0.92) !important;
+  color: #0f172a !important;
+}
+
+.site-nav a[data-active="true"] {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.04) !important;
+}
+
+.button-primary {
+  background: #0f172a !important;
+  border-color: #0f172a !important;
+  color: #f8fafc !important;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16) !important;
+}
+
+.button-primary:hover {
+  background: #0b1220 !important;
+  transform: translateY(-1px);
+}
+
+.button-secondary {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(148, 163, 184, 0.24) !important;
+  color: #0f172a !important;
+}
+
+.eyebrow,
+.section-kicker {
+  border-radius: 999px !important;
+  padding: 6px 11px !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: #475569 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.landing-masterhead,
+.about-hero-premium,
+.auth-page-header-premium {
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 420px) !important;
+  gap: 26px !important;
+  align-items: stretch !important;
+}
+
+.landing-masterhead h1,
+.about-hero-premium h1,
+.auth-page-header-premium h1,
+.workspace-header h1 {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  color: #0a1220 !important;
+  text-wrap: balance !important;
+}
+
+.landing-masterhead h1 {
+  max-width: 9ch !important;
+  font-size: clamp(4rem, 7vw, 6.8rem) !important;
+  letter-spacing: -0.08em !important;
+  line-height: 0.9 !important;
+}
+
+.about-hero-premium h1,
+.auth-page-header-premium h1 {
+  margin: 0 !important;
+  font-size: clamp(3rem, 5vw, 5.2rem) !important;
+  line-height: 0.92 !important;
+  letter-spacing: -0.075em !important;
+  max-width: 10ch !important;
+}
+
+.premium-hero-copy {
+  display: grid !important;
+  gap: 16px !important;
+  align-content: start !important;
+}
+
+.premium-hero-copy > p,
+.landing-masterhead .hero-lead,
+.workspace-header p,
+.results-header p,
+.signup-form-header p,
+.settings-section-header p {
+  font-size: 1.02rem !important;
+  line-height: 1.65 !important;
+  color: #5b6778 !important;
+}
+
+.premium-hero-rail,
+.landing-hero-console,
+.onboarding-companion,
+.contact-qualification-panel {
+  display: grid !important;
+  gap: 12px !important;
+  align-content: start !important;
+  padding: 18px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 250, 252, 0.96) 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.04) !important;
+}
+
+.premium-hero-rail article,
+.landing-console-metrics article {
+  padding: 14px 14px 15px !important;
+  background: #f8fbff !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.premium-hero-rail span,
+.landing-console-metrics span {
+  display: inline-flex !important;
+  width: fit-content !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.7rem !important;
+  letter-spacing: 0.08em !important;
+  color: #64748b !important;
+}
+
+.premium-hero-rail strong,
+.landing-hero-console-head strong,
+.landing-console-metrics strong {
+  color: #0a1220 !important;
+}
+
+.premium-hero-rail strong {
+  display: block !important;
+  margin-top: 8px !important;
+  font-size: 1.02rem !important;
+}
+
+.premium-hero-rail p {
+  margin: 6px 0 0 !important;
+  color: #5b6778 !important;
+  font-size: 0.94rem !important;
+  line-height: 1.55 !important;
+}
+
+.landing-audience-strip span,
+.signup-confidence-bar span {
+  min-height: 34px !important;
+  padding: 0 12px !important;
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  color: #475569 !important;
+}
+
+.hero-inline-splash,
+.dashboard-executive-band,
+.workspace-kpi-band,
+.landing-console-metrics {
+  gap: 12px !important;
+}
+
+.hero-inline-splash article,
+.dashboard-executive-band article,
+.workspace-kpi-band article {
+  border-top: 0 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.03) !important;
+}
+
+.hero-inline-splash strong {
+  font-size: clamp(1.05rem, 1.8vw, 1.35rem) !important;
+  letter-spacing: -0.04em !important;
+}
+
+.results-header h2,
+.landing-system-diagram-copy h3,
+.editorial-callout h2,
+.experience-card h3,
+.proof-card h2,
+.signup-form-header h2,
+.settings-section-header h3,
+.workspace-header h1 {
+  letter-spacing: -0.06em !important;
+}
+
+.editorial-callout-dark,
+.experience-card-dark {
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%) !important;
+  border-color: rgba(148, 163, 184, 0.14) !important;
+}
+
+.opportunity-list-card {
+  grid-template-columns: minmax(0, 2.1fr) minmax(220px, 0.72fr) !important;
+  padding: 16px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.15) !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.03) !important;
+}
+
+.opportunity-list-card strong {
+  font-size: 1.08rem !important;
+  font-weight: 700 !important;
+}
+
+.opportunity-list-head .badge,
+.opportunity-list-head .source-chip,
+.results-ribbon span,
+.mini-pill,
+.badge,
+.source-chip {
+  border-radius: 999px !important;
+}
+
+.results-ribbon {
+  background: rgba(241, 245, 249, 0.84) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.results-ribbon span {
+  color: #64748b !important;
+  font-size: 0.76rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+.auth-form-card,
+.dispatch-panel,
+.table-panel,
+.table-panel-upgraded,
+.dashboard-filter-panel {
+  padding: 20px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(148, 163, 184, 0.16) !important;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.04) !important;
+}
+
+.signup-form-header,
+.settings-section,
+.field,
+.settings-helper-card,
+.detail-note-card {
+  min-width: 0 !important;
+}
+
+.field label,
+.form-field span {
+  color: #516071 !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.08em !important;
+}
+
+input,
+select,
+textarea {
+  min-height: 50px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  background: #fbfdff !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+}
+
+textarea {
+  min-height: 140px !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: rgba(37, 99, 235, 0.48) !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+}
+
+.checkbox-row {
+  padding: 10px 12px !important;
+  border-radius: 16px !important;
+  background: rgba(248, 250, 252, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.settings-channel-grid,
+.onboarding-proof-list,
+.source-stack {
+  gap: 12px !important;
+}
+
+.settings-channel-card,
+.onboarding-proof-list article,
+.source-card {
+  background: rgba(248, 251, 255, 0.88) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.workspace-header-actions,
+.hero-actions,
+.site-auth-actions {
+  gap: 10px !important;
+}
+
+.site-footer {
+  background: #0f172a !important;
+}
+
+.site-footer h2 {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.05em !important;
+}
+
+@media (max-width: 960px) {
+  .page-shell {
+    padding: 18px 16px 76px !important;
+  }
+
+  .landing-masterhead,
+  .about-hero-premium,
+  .auth-page-header-premium {
+    grid-template-columns: 1fr !important;
+  }
+}
