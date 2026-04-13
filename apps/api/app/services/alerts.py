@@ -3,9 +3,10 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.orm import Session, joinedload
 
 from app.models.tender import Alert, Tender, TenderMatch, TenderState, User
+from app.services.source_access import list_effective_source_ids_for_profile
 from app.services.users import get_user_alert_preferences, has_verified_telegram, has_verified_whatsapp
 from app.services.workflow import normalize_tender_alert_overrides
 
@@ -16,14 +17,17 @@ SAVED_STATES = {"saved", "evaluating", "presenting"}
 def generate_alerts(db: Session, users: list[User], *, default_min_score: float = 60) -> dict:
     tenders = db.execute(
         select(Tender)
-        .options(selectinload(Tender.enrichments))
+        .options(joinedload(Tender.source), joinedload(Tender.source), joinedload(Tender.source))
         .order_by(Tender.id.asc())
-    ).scalars().all()
+    ).unique().scalars().all()
     created = 0
     for user in users:
         company_preferences = _get_company_alert_preferences(user, default_min_score=default_min_score)
         preferences = _get_effective_alert_preferences(user, company_preferences=company_preferences)
+        allowed_source_ids = set(list_effective_source_ids_for_profile(db, user.company_profile)) if user.company_profile else set()
         for tender in tenders:
+            if allowed_source_ids and tender.source_id not in allowed_source_ids:
+                continue
             created += _ensure_relevance_alerts(db, tender, user, preferences=preferences)
             created += _ensure_deadline_alerts(db, tender, user, preferences=preferences)
     db.commit()
@@ -267,8 +271,7 @@ def _parse_event_datetime(value: object) -> datetime | None:
     return parsed
 
 
-def _format_deadline_offset_label(hours: int) -> str:
-    if hours % 24 == 0:
-        days = hours // 24
-        return f"{days}d"
-    return f"{hours}h"
+def _format_deadline_offset_label(offset_hours: int) -> str:
+    if offset_hours % 24 == 0:
+        return f"{offset_hours // 24}d"
+    return f"{offset_hours}h"

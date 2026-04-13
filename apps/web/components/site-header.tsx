@@ -9,15 +9,18 @@ type Props = {
   section?: "landing" | "about" | "dashboard" | "detail" | "saved" | "admin" | "profile" | "auth" | "account" | "contact";
   currentUserName?: string | null;
   currentUserRole?: string | null;
+  audience?: "auto" | "public";
 };
 
-export function SiteHeader({ currentUserName, currentUserRole }: Props) {
+export function SiteHeader({ currentUserName, currentUserRole, audience = "auto" }: Props) {
   const pathname = usePathname() ?? "";
   const [navOpen, setNavOpen] = useState(false);
   const navRegionId = useId();
   const isCompanyAdmin = currentUserRole === "manager";
   const isPlatformAdmin = currentUserRole === "admin";
-  const isAuthenticated = Boolean(currentUserName);
+  const hasSession = Boolean(currentUserName);
+  const isPresentationMode = audience === "public";
+  const isAuthenticated = isPresentationMode ? false : hasSession;
 
   const closeNav = useCallback(() => setNavOpen(false), []);
 
@@ -52,7 +55,7 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
   };
 
   return (
-    <header className="site-header">
+    <header className={`site-header${isPresentationMode ? " site-header--public" : ""}`}>
       <Link href="/" className="brand-lockup" onClick={closeNav}>
         <span className="brand-mark">ET</span>
         <span>
@@ -81,11 +84,14 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
           </Link>
           {!isAuthenticated ? (
             <>
+              <Link href="/contact" data-active={active.contact} onClick={closeNav}>
+                Demo
+              </Link>
               <Link href="/signup" data-active={active.signup} onClick={closeNav}>
                 Alta por CUIT
               </Link>
-              <Link href="/contact" data-active={active.contact} onClick={closeNav}>
-                Contacto
+              <Link href="/login" data-active={active.login} onClick={closeNav}>
+                Accesos
               </Link>
             </>
           ) : (
@@ -116,7 +122,7 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
         <div className="site-auth-actions">
           {isAuthenticated ? (
             <span className="mini-pill" aria-label={`Sesión activa: ${currentUserName}`}>
-              {isPlatformAdmin ? "Superadmin" : isCompanyAdmin ? "Manager" : "Usuario"} · {currentUserName}
+              {isPlatformAdmin ? "Superadmin" : isCompanyAdmin ? "Manager" : "Workspace activo"}
             </span>
           ) : null}
 
@@ -136,13 +142,8 @@ export function SiteHeader({ currentUserName, currentUserRole }: Props) {
             </>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="button-secondary site-auth-button"
-                data-active={active.login}
-                onClick={closeNav}
-              >
-                Ingresar
+              <Link href="/contact" className="button-secondary site-auth-button" data-active={active.contact} onClick={closeNav}>
+                Solicitar demo
               </Link>
               <Link href="/signup" className="button-primary site-auth-button" onClick={closeNav}>
                 Alta por CUIT

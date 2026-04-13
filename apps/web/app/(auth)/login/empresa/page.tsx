@@ -1,21 +1,14 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { PageHero } from "../../../../components/layout/page-hero";
 import { PageShell } from "../../../../components/layout/page-shell";
 import { LoginForm } from "../../../../components/login-form";
 import { SiteHeader } from "../../../../components/site-header";
-import { getCurrentUserFromSession } from "../../../../lib/session";
 
 export default async function CompanyLoginPage() {
-  const currentUser = await getCurrentUserFromSession();
-  if (currentUser) {
-    redirect(currentUser.role === "admin" ? "/admin/platform" : "/dashboard");
-  }
-
   return (
     <PageShell variant="auth">
-      <SiteHeader section="auth" />
+      <SiteHeader section="auth" audience="public" />
 
       <PageHero
         eyebrow="Acceso empresa"

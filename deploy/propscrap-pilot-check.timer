@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Propscrap Pilot Health Check every 15 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=15min
+Unit=propscrap-pilot-check.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

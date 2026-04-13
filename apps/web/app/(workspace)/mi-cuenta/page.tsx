@@ -27,6 +27,16 @@ function primaryChannelLabel(currentUser: Awaited<ReturnType<typeof getCurrentUs
   return "Dashboard";
 }
 
+function configuredChannelLabels(currentUser: Awaited<ReturnType<typeof getCurrentUserFromSession>>) {
+  const channels = currentUser?.alert_preferences_json?.channels ?? ["dashboard"];
+  const labels: string[] = [];
+  if (channels.includes("email")) labels.push("Email");
+  if (channels.includes("whatsapp") && currentUser?.whatsapp_number) labels.push("WhatsApp");
+  if (channels.includes("telegram") && currentUser?.telegram_chat_id) labels.push("Telegram");
+  if (!labels.length) labels.push("Dashboard");
+  return labels;
+}
+
 export default async function AccountPage({ searchParams }: Props) {
   const params = await searchParams;
   const [currentUser, profile, cookieHeader] = await Promise.all([
@@ -61,6 +71,7 @@ export default async function AccountPage({ searchParams }: Props) {
         (profile?.jurisdictions?.length ?? 0) > 0),
   );
   const savedCount = saved?.total ?? 0;
+  const configuredChannels = configuredChannelLabels(currentUser);
   const companyOnboardingSteps: OnboardingStep[] = [
     {
       id: "alerts",
@@ -149,6 +160,10 @@ export default async function AccountPage({ searchParams }: Props) {
           <strong>{primaryChannelLabel(currentUser)}</strong>
         </article>
         <article>
+          <span>Canales listos</span>
+          <strong>{configuredChannels.join(" · ")}</strong>
+        </article>
+        <article>
           <span>Prioridad</span>
           <strong>{alertPriorityLabel(currentUser.alert_preferences_json?.min_score)}</strong>
         </article>
@@ -179,10 +194,10 @@ export default async function AccountPage({ searchParams }: Props) {
 
           <div className="onboarding-proof-list">
             <article>
-              <strong>Canal</strong>
+              <strong>Canales activos</strong>
               <p>
                 {alertChannelReady
-                  ? primaryChannelLabel(currentUser)
+                  ? configuredChannels.join(", ")
                   : "Todavía no cargaste un canal directo para alertas instantáneas."}
               </p>
             </article>
@@ -193,6 +208,10 @@ export default async function AccountPage({ searchParams }: Props) {
             <article>
               <strong>Filtro de alertas</strong>
               <p>{alertPriorityLabel(currentUser.alert_preferences_json?.min_score)}</p>
+            </article>
+            <article>
+              <strong>Pipeline</strong>
+              <p>{savedCount > 0 ? `${savedCount} licitaciones en seguimiento.` : "Todavía no hay oportunidades guardadas."}</p>
             </article>
           </div>
 

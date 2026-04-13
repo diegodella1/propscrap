@@ -3,18 +3,11 @@ import Link from "next/link";
 import { ProcessFlowEditorialIllustration, WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
-import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function AboutPage() {
-  const currentUser = await getCurrentUserFromSession();
-
   return (
     <PageShell variant="marketing" className="page-screen page-screen--about">
-      <SiteHeader
-        section="about"
-        currentUserName={currentUser?.full_name}
-        currentUserRole={currentUser?.role}
-      />
+      <SiteHeader section="about" audience="public" />
 
       <section className="hero hero-app about-hero">
         <div>
@@ -135,8 +128,8 @@ export default async function AboutPage() {
           <Link href="/contact" className="button-primary">
             Solicitar Demo
           </Link>
-          <Link href={currentUser ? "/dashboard" : "/signup"} className="button-secondary">
-            {currentUser ? "Ir al Workspace" : "Registrar Empresa"}
+          <Link href="/signup" className="button-secondary">
+            Registrar Empresa
           </Link>
         </div>
       </section>

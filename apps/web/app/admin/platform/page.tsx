@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { PlatformAdminPage } from "../../../components/platform-admin-page";
 import {
   fetchAdminAuditEvents,
+  fetchAdminCompanyProfiles,
+  fetchAdminCompanySourceAccess,
   fetchAdminSources,
   fetchAlerts,
   fetchAutomationSettings,
@@ -25,7 +27,7 @@ export default async function PlatformAdminRoute() {
     redirect(currentUser.role === "manager" ? "/admin/company" : "/dashboard");
   }
 
-  const [sourceRuns, alerts, users, sources, automationSettings, whatsappOutbox, auditEvents] = await Promise.all([
+  const [sourceRuns, alerts, users, sources, automationSettings, whatsappOutbox, auditEvents, companyProfiles] = await Promise.all([
     fetchSourceRuns(cookieHeader || undefined),
     fetchAlerts(cookieHeader || undefined),
     fetchUsers(cookieHeader || undefined),
@@ -33,7 +35,12 @@ export default async function PlatformAdminRoute() {
     fetchAutomationSettings(cookieHeader || undefined),
     fetchWhatsappOutbox(cookieHeader || undefined),
     fetchAdminAuditEvents(cookieHeader || undefined),
+    fetchAdminCompanyProfiles(cookieHeader || undefined),
   ]);
+
+  const companySourceAccess = await Promise.all(
+    companyProfiles.map((profile) => fetchAdminCompanySourceAccess(profile.id, cookieHeader || undefined)),
+  );
 
   return (
     <PlatformAdminPage
@@ -45,6 +52,8 @@ export default async function PlatformAdminRoute() {
       automationSettings={automationSettings}
       whatsappOutbox={whatsappOutbox}
       auditEvents={auditEvents}
+      companyProfiles={companyProfiles}
+      companySourceAccess={companySourceAccess}
     />
   );
 }

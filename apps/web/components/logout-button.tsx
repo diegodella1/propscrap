@@ -1,12 +1,10 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 export function LogoutButton() {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   function logout() {
@@ -14,9 +12,9 @@ export function LogoutButton() {
       await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
         method: "POST",
         credentials: "include",
+        cache: "no-store",
       });
-      router.push("/login");
-      router.refresh();
+      window.location.assign("/login");
     });
   }
 

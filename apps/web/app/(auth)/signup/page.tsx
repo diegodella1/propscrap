@@ -1,21 +1,14 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { PageHero } from "../../../components/layout/page-hero";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SignupForm } from "../../../components/signup-form";
 import { SiteHeader } from "../../../components/site-header";
-import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function SignupPage() {
-  const currentUser = await getCurrentUserFromSession();
-  if (currentUser) {
-    redirect(currentUser.role === "admin" ? "/admin/platform" : "/dashboard");
-  }
-
   return (
     <PageShell variant="auth" className="page-screen page-screen--signup">
-      <SiteHeader section="auth" />
+      <SiteHeader section="auth" audience="public" />
 
       <PageHero
         eyebrow="Onboarding por CUIT"

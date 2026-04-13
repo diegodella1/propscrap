@@ -1,20 +1,13 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { PageHero } from "../../../components/layout/page-hero";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
-import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function LoginPage() {
-  const currentUser = await getCurrentUserFromSession();
-  if (currentUser) {
-    redirect(currentUser.role === "admin" ? "/admin/platform" : "/dashboard");
-  }
-
   return (
     <PageShell variant="auth" className="page-screen page-screen--login-selector">
-      <SiteHeader section="auth" />
+      <SiteHeader section="auth" audience="public" />
 
       <PageHero
         eyebrow="Acceso"

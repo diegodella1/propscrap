@@ -112,7 +112,7 @@ HEALTH="$(retry_curl -fsS http://127.0.0.1:8001/health)"
 [[ "$HEALTH" == *'"ocr"'* ]] || { echo "FAIL health missing ocr" >&2; exit 1; }
 
 echo "[2] public pages"
-check_contains "$BASE_WEB/" "La infraestructura operativa para empresas que venden al Estado."
+check_contains "$BASE_WEB/" "Mostrá un producto claro, serio y accionable desde la primera pantalla."
 check_contains "$BASE_WEB/signup" "Registrá tu empresa por CUIT."
 check_contains "$BASE_WEB/login" "Elegí el tipo de acceso."
 check_contains "$BASE_WEB/login/empresa" "Ingresá como cliente."

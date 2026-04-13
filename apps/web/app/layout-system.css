@@ -29,6 +29,36 @@
   transition: background 160ms ease, border-color 160ms ease;
 }
 
+@media (min-width: 901px) {
+  .site-header {
+    flex-wrap: nowrap;
+  }
+
+  .site-nav-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+
+  .site-nav {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    gap: 6px;
+  }
+
+  .site-auth-actions {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+}
+
 @media (max-width: 900px) {
   .site-header {
     flex-wrap: wrap;

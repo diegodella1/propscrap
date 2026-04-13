@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { CompanyAdminPage } from "../../../components/company-admin-page";
-import { fetchMyCompanyProfile, fetchUsers } from "../../../lib/api";
+import { fetchMyCompanyProfile, fetchMySourceAccess, fetchUsers } from "../../../lib/api";
 import { getCookieHeaderFromSession, getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function CompanyAdminRoute() {
@@ -20,12 +20,13 @@ export default async function CompanyAdminRoute() {
     redirect("/dashboard");
   }
 
-  const [users, companyProfile] = await Promise.all([
+  const [users, companyProfile, sourceAccess] = await Promise.all([
     fetchUsers(cookieHeader || undefined),
     fetchMyCompanyProfile(cookieHeader || undefined),
+    fetchMySourceAccess(cookieHeader || undefined),
   ]);
   if (!companyProfile) {
     redirect("/company-profile");
   }
-  return <CompanyAdminPage currentUserName={currentUser.full_name} users={users} companyProfile={companyProfile} />;
+  return <CompanyAdminPage currentUserName={currentUser.full_name} users={users} companyProfile={companyProfile} sourceAccess={sourceAccess} />;
 }

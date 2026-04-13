@@ -1,5 +1,6 @@
 @import "./layout-system.css";
 @import "./surface-redesign.css";
+@import "./product-hardening.css";
 
 /*
   Design tokens (Gestalt / consistencia): fondos --bg / --panel; texto --text / --muted;

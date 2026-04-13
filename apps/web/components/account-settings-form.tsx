@@ -12,6 +12,12 @@ function alertPriorityFromMinScore(value: number | undefined) {
   return "media";
 }
 
+function channelStatusLabel(isEnabled: boolean, isConfigured: boolean) {
+  if (isEnabled && isConfigured) return "Activo";
+  if (isEnabled) return "Falta completar";
+  return "Apagado";
+}
+
 export function AccountSettingsForm({ user }: { user: User }) {
   const [form, setForm] = useState({
     full_name: user.full_name,
@@ -29,6 +35,33 @@ export function AccountSettingsForm({ user }: { user: User }) {
   });
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const emailEnabled = form.email_opt_in;
+  const whatsappReady = Boolean(form.whatsapp_number.trim());
+  const telegramReady = Boolean(form.telegram_chat_id.trim());
+  const deliveryChannels = [
+    {
+      key: "email",
+      title: "Email",
+      detail: user.email,
+      status: channelStatusLabel(emailEnabled, Boolean(user.email)),
+      tone: emailEnabled ? "success" : "muted",
+    },
+    {
+      key: "whatsapp",
+      title: "WhatsApp",
+      detail: form.whatsapp_number.trim() || "Cargá un número con prefijo internacional.",
+      status: channelStatusLabel(form.whatsapp_opt_in, whatsappReady),
+      tone: form.whatsapp_opt_in && whatsappReady ? "success" : form.whatsapp_opt_in ? "warning" : "muted",
+    },
+    {
+      key: "telegram",
+      title: "Telegram",
+      detail: form.telegram_chat_id.trim() || "Pegá tu chat id para habilitar envíos reales.",
+      status: channelStatusLabel(form.telegram_opt_in_alerts, telegramReady),
+      tone:
+        form.telegram_opt_in_alerts && telegramReady ? "success" : form.telegram_opt_in_alerts ? "warning" : "muted",
+    },
+  ] as const;
 
   function updateField<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -59,139 +92,198 @@ export function AccountSettingsForm({ user }: { user: User }) {
         <h2>Canal e intensidad de alertas</h2>
         <p>Definí cómo te avisa la plataforma y con qué nivel de filtro.</p>
       </div>
-      <p className="form-flow-hint">
-        Completá identidad y canales acá; el resumen a la derecha se actualiza al guardar.
-      </p>
-      <div className="field">
-        <label htmlFor="account-name">Tu nombre</label>
-        <input
-          id="account-name"
-          name="full_name"
-          value={form.full_name}
-          onChange={(event) => updateField("full_name", event.target.value)}
-          autoComplete="name"
-        />
+      <p className="form-flow-hint">Acá podés dejar listos email, WhatsApp y Telegram. Si un canal está incompleto, no entra en la cola real de alertas.</p>
+
+      <section className="settings-section">
+        <div className="settings-section-header">
+          <div>
+            <span className="section-kicker">Estado actual</span>
+            <h3>Canales disponibles</h3>
+          </div>
+          <p>La plataforma usa estos datos para decidir qué notificaciones puede despachar fuera del dashboard.</p>
+        </div>
+
+        <div className="settings-channel-grid">
+          {deliveryChannels.map((channel) => (
+            <article key={channel.key} className="settings-channel-card">
+              <div className="settings-channel-topline">
+                <strong>{channel.title}</strong>
+                <span className={`badge tone-${channel.tone}`}>{channel.status}</span>
+              </div>
+              <p>{channel.detail}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="settings-section-header">
+          <div>
+            <span className="section-kicker">Identidad</span>
+            <h3>Datos básicos</h3>
+          </div>
+          <p>Sirven para personalizar la operación, identificar la cuenta y cruzarla con el perfil comercial.</p>
+        </div>
+
+        <div className="field">
+          <label htmlFor="account-name">Tu nombre</label>
+          <input
+            id="account-name"
+            name="full_name"
+            value={form.full_name}
+            onChange={(event) => updateField("full_name", event.target.value)}
+            autoComplete="name"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="account-company">Empresa</label>
+          <input
+            id="account-company"
+            name="company_name"
+            value={form.company_name}
+            onChange={(event) => updateField("company_name", event.target.value)}
+            autoComplete="organization"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="account-cuit">CUIT</label>
+          <input
+            id="account-cuit"
+            name="cuit"
+            value={form.cuit}
+            onChange={(event) => updateField("cuit", event.target.value)}
+            autoComplete="off"
+            inputMode="numeric"
+            placeholder="30712345678…"
+          />
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="settings-section-header">
+          <div>
+            <span className="section-kicker">Entrega</span>
+            <h3>Canales de alerta</h3>
+          </div>
+          <p>Email siempre puede usarse con tu cuenta. WhatsApp y Telegram requieren completar el identificador correspondiente.</p>
+        </div>
+
+        <div className="field">
+          <label htmlFor="account-whatsapp">Tu WhatsApp</label>
+          <input
+            id="account-whatsapp"
+            name="whatsapp_number"
+            type="tel"
+            value={form.whatsapp_number}
+            onChange={(event) => updateField("whatsapp_number", event.target.value)}
+            autoComplete="tel"
+            inputMode="tel"
+            placeholder="+5491123456789…"
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="account-telegram">Tu Telegram chat id</label>
+          <input
+            id="account-telegram"
+            name="telegram_chat_id"
+            value={form.telegram_chat_id}
+            onChange={(event) => updateField("telegram_chat_id", event.target.value)}
+            autoComplete="off"
+            inputMode="numeric"
+            placeholder="123456789 o -1001234567890…"
+          />
+        </div>
+
+        <div className="settings-helper-card">
+          <strong>Telegram</strong>
+          <p>Primero hablá con el bot, después pegá el `chat id` acá y recién ahí activá el canal para alertas.</p>
+        </div>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.email_opt_in}
+            onChange={(event) => updateField("email_opt_in", event.target.checked)}
+          />
+          <span>Quiero recibir alertas por email</span>
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.whatsapp_opt_in}
+            onChange={(event) => updateField("whatsapp_opt_in", event.target.checked)}
+          />
+          <span>Quiero recibir alertas por WhatsApp</span>
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.telegram_opt_in}
+            onChange={(event) => updateField("telegram_opt_in", event.target.checked)}
+          />
+          <span>Habilitar Telegram para mi usuario</span>
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.telegram_opt_in_alerts}
+            onChange={(event) => updateField("telegram_opt_in_alerts", event.target.checked)}
+          />
+          <span>Quiero recibir alertas por Telegram</span>
+        </label>
+      </section>
+
+      <section className="settings-section">
+        <div className="settings-section-header">
+          <div>
+            <span className="section-kicker">Filtro</span>
+            <h3>Intensidad de alertas</h3>
+          </div>
+          <p>Definí si querés sólo oportunidades de alta prioridad o también señales más amplias para seguimiento temprano.</p>
+        </div>
+
+        <div className="field">
+          <label htmlFor="account-priority">Qué tan filtradas querés las alertas</label>
+          <select
+            id="account-priority"
+            value={form.alert_priority}
+            onChange={(event) =>
+              updateField("alert_priority", event.target.value as "alta" | "media" | "todas")
+            }
+          >
+            <option value="alta">Solo alta prioridad</option>
+            <option value="media">Media o alta</option>
+            <option value="todas">Todas</option>
+          </select>
+        </div>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.receive_relevant}
+            onChange={(event) => updateField("receive_relevant", event.target.checked)}
+          />
+          <span>Avisarme cuando aparezca una licitación relevante</span>
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={form.receive_deadlines}
+            onChange={(event) => updateField("receive_deadlines", event.target.checked)}
+          />
+          <span>Recordarme los vencimientos</span>
+        </label>
+      </section>
+
+      <div className="settings-action-row">
+        <button type="button" onClick={save} disabled={isPending} className="button-primary button-block">
+          {isPending ? "Guardando…" : "Guardar preferencias"}
+        </button>
       </div>
-      <div className="field">
-        <label htmlFor="account-company">Empresa</label>
-        <input
-          id="account-company"
-          name="company_name"
-          value={form.company_name}
-          onChange={(event) => updateField("company_name", event.target.value)}
-          autoComplete="organization"
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="account-cuit">CUIT</label>
-        <input
-          id="account-cuit"
-          name="cuit"
-          value={form.cuit}
-          onChange={(event) => updateField("cuit", event.target.value)}
-          autoComplete="off"
-          inputMode="numeric"
-          placeholder="30712345678…"
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="account-whatsapp">Tu WhatsApp</label>
-        <input
-          id="account-whatsapp"
-          name="whatsapp_number"
-          type="tel"
-          value={form.whatsapp_number}
-          onChange={(event) => updateField("whatsapp_number", event.target.value)}
-          autoComplete="tel"
-          inputMode="tel"
-          placeholder="+5491123456789…"
-        />
-      </div>
-      <div className="field">
-        <label htmlFor="account-telegram">Tu Telegram chat id</label>
-        <input
-          id="account-telegram"
-          name="telegram_chat_id"
-          value={form.telegram_chat_id}
-          onChange={(event) => updateField("telegram_chat_id", event.target.value)}
-          autoComplete="off"
-          inputMode="numeric"
-          placeholder="123456789 o -1001234567890…"
-        />
-      </div>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.email_opt_in}
-          onChange={(event) => updateField("email_opt_in", event.target.checked)}
-        />
-        <span>Quiero recibir alertas por email</span>
-      </label>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.whatsapp_opt_in}
-          onChange={(event) => updateField("whatsapp_opt_in", event.target.checked)}
-        />
-        <span>Quiero recibir alertas por WhatsApp</span>
-      </label>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.telegram_opt_in}
-          onChange={(event) => updateField("telegram_opt_in", event.target.checked)}
-        />
-        <span>Habilitar Telegram para mi usuario</span>
-      </label>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.telegram_opt_in_alerts}
-          onChange={(event) => updateField("telegram_opt_in_alerts", event.target.checked)}
-        />
-        <span>Quiero recibir alertas por Telegram</span>
-      </label>
-
-      <div className="field">
-        <label htmlFor="account-priority">Qué tan filtradas querés las alertas</label>
-        <select
-          id="account-priority"
-          value={form.alert_priority}
-          onChange={(event) =>
-            updateField("alert_priority", event.target.value as "alta" | "media" | "todas")
-          }
-        >
-          <option value="alta">Solo alta prioridad</option>
-          <option value="media">Media o alta</option>
-          <option value="todas">Todas</option>
-        </select>
-      </div>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.receive_relevant}
-          onChange={(event) => updateField("receive_relevant", event.target.checked)}
-        />
-        <span>Avisarme cuando aparezca una licitación relevante</span>
-      </label>
-
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={form.receive_deadlines}
-          onChange={(event) => updateField("receive_deadlines", event.target.checked)}
-        />
-        <span>Recordarme los vencimientos</span>
-      </label>
-
-      <button type="button" onClick={save} disabled={isPending} className="button-primary button-block">
-        {isPending ? "Guardando…" : "Guardar preferencias"}
-      </button>
 
       {message ? <p className="form-message form-message-block" aria-live="polite">{message}</p> : null}
     </div>

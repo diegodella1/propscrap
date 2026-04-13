@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 
-from sqlalchemy import JSON, Boolean, Date, DateTime, ForeignKey, Numeric, String, Text, func
+from sqlalchemy import JSON, Boolean, Date, DateTime, ForeignKey, Numeric, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -29,6 +29,7 @@ class Source(Base):
 
     runs: Mapped[list["SourceRun"]] = relationship(back_populates="source")
     tenders: Mapped[list["Tender"]] = relationship(back_populates="source")
+    company_profile_links: Mapped[list["CompanyProfileSource"]] = relationship(back_populates="source")
 
 
 class SourceRun(Base):
@@ -148,6 +149,7 @@ class CompanyProfile(Base):
     tax_status_json: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     company_data_source: Mapped[str | None] = mapped_column(String(100), nullable=True)
     company_data_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    source_scope_mode: Mapped[str] = mapped_column(String(20), default="all_active")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
@@ -155,6 +157,20 @@ class CompanyProfile(Base):
 
     matches: Mapped[list["TenderMatch"]] = relationship(back_populates="company_profile")
     users: Mapped[list["User"]] = relationship(back_populates="company_profile")
+    company_sources: Mapped[list["CompanyProfileSource"]] = relationship(back_populates="company_profile", cascade="all, delete-orphan")
+
+
+class CompanyProfileSource(Base):
+    __tablename__ = "company_profile_sources"
+    __table_args__ = (UniqueConstraint("company_profile_id", "source_id", name="uq_company_profile_source"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_profile_id: Mapped[int] = mapped_column(ForeignKey("company_profiles.id"), index=True)
+    source_id: Mapped[int] = mapped_column(ForeignKey("sources.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    company_profile: Mapped["CompanyProfile"] = relationship(back_populates="company_sources")
+    source: Mapped["Source"] = relationship(back_populates="company_profile_links")
 
 
 class TenderMatch(Base):

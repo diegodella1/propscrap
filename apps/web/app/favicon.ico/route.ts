@@ -1,0 +1,25 @@
+export function GET() {
+  return new Response(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="EasyTaciones">
+      <defs>
+        <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#002855" />
+          <stop offset="100%" stop-color="#001430" />
+        </linearGradient>
+        <linearGradient id="accent" x1="0%" x2="100%" y1="0%" y2="100%">
+          <stop offset="0%" stop-color="#f2b366" />
+          <stop offset="100%" stop-color="#f7d7a7" />
+        </linearGradient>
+      </defs>
+      <rect width="96" height="96" rx="24" fill="url(#bg)" />
+      <path d="M24 28h48v8H24zm0 16h34v8H24zm0 16h48v8H24z" fill="#f5faff" opacity=".94" />
+      <circle cx="68" cy="48" r="10" fill="url(#accent)" />
+    </svg>`,
+    {
+      headers: {
+        "Content-Type": "image/svg+xml; charset=utf-8",
+        "Cache-Control": "public, max-age=86400",
+      },
+    },
+  );
+}

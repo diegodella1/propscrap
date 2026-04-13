@@ -5,14 +5,15 @@ from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from app.models.tender import Tender
+from app.models.tender import Source, Tender
 from app.services.company_profiles import ensure_demo_company_profile
-from app.services.sources import ensure_source
+from app.services.source_access import replace_company_source_scope
+from app.services.source_catalog import seed_source_catalog
 from app.services.users import ensure_demo_company_admin_user, ensure_demo_user, ensure_platform_admin_user
 
 
 def seed_demo_data(db: Session) -> None:
-    ensure_demo_company_profile(db)
+    profile = ensure_demo_company_profile(db)
     ensure_platform_admin_user(db)
     ensure_demo_company_admin_user(db)
     demo_user = ensure_demo_user(db)
@@ -23,34 +24,14 @@ def seed_demo_data(db: Session) -> None:
             "receive_relevant": True,
             "receive_deadlines": True,
         }
-    source = ensure_source(
-        db,
-        slug="comprar",
-        name="COMPR.AR",
-        source_type="portal",
-        base_url="https://comprar.gob.ar",
-        scraping_mode="coded",
-        connector_slug="comprar",
-    )
-    ensure_source(
-        db,
-        slug="pbac",
-        name="PBAC",
-        source_type="portal",
-        base_url="https://www.pbac.cgp.gba.gov.ar",
-        scraping_mode="coded",
-        connector_slug="pbac",
-    )
-    ensure_source(
-        db,
-        slug="boletin-oficial",
-        name="Boletín Oficial",
-        source_type="boletin",
-        base_url="https://www.boletinoficial.gob.ar",
-        scraping_mode="coded",
-        connector_slug="boletin-oficial",
-    )
+
+    seed_source_catalog(db)
     db.flush()
+
+    source = db.query(Source).filter_by(slug='comprar').one()
+    pbac = db.query(Source).filter_by(slug='pbac').one()
+    boletin = db.query(Source).filter_by(slug='boletin-oficial').one()
+    replace_company_source_scope(db, profile=profile, source_scope_mode='custom', source_ids=[source.id, pbac.id, boletin.id])
 
     existing = db.query(Tender).count()
     if existing > 0:

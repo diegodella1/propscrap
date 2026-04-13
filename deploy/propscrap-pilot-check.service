@@ -1,0 +1,12 @@
+[Unit]
+Description=Propscrap Pilot Health Check
+After=network-online.target propscrap-api.service propscrap-scheduler.service
+Wants=network-online.target propscrap-api.service propscrap-scheduler.service
+
+[Service]
+Type=oneshot
+User=diego
+WorkingDirectory=/home/diego/Documents/prop/propscrap
+ExecStart=/home/diego/Documents/prop/propscrap/apps/api/.venv/bin/python /home/diego/Documents/prop/propscrap/scripts/check_propscrap_pilot.py
+StandardOutput=append:/var/log/propscrap-pilot-check.log
+StandardError=append:/var/log/propscrap-pilot-check.log

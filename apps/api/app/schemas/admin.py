@@ -10,6 +10,7 @@ from app.services.source_registry import ALLOWED_CONNECTOR_SLUGS
 
 SourceTypeLiteral = Literal["portal", "boletin", "marketplace", "manual"]
 ScrapingModeLiteral = Literal["coded", "api", "html", "pdf", "hybrid"]
+SourceScopeModeLiteral = Literal["all_active", "custom"]
 
 
 class UserRead(BaseModel):
@@ -199,6 +200,7 @@ class CompanyProfileAdminRead(BaseModel):
     tax_status_json: dict | None = None
     company_data_source: str | None = None
     company_data_updated_at: datetime | None = None
+    source_scope_mode: SourceScopeModeLiteral = "all_active"
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -217,6 +219,26 @@ class CompanyProfileUpdateRequest(BaseModel):
     max_amount: str | None = None
     alert_preferences_json: dict | None = None
     tax_status_json: dict | None = None
+
+
+class SourceAccessRead(BaseModel):
+    profile_id: int
+    company_name: str
+    source_scope_mode: SourceScopeModeLiteral
+    selected_source_ids: list[int]
+    effective_source_ids: list[int]
+    sources: list[SourceAdminRead]
+
+
+class SourceAccessUpdateRequest(BaseModel):
+    source_scope_mode: SourceScopeModeLiteral
+    source_ids: list[int] = []
+
+    @field_validator("source_ids")
+    @classmethod
+    def normalize_source_ids(cls, v: list[int]) -> list[int]:
+        unique_ids = sorted({int(value) for value in v})
+        return unique_ids
 
 
 class AutomationSettingsRead(BaseModel):
@@ -261,11 +283,10 @@ class AutomationSettingsUpdateRequest(BaseModel):
     demo_booking_url: str | None = None
     resend_api_key: str | None = None
     resend_from_email: str | None = None
-    email_delivery_enabled: bool | None = None
     whatsapp_enabled: bool | None = None
     whatsapp_provider: str | None = None
-    whatsapp_meta_token: str | None = None
-    whatsapp_meta_phone_number_id: str | None = None
+    whatsapp_api_token: str | None = None
+    whatsapp_phone_number_id: str | None = None
     whatsapp_api_version: str | None = None
     telegram_enabled: bool | None = None
     telegram_bot_token: str | None = None

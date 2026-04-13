@@ -4,21 +4,13 @@ import { ContactRequestForm } from "../../../components/contact-request-form";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { fetchPublicPlatformSettings } from "../../../lib/api";
-import { getCurrentUserFromSession } from "../../../lib/session";
 
 export default async function ContactPage() {
-  const [currentUser, platformSettings] = await Promise.all([
-    getCurrentUserFromSession(),
-    fetchPublicPlatformSettings(),
-  ]);
+  const platformSettings = await fetchPublicPlatformSettings();
 
   return (
     <PageShell variant="marketing" className="page-screen page-screen--contact">
-      <SiteHeader
-        section="contact"
-        currentUserName={currentUser?.full_name}
-        currentUserRole={currentUser?.role}
-      />
+      <SiteHeader section="contact" audience="public" />
 
       <section className="hero hero-app about-hero">
         <div>

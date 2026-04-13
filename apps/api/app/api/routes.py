@@ -23,8 +23,10 @@ from app.schemas.admin import (
     AutomationSettingsRead,
     AutomationSettingsUpdateRequest,
     CompanyProfileAdminRead,
-    PublicPlatformSettingsRead,
     CompanyProfileUpdateRequest,
+    PublicPlatformSettingsRead,
+    SourceAccessRead,
+    SourceAccessUpdateRequest,
     SourceAdminRead,
     SourceCreateRequest,
     SourceUpdateRequest,
@@ -51,6 +53,13 @@ from app.services.company_profiles import (
 )
 from app.services.company_registry import lookup_company_by_cuit
 from app.services.llm_enrichment import DEFAULT_MASTER_PROMPT
+from app.services.source_access import (
+    list_effective_source_ids_for_profile,
+    list_selected_source_ids,
+    list_source_rows,
+    replace_company_source_scope,
+)
+from app.services.source_catalog import seed_source_catalog
 from app.services.rate_limit import enforce_auth_rate_limit
 from app.services.runtime_settings import get_automation_settings, update_automation_settings
 from app.services.source_registry import ALLOWED_CONNECTOR_SLUGS
@@ -259,13 +268,21 @@ def get_tenders(
     min_score: int | None = Query(default=None, ge=0, le=100),
     limit: int = Query(default=50, le=200),
     db: Session = Depends(get_db),
+    session_token: str | None = Cookie(default=None, alias=settings.session_cookie_name),
 ) -> TenderListResponse:
+    allowed_source_ids: list[int] | None = None
+    user_id = read_session_user_id(session_token)
+    if user_id is not None:
+        current_user = db.execute(select(User).where(User.id == user_id, User.is_active.is_(True))).scalar_one_or_none()
+        if current_user is not None and current_user.company_profile_id is not None and current_user.company_profile is not None:
+            allowed_source_ids = list_effective_source_ids_for_profile(db, current_user.company_profile)
     items, total = list_tenders(
         db,
         source_slug=source,
         jurisdiction=jurisdiction,
         min_score=min_score,
         limit=limit,
+        allowed_source_ids=allowed_source_ids,
     )
     return TenderListResponse(items=[TenderRead.model_validate(item) for item in items], total=total)
 
@@ -274,9 +291,10 @@ def get_tenders(
 def get_tender(
     tender_id: int,
     db: Session = Depends(get_db),
-    _: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ) -> TenderDetailRead:
-    item = get_tender_detail(db, tender_id)
+    allowed_source_ids = list_effective_source_ids_for_profile(db, current_user.company_profile) if current_user.company_profile else None
+    item = get_tender_detail(db, tender_id, allowed_source_ids=allowed_source_ids)
     if item is None:
         raise HTTPException(status_code=404, detail=f"Tender not found: {tender_id}")
     return TenderDetailRead.model_validate(item)
@@ -288,13 +306,16 @@ def get_saved_tenders(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> TenderListResponse:
-    items, total = list_saved_tenders(db, user_id=current_user.id, limit=limit)
+    allowed_source_ids = list_effective_source_ids_for_profile(db, current_user.company_profile) if current_user.company_profile else None
+    items, total = list_saved_tenders(db, user_id=current_user.id, limit=limit, allowed_source_ids=allowed_source_ids)
     return TenderListResponse(items=[TenderRead.model_validate(item) for item in items], total=total)
 
 
 @router.get("/sources", response_model=list[SourceRead])
 def get_sources(db: Session = Depends(get_db)) -> list[SourceRead]:
-    rows = db.execute(select(Source).order_by(Source.name.asc())).scalars().all()
+    seed_source_catalog(db)
+    db.commit()
+    rows = db.execute(select(Source).where(Source.is_active.is_(True)).order_by(Source.name.asc())).scalars().all()
     return [SourceRead.model_validate(row) for row in rows]
 
 
@@ -303,25 +324,10 @@ def get_admin_sources(
     db: Session = Depends(get_db),
     _: User = Depends(require_platform_admin),
 ) -> list[SourceAdminRead]:
+    seed_source_catalog(db)
+    db.commit()
     rows = db.execute(select(Source).order_by(Source.created_at.desc(), Source.id.desc())).scalars().all()
-    return [
-        SourceAdminRead.model_validate(
-            {
-                "id": row.id,
-                "name": row.name,
-                "slug": row.slug,
-                "source_type": row.source_type,
-                "scraping_mode": row.scraping_mode,
-                "connector_slug": row.connector_slug,
-                "base_url": row.base_url,
-                "config_json": row.config_json,
-                "is_active": row.is_active,
-                "last_run_at": row.last_run_at,
-                "connector_available": (row.connector_slug or row.slug) in ALLOWED_CONNECTOR_SLUGS,
-            }
-        )
-        for row in rows
-    ]
+    return [_serialize_source(row) for row in rows]
 
 
 @router.post("/admin/sources", response_model=SourceAdminRead)
@@ -355,21 +361,7 @@ def create_source(
     )
     db.commit()
     db.refresh(source)
-    return SourceAdminRead.model_validate(
-        {
-            "id": source.id,
-            "name": source.name,
-            "slug": source.slug,
-            "source_type": source.source_type,
-            "scraping_mode": source.scraping_mode,
-            "connector_slug": source.connector_slug,
-            "base_url": source.base_url,
-            "config_json": source.config_json,
-            "is_active": source.is_active,
-            "last_run_at": source.last_run_at,
-            "connector_available": (source.connector_slug or source.slug) in ALLOWED_CONNECTOR_SLUGS,
-        }
-    )
+    return _serialize_source(source)
 
 
 @router.patch("/admin/sources/{source_id}", response_model=SourceAdminRead)
@@ -412,21 +404,7 @@ def update_source(
     )
     db.commit()
     db.refresh(source)
-    return SourceAdminRead.model_validate(
-        {
-            "id": source.id,
-            "name": source.name,
-            "slug": source.slug,
-            "source_type": source.source_type,
-            "scraping_mode": source.scraping_mode,
-            "connector_slug": source.connector_slug,
-            "base_url": source.base_url,
-            "config_json": source.config_json,
-            "is_active": source.is_active,
-            "last_run_at": source.last_run_at,
-            "connector_available": (source.connector_slug or source.slug) in ALLOWED_CONNECTOR_SLUGS,
-        }
-    )
+    return _serialize_source(source)
 
 
 @router.get("/company-profiles")
@@ -495,6 +473,82 @@ def put_company_profile(
     db.commit()
     db.refresh(profile)
     return _serialize_company_profile(profile)
+
+
+@router.get("/me/source-access", response_model=SourceAccessRead)
+def get_my_source_access(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_company_admin),
+) -> SourceAccessRead:
+    profile = get_company_profile_for_user(db, current_user)
+    seed_source_catalog(db)
+    db.commit()
+    return _serialize_source_access(db, profile)
+
+
+@router.put("/me/source-access", response_model=SourceAccessRead)
+def put_my_source_access(
+    payload: SourceAccessUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_company_admin),
+) -> SourceAccessRead:
+    profile = get_company_profile_for_user(db, current_user)
+    replace_company_source_scope(
+        db,
+        profile=profile,
+        source_scope_mode=payload.source_scope_mode,
+        source_ids=payload.source_ids,
+    )
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="company.source_scope.update",
+        detail={"profile_id": profile.id, "mode": payload.source_scope_mode, "source_ids": payload.source_ids},
+    )
+    db.commit()
+    db.refresh(profile)
+    return _serialize_source_access(db, profile)
+
+
+@router.get("/admin/company-profiles/{profile_id}/source-access", response_model=SourceAccessRead)
+def get_admin_company_source_access(
+    profile_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_platform_admin),
+) -> SourceAccessRead:
+    seed_source_catalog(db)
+    db.commit()
+    profile = get_company_profile(db, profile_id)
+    if profile is None:
+        raise NotFoundError(f"Company profile not found: {profile_id}")
+    return _serialize_source_access(db, profile)
+
+
+@router.put("/admin/company-profiles/{profile_id}/source-access", response_model=SourceAccessRead)
+def put_admin_company_source_access(
+    profile_id: int,
+    payload: SourceAccessUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_platform_admin),
+) -> SourceAccessRead:
+    profile = get_company_profile(db, profile_id)
+    if profile is None:
+        raise NotFoundError(f"Company profile not found: {profile_id}")
+    replace_company_source_scope(
+        db,
+        profile=profile,
+        source_scope_mode=payload.source_scope_mode,
+        source_ids=payload.source_ids,
+    )
+    record_admin_audit(
+        db,
+        actor_user_id=current_user.id,
+        action="admin.company_source_scope.update",
+        detail={"profile_id": profile.id, "mode": payload.source_scope_mode, "source_ids": payload.source_ids},
+    )
+    db.commit()
+    db.refresh(profile)
+    return _serialize_source_access(db, profile)
 
 
 @router.get("/users", response_model=list[UserRead])
@@ -747,15 +801,16 @@ def run_match_tender(
 @router.post("/jobs/match-all")
 def run_match_all(
     profile_id: int | None = Query(default=None),
+    batch_size: int | None = Query(default=None, ge=10, le=1000),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_platform_admin),
 ) -> dict:
-    result = match_all_tenders(db, profile_id=profile_id)
+    result = match_all_tenders(db, profile_id=profile_id, batch_size=batch_size)
     record_admin_audit(
         db,
         actor_user_id=current_user.id,
         action="job.match_all",
-        detail={"profile_id": profile_id},
+        detail={"profile_id": profile_id, "batch_size": batch_size},
     )
     db.commit()
     return result
@@ -913,6 +968,41 @@ def _serialize_company_profile(profile: CompanyProfile) -> CompanyProfileAdminRe
             "tax_status_json": profile.tax_status_json,
             "company_data_source": profile.company_data_source,
             "company_data_updated_at": profile.company_data_updated_at,
+            "source_scope_mode": profile.source_scope_mode,
+        }
+    )
+
+
+def _serialize_source(source: Source) -> SourceAdminRead:
+    return SourceAdminRead.model_validate(
+        {
+            "id": source.id,
+            "name": source.name,
+            "slug": source.slug,
+            "source_type": source.source_type,
+            "scraping_mode": source.scraping_mode,
+            "connector_slug": source.connector_slug,
+            "base_url": source.base_url,
+            "config_json": source.config_json,
+            "is_active": source.is_active,
+            "last_run_at": source.last_run_at,
+            "connector_available": (source.connector_slug or source.slug) in ALLOWED_CONNECTOR_SLUGS,
+        }
+    )
+
+
+def _serialize_source_access(db: Session, profile: CompanyProfile) -> SourceAccessRead:
+    rows = list_source_rows(db)
+    selected_source_ids = list_selected_source_ids(db, profile)
+    effective_source_ids = list_effective_source_ids_for_profile(db, profile)
+    return SourceAccessRead.model_validate(
+        {
+            "profile_id": profile.id,
+            "company_name": profile.company_name,
+            "source_scope_mode": profile.source_scope_mode,
+            "selected_source_ids": selected_source_ids,
+            "effective_source_ids": effective_source_ids,
+            "sources": [_serialize_source(row) for row in rows],
         }
     )
 

@@ -6,7 +6,7 @@ import { WorkspaceBoardIllustration } from "../../../components/landing-ornament
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { TendersTable } from "../../../components/tenders-table";
-import { fetchAlerts, fetchSavedTenders, fetchSources, fetchTenders } from "../../../lib/api";
+import { fetchAlerts, fetchMySourceAccess, fetchSavedTenders, fetchSources, fetchTenders } from "../../../lib/api";
 import { getCookieHeaderFromSession, getCurrentUserFromSession, getMyCompanyProfileFromSession } from "../../../lib/session";
 
 type Props = {
@@ -57,7 +57,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     redirect("/login");
   }
 
-  const [sources, tenders, alerts, profile, saved] = await Promise.all([
+  const [sources, tenders, alerts, profile, saved, sourceAccess] = await Promise.all([
     fetchSources(),
     fetchTenders({
       source: params.source,
@@ -67,6 +67,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     fetchAlerts(cookieHeader || undefined),
     getMyCompanyProfileFromSession(),
     fetchSavedTenders(cookieHeader || undefined).catch(() => null),
+    fetchMySourceAccess(cookieHeader || undefined).catch(() => null),
   ]);
 
   const topPriority = [...tenders.items]
@@ -166,6 +167,10 @@ export default async function DashboardPage({ searchParams }: Props) {
         <article>
           <span>Alertas activas</span>
           <strong>{alerts.length}</strong>
+        </article>
+        <article>
+          <span>Fuentes efectivas</span>
+          <strong>{sourceAccess?.effective_source_ids.length ?? 0}</strong>
         </article>
       </section>
 
@@ -314,6 +319,39 @@ export default async function DashboardPage({ searchParams }: Props) {
           sources={sources}
         />
         <TendersTable tenders={tenders.items} total={tenders.total} />
+      </section>
+
+      <section className="panel workspace-briefing-panel">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Fuentes y scoring</span>
+            <h2>Cómo leer este top</h2>
+          </div>
+          <p>El score mezcla keywords, buyer, jurisdicción, sectores, frescura de publicación y cercanía del cierre. No reemplaza criterio comercial: ordena primero qué conviene revisar.</p>
+        </div>
+        <div className="admin-overview-grid">
+          <article className="panel admin-overview-card">
+            <span className="section-kicker">Fuentes</span>
+            <h3>Inventario efectivo</h3>
+            <p>
+              {sourceAccess
+                ? `Modo ${sourceAccess.source_scope_mode === "all_active" ? "todas las activas" : "custom"} · ${sourceAccess.effective_source_ids.length} fuentes efectivas para esta empresa.`
+                : "El listado no muestra todo lo que existe en plataforma, sino solo las fuentes globalmente activas y habilitadas para esta empresa."}
+            </p>
+          </article>
+          <article className="panel admin-overview-card">
+            <span className="section-kicker">Scoring</span>
+            <h3>Orden de revisión</h3>
+            <p>Un score alto sube por fit comercial real; baja si aparecen exclusiones, si la oportunidad está vencida o si el cierre está demasiado encima.</p>
+          </article>
+          <article className="panel admin-overview-card">
+            <span className="section-kicker">Visibilidad</span>
+            <h3>Quién define el alcance</h3>
+            <p>
+              Superadmin activa fuentes a nivel plataforma. El admin de empresa decide si hereda todas las activas o si trabaja con una selección custom para su equipo.
+            </p>
+          </article>
+        </div>
       </section>
     </PageShell>
   );

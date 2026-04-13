@@ -1,17 +1,19 @@
 import Link from "next/link";
 
 import { CompanyAlertSettingsForm } from "./company-alert-settings-form";
+import { CompanySourceAccessForm } from "./company-source-access-form";
 import { SiteHeader } from "./site-header";
 import { UserEditorList } from "./user-editor-list";
-import type { CompanyProfile, User } from "../lib/api";
+import type { CompanyProfile, SourceAccess, User } from "../lib/api";
 
 type Props = {
   currentUserName: string;
   companyProfile: CompanyProfile;
   users: User[];
+  sourceAccess: SourceAccess | null;
 };
 
-export function CompanyAdminPage({ currentUserName, companyProfile, users }: Props) {
+export function CompanyAdminPage({ currentUserName, companyProfile, users, sourceAccess }: Props) {
   const defaults = companyProfile.alert_preferences_json ?? {};
   const whatsappReady = users.filter((user) => user.whatsapp_opt_in && user.whatsapp_number).length;
   const telegramReady = users.filter((user) => user.telegram_opt_in && user.telegram_chat_id).length;
@@ -172,6 +174,23 @@ export function CompanyAdminPage({ currentUserName, companyProfile, users }: Pro
                   <p>Anticipaciones base para recordatorios por fechas críticas detectadas en scraping o enriquecimiento.</p>
                 </article>
               </div>
+            </article>
+
+            <article className="panel table-panel table-panel-upgraded">
+              <div className="results-header">
+                <div>
+                  <span className="section-kicker">Fuentes</span>
+                  <h2>Qué universos ve esta empresa</h2>
+                </div>
+                <p>Podés heredar todas las fuentes activas o fijar un subset puntual para esta cuenta.</p>
+              </div>
+              <div className="detail-note-card">
+                <span className="section-kicker">Regla de acceso</span>
+                <p>
+                  Esta pantalla no crea fuentes nuevas. Solo te deja elegir, dentro del inventario global habilitado por superadmin, cuáles usa tu empresa para que después las vean sus usuarios.
+                </p>
+              </div>
+              {sourceAccess ? <CompanySourceAccessForm access={sourceAccess} endpoint="/api/v1/me/source-access" /> : <p>No se pudo cargar el alcance de fuentes.</p>}
             </article>
 
             <article className="panel table-panel table-panel-upgraded">

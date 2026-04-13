@@ -203,6 +203,7 @@ La app usa PostgreSQL estándar. Si preferís apuntar al Postgres de Supabase lo
 
 - checklist operativa: [docs/launch-readiness.md](docs/launch-readiness.md)
 - guía de demo y prueba de 30 días: [docs/demo-guide.md](docs/demo-guide.md)
+- gobierno de fuentes y habilitación comercial: [docs/source-governance.md](docs/source-governance.md)
 - validación reproducible: `bash scripts/release_readiness_check.sh`
 - smoke funcional: `bash scripts/smoke_easytaciones.sh`
 - arranque demo local: `bash scripts/start_demo_stack.sh`
@@ -225,8 +226,10 @@ La app usa PostgreSQL estándar. Si preferís apuntar al Postgres de Supabase lo
 - `deploy/propscrap-api.service` publica la API en `127.0.0.1:8001`
 - `deploy/propscrap-web.service` publica el frontend en `127.0.0.1:3000`
 - `deploy/propscrap-scheduler.service` publica el worker de automatización
+- `deploy/propscrap-pilot-check.timer` corre un chequeo cada 15 minutos sobre base, ciclo y fuentes activas
 - ambos usan `Restart=always` para reiniciar automáticamente después de un reboot o corte de luz
 - después de cambios en frontend, reconstruí `apps/web` con `npm run build` antes de reiniciar `propscrap-web`
+- `docker-compose.yml` deja Postgres en `127.0.0.1:55432` con `restart: unless-stopped` para no chocar con Supabase local
 
 ## Pendiente para siguientes fases
 

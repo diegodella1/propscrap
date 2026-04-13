@@ -1,11 +1,12 @@
 import { AlertOpsPanel } from "./alert-ops-panel";
+import { CompanySourceAccessForm } from "./company-source-access-form";
 import { AutomationSettingsPanel } from "./automation-settings-panel";
 import { OnboardingWizard, type OnboardingStep } from "./onboarding-wizard";
 import { SiteHeader } from "./site-header";
 import { SourceEditorList } from "./source-editor-list";
 import { SourceForm } from "./source-form";
 import { UserEditorList } from "./user-editor-list";
-import type { AdminAuditEvent, Alert, AutomationSettings, Source, SourceRun, User, WhatsappOutboxMessage } from "../lib/api";
+import type { AdminAuditEvent, Alert, AutomationSettings, CompanyProfile, Source, SourceAccess, SourceRun, User, WhatsappOutboxMessage } from "../lib/api";
 
 type Props = {
   currentUserName: string;
@@ -16,6 +17,8 @@ type Props = {
   automationSettings: AutomationSettings;
   whatsappOutbox: WhatsappOutboxMessage[];
   auditEvents: AdminAuditEvent[];
+  companyProfiles: CompanyProfile[];
+  companySourceAccess: SourceAccess[];
 };
 
 export function PlatformAdminPage({
@@ -27,9 +30,27 @@ export function PlatformAdminPage({
   automationSettings,
   whatsappOutbox,
   auditEvents,
+  companyProfiles,
+  companySourceAccess,
 }: Props) {
   const sourceMap = new Map(sources.map((source) => [source.id, source]));
   const userMap = new Map(users.map((user) => [user.id, user]));
+  const runSummaryBySourceId = Object.fromEntries(
+    sources.map((source) => {
+      const latestRun = sourceRuns.find((run) => run.source_id === source.id) ?? null;
+      return [
+        source.id,
+        {
+          lastStartedAt: latestRun?.started_at ?? null,
+          lastFinishedAt: latestRun?.finished_at ?? null,
+          lastStatus: latestRun?.status ?? null,
+          lastItemsFound: latestRun?.items_found ?? null,
+          lastItemsNew: latestRun?.items_new ?? null,
+          lastErrorMessage: latestRun?.error_message ?? null,
+        },
+      ];
+    }),
+  );
   const activeSources = sources.filter((source) => source.is_active).length;
   const healthyRuns = sourceRuns.filter((run) => run.status === "success" || run.status === "completed").length;
   const failedRuns = sourceRuns.filter((run) => run.status === "failed" || run.status === "error").length;
@@ -116,7 +137,7 @@ export function PlatformAdminPage({
         <div>
           <span className="eyebrow">Superadmin</span>
           <h1>Consola de plataforma.</h1>
-          <p>Gobierno de fuentes, automatización, alertas y acceso global.</p>
+          <p>Gobierno del catálogo maestro de fuentes, automatización, alertas y acceso global.</p>
         </div>
         <div className="workspace-header-actions">
           <a href="#admin-sources" className="button-secondary">
@@ -169,6 +190,7 @@ export function PlatformAdminPage({
               <a href="#admin-overview">Resumen</a>
               <a href="#admin-sources">Fuentes</a>
               <a href="#admin-automation">Automatización</a>
+              <a href="#admin-company-sources">Clientes</a>
               <a href="#admin-delivery">Entregas</a>
               <a href="#admin-audit">Auditoría</a>
               <a href="#admin-users">Usuarios</a>
@@ -181,6 +203,10 @@ export function PlatformAdminPage({
               <article>
                 <strong>Salud de fuentes</strong>
                 <p>{inactiveSources} inactivas y {sourcesWithoutConnector} sin conector disponible.</p>
+              </article>
+              <article>
+                <strong>Registro maestro</strong>
+                <p>Lo que actives acá entra al inventario principal de licitaciones y puede ser habilitado luego por cada empresa.</p>
               </article>
               <article>
                 <strong>LLM y automatización</strong>
@@ -224,6 +250,14 @@ export function PlatformAdminPage({
               </div>
               <p>Ordená prioridades, ejecutá cambios con criterio y verificá si discovery, matching y entrega están sanos.</p>
             </div>
+
+            <article className="panel admin-overview-card">
+              <span className="section-kicker">Flujo de habilitación</span>
+              <h3>Cómo entra una fuente al producto</h3>
+              <p>
+                1. Se registra en el catálogo maestro y se implementa el conector. 2. El super admin la activa globalmente para que aparezca en el top de licitaciones. 3. Cada admin de empresa decide si la hereda o la habilita para su equipo en modo custom.
+              </p>
+            </article>
 
             <div className="ops-priority-grid">
               <article className="panel ops-priority-card ops-priority-card-strong">
@@ -333,8 +367,37 @@ export function PlatformAdminPage({
                   </div>
                   <p>Cada bloque concentra estado, URL base, conector y configuración editable.</p>
                 </div>
-                <SourceEditorList sources={sources} />
+                <SourceEditorList sources={sources} runSummaryBySourceId={runSummaryBySourceId} />
               </article>
+            </div>
+          </section>
+
+          <section id="admin-company-sources" className="admin-section-stack">
+            <div className="results-header">
+              <div>
+                <span className="section-kicker">Clientes</span>
+                <h2>Fuentes por empresa</h2>
+              </div>
+              <p>El superadmin define si cada empresa hereda todo el universo activo o trabaja un subset específico.</p>
+            </div>
+
+            <div className="admin-section-stack">
+              {companyProfiles.map((profile) => {
+                const access = companySourceAccess.find((item) => item.profile_id === profile.id);
+                if (!access) return null;
+                return (
+                  <article className="panel table-panel table-panel-upgraded" key={profile.id}>
+                    <div className="results-header">
+                      <div>
+                        <span className="section-kicker">Empresa</span>
+                        <h2>{profile.company_name}</h2>
+                      </div>
+                      <p>CUIT {profile.cuit ?? "sin cargar"} · modo {access.source_scope_mode === "all_active" ? "todas las activas" : "custom"}.</p>
+                    </div>
+                    <CompanySourceAccessForm access={access} endpoint={`/api/v1/admin/company-profiles/${profile.id}/source-access`} compact />
+                  </article>
+                );
+              })}
             </div>
           </section>
 

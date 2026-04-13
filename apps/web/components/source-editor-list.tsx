@@ -7,8 +7,22 @@ import { formatFastApiDetail, type Source } from "../lib/api";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
 type DraftState = Record<number, Source>;
+type SourceRunSummary = {
+  lastStartedAt: string | null;
+  lastFinishedAt: string | null;
+  lastStatus: string | null;
+  lastItemsFound: number | null;
+  lastItemsNew: number | null;
+  lastErrorMessage: string | null;
+};
 
-export function SourceEditorList({ sources }: { sources: Source[] }) {
+export function SourceEditorList({
+  sources,
+  runSummaryBySourceId = {},
+}: {
+  sources: Source[];
+  runSummaryBySourceId?: Record<number, SourceRunSummary>;
+}) {
   const [drafts, setDrafts] = useState<DraftState>(
     Object.fromEntries(sources.map((source) => [source.id, { ...source }])),
   );
@@ -62,8 +76,16 @@ export function SourceEditorList({ sources }: { sources: Source[] }) {
 
   return (
     <div className="source-edit-stack">
+      <article className="panel admin-overview-card">
+        <span className="section-kicker">Gobierno de fuentes</span>
+        <h3>Registro maestro y habilitación por capas</h3>
+        <p>
+          Toda fuente nueva se registra primero en el catálogo global. Después el super admin decide si queda activa a nivel plataforma y cada admin de empresa puede heredar todas las activas o elegir un subset propio.
+        </p>
+      </article>
       {sources.map((source) => {
         const draft = drafts[source.id];
+        const runSummary = runSummaryBySourceId[source.id];
 
         return (
           <article key={source.id} className="source-card">
@@ -158,6 +180,39 @@ export function SourceEditorList({ sources }: { sources: Source[] }) {
                   </div>
                 </div>
 
+                <div className="admin-status-list">
+                  <article>
+                    <strong>Visibilidad</strong>
+                    <p>
+                      {draft.is_active
+                        ? "Disponible para que las empresas la hereden o la seleccionen en modo custom."
+                        : "Oculta para empresas y usuarios finales hasta que el super admin la reactive."}
+                    </p>
+                  </article>
+                  <article>
+                    <strong>Ultima corrida</strong>
+                    <p>
+                      {runSummary?.lastStartedAt
+                        ? `${new Date(runSummary.lastStartedAt).toLocaleString("es-AR")} · ${runSummary.lastStatus ?? "n/d"}`
+                        : draft.last_run_at
+                          ? `${new Date(draft.last_run_at).toLocaleString("es-AR")} · sin detalle reciente`
+                          : "Sin corridas registradas"}
+                    </p>
+                  </article>
+                  <article>
+                    <strong>Resultado</strong>
+                    <p>
+                      {runSummary?.lastItemsFound != null && runSummary?.lastItemsNew != null
+                        ? `${runSummary.lastItemsNew} nuevos / ${runSummary.lastItemsFound} encontrados`
+                        : "Todavia no hay metricas de corrida"}
+                    </p>
+                  </article>
+                  <article>
+                    <strong>Incidente</strong>
+                    <p>{runSummary?.lastErrorMessage || "Sin error reciente registrado"}</p>
+                  </article>
+                </div>
+
                 <div className="field">
                   <label htmlFor={`source-config-${source.id}`}>Config JSON</label>
                   <textarea
@@ -183,7 +238,7 @@ export function SourceEditorList({ sources }: { sources: Source[] }) {
                       checked={draft.is_active}
                       onChange={(event) => updateSource(source.id, { is_active: event.target.checked })}
                     />
-                    <span>Activa para seguimiento</span>
+                    <span>Activa globalmente en el top de licitaciones</span>
                   </label>
 
                   <button

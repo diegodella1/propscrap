@@ -55,9 +55,28 @@ function formatStateLabel(value: string | null | undefined) {
 
 function getScoreTone(score: number | null) {
   if (score === null) return "tone-neutral";
-  if (score >= 75) return "tone-success";
-  if (score >= 50) return "tone-warning";
+  if (score >= 70) return "tone-success";
+  if (score >= 45) return "tone-warning";
   return "tone-muted";
+}
+
+function formatScoreBand(value: string | null | undefined) {
+  switch (value) {
+    case "high":
+      return "Alto fit";
+    case "medium":
+      return "Fit medio";
+    case "low":
+      return "Fit bajo";
+    default:
+      return "Sin banda";
+  }
+}
+
+function collectReasonLines(tender: Tender): string[] {
+  const summary = tender.matches[0]?.reasons_json?.summary;
+  if (!summary || !Array.isArray(summary)) return [];
+  return summary.filter((item): item is string => typeof item === "string" && item.trim().length > 0).slice(0, 2);
 }
 
 export function TendersTable({ tenders, total }: Props) {
@@ -72,15 +91,22 @@ export function TendersTable({ tenders, total }: Props) {
           <p>
             {isEmpty
               ? "No hay coincidencias con los filtros actuales."
-              : `${total} registros visibles con score, urgencia y acceso a fuente original.`}
+              : `${total} registros visibles en el top de licitaciones habilitado para esta empresa, con score, urgencia y acceso a fuente original.`}
           </p>
         </div>
         <p className="muted">Usá esta lista como inbox de revisión. El objetivo no es mirar todo: es guardar rápido lo que sí amerita seguimiento.</p>
       </div>
 
       {!isEmpty ? (
+        <div className="detail-note-card">
+          <span className="section-kicker">Alcance efectivo</span>
+          <p>Lo que aparece acá depende de dos filtros: fuentes activas a nivel plataforma y fuentes habilitadas para esta empresa.</p>
+        </div>
+      ) : null}
+
+      {!isEmpty ? (
       <div className="results-ribbon">
-        <span>Score y motivo</span>
+        <span>Score, banda y motivo</span>
         <span>Deadline</span>
         <span>Workflow</span>
         <span>Fuente original</span>
@@ -103,6 +129,7 @@ export function TendersTable({ tenders, total }: Props) {
           const match = tender.matches[0];
           const state = tender.states[0];
           const score = match ? Math.round(Number(match.score)) : null;
+          const reasonLines = collectReasonLines(tender);
 
           return (
             <article key={tender.id} className="opportunity-list-card">
@@ -115,14 +142,26 @@ export function TendersTable({ tenders, total }: Props) {
                 </div>
                 <strong>{tender.title}</strong>
                 <p>{tender.organization ?? "Sin organismo"} · cierre {formatDate(tender.deadline_date)}</p>
-                <p className="muted">
-                  {match?.reasons_json?.summary?.[0] ?? "Sin explicación sintetizada todavía."}
-                </p>
+                <p className="muted">Fuente {tender.source.name}{tender.external_id ? ` · expediente/proceso ${tender.external_id}` : ""}</p>
+                {reasonLines.length ? (
+                  <div className="admin-status-list">
+                    {reasonLines.map((line) => (
+                      <article key={`${tender.id}-${line}`}>
+                        <p>{line}</p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="muted">Sin explicación sintetizada todavía.</p>
+                )}
               </div>
 
               <div className="opportunity-list-aside">
                 {match ? (
-                  <span className={`badge score-chip ${getScoreTone(score)}`}>Score {score}</span>
+                  <>
+                    <span className={`badge score-chip ${getScoreTone(score)}`}>Score {score}</span>
+                    <span className="badge">{formatScoreBand(match.score_band)}</span>
+                  </>
                 ) : (
                   <span className="badge">Sin match</span>
                 )}

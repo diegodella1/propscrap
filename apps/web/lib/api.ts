@@ -15,7 +15,25 @@ function getApiBaseUrl() {
 const API_BASE_URL = getApiBaseUrl();
 
 /** Must match API `ALLOWED_CONNECTOR_SLUGS` (apps/api/app/services/source_registry.py). */
-export const KNOWN_CONNECTOR_SLUGS = ["comprar", "boletin-oficial", "pbac"] as const;
+export const KNOWN_CONNECTOR_SLUGS = [
+  "arsat",
+  "boletin-oficial",
+  "comprar",
+  "contratar",
+  "inta",
+  "licitaciones-catamarca",
+  "licitaciones-chaco",
+  "licitaciones-cordoba",
+  "licitaciones-corrientes",
+  "licitaciones-mendoza",
+  "licitaciones-rio-negro",
+  "licitaciones-salta",
+  "licitaciones-san-luis",
+  "licitaciones-santa-fe",
+  "licitaciones-tucuman",
+  "pami",
+  "pbac",
+] as const;
 
 export function formatFastApiDetail(payload: unknown): string {
   if (payload == null) {
@@ -268,6 +286,16 @@ export type CompanyProfile = {
   tax_status_json: Record<string, unknown> | null;
   company_data_source: string | null;
   company_data_updated_at: string | null;
+  source_scope_mode: "all_active" | "custom";
+};
+
+export type SourceAccess = {
+  profile_id: number;
+  company_name: string;
+  source_scope_mode: "all_active" | "custom";
+  selected_source_ids: number[];
+  effective_source_ids: number[];
+  sources: Source[];
 };
 
 export type AutomationSettings = {
@@ -532,4 +560,29 @@ export async function fetchMyCompanyProfile(cookieHeader?: string) {
     throw new Error("Failed to fetch company profile");
   }
   return (await response.json()) as CompanyProfile;
+}
+
+export async function fetchMySourceAccess(cookieHeader?: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/me/source-access`, {
+    cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
+  });
+  if (response.status === 401 || response.status === 403) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error("Failed to fetch company source access");
+  }
+  return (await response.json()) as SourceAccess;
+}
+
+export async function fetchAdminCompanySourceAccess(profileId: number, cookieHeader?: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/admin/company-profiles/${profileId}/source-access`, {
+    cache: "no-store",
+    headers: withCookieHeader(cookieHeader),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch admin company source access");
+  }
+  return (await response.json()) as SourceAccess;
 }

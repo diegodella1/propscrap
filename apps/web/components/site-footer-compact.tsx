@@ -9,6 +9,7 @@ export function SiteFooterCompact() {
         </span>
         <nav className="site-footer-compact-nav" aria-label="Enlaces mínimos">
           <Link href="/">Inicio</Link>
+          <Link href="/about">Cómo funciona</Link>
           <Link href="/contact">Contacto</Link>
         </nav>
       </div>

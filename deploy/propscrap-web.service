@@ -7,6 +7,8 @@ Wants=network-online.target propscrap-api.service
 Type=simple
 User=diego
 WorkingDirectory=/home/diego/Documents/prop/propscrap/apps/web
+Environment=PROPSCRAP_WEB_BUILD_ON_START=1
+Environment=PROPSCRAP_WEB_CLEAN_BUILD_ON_START=1
 ExecStart=/home/diego/Documents/prop/propscrap/scripts/start_propscrap_web.sh
 Restart=always
 RestartSec=5

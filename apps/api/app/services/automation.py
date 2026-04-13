@@ -49,6 +49,7 @@ def run_automation_cycle(db: Session) -> dict:
     active_sources = db.execute(select(Source).where(Source.is_active.is_(True)).order_by(Source.id.asc())).scalars().all()
     ingested_sources: list[dict] = []
     skipped_sources: list[dict] = []
+    failed_sources: list[dict] = []
 
     try:
         for source in active_sources:
@@ -63,7 +64,19 @@ def run_automation_cycle(db: Session) -> dict:
                     }
                 )
                 continue
-            ingested_sources.append(ingest_source(db, source.slug))
+            try:
+                ingested_sources.append(ingest_source(db, source.slug))
+            except Exception as exc:
+                failed_sources.append(
+                    {
+                        "source_id": source.id,
+                        "slug": source.slug,
+                        "connector_slug": source.connector_slug,
+                        "reason": "ingest_failed",
+                        "error": str(exc),
+                    }
+                )
+                continue
 
         enrichment_result = enrich_pending_tenders(db)
         match_result = match_all_tenders(db)
@@ -75,6 +88,7 @@ def run_automation_cycle(db: Session) -> dict:
             "sources_total": len(active_sources),
             "sources_ingested": len(ingested_sources),
             "sources_skipped": skipped_sources,
+            "sources_failed": failed_sources,
             "ingestion_results": ingested_sources,
             "enrichment": enrichment_result,
             "match": match_result,
@@ -84,7 +98,7 @@ def run_automation_cycle(db: Session) -> dict:
         settings.last_run_finished_at = finished_at
         settings.last_success_at = finished_at
         settings.last_cycle_summary = summary
-        settings.last_error_message = None
+        settings.last_error_message = None if not failed_sources else f"{len(failed_sources)} source(s) failed during the last cycle"
         db.add(settings)
         db.commit()
         return summary

@@ -27,6 +27,9 @@ export const metadata: Metadata = {
   title: "EasyTaciones | Sistema Operativo de Licitaciones para Proveedores del Estado",
   description:
     "EasyTaciones ayuda a empresas que venden al Estado a ordenar discovery, seguimiento y alertas de licitaciones en un solo sistema.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
