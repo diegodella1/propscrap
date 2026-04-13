@@ -24,8 +24,8 @@ export default async function CompanyProfilePage() {
       <section className="workspace-header profile-header">
         <div>
           <span className="eyebrow">Perfil de empresa</span>
-          <h1>Perfil comercial.</h1>
-          <p>Definí qué tipo de licitación entra al radar, con qué señales y con qué nivel de exigencia.</p>
+          <h1>Criterio comercial.</h1>
+          <p>Definí qué licitación entra al radar, con qué señales y con qué nivel de exigencia.</p>
         </div>
         <div className="workspace-header-actions">
           <a href="#company-profile-form" className="button-primary">
@@ -57,19 +57,14 @@ export default async function CompanyProfilePage() {
 
           <section className="ops-priority-grid profile-workbench-grid">
             <article className="panel ops-priority-card ops-priority-card-strong">
-              <span className="section-kicker">Cómo usa esto EasyTaciones</span>
-              <h3>Matching con criterio comercial real</h3>
+              <span className="section-kicker">Matching</span>
+              <h3>El perfil define el ranking inicial.</h3>
               <p>La plataforma cruza identidad, descripción, buyers, keywords, exclusiones y umbral para priorizar qué vale mirar primero.</p>
             </article>
             <article className="panel ops-priority-card">
-              <span className="section-kicker">Conviene completar</span>
-              <h3>Dossier y documentación base</h3>
-              <p>Usá la descripción y los buyers para reflejar antecedentes, documentación típica y foco comercial real de la empresa.</p>
-            </article>
-            <article className="panel ops-priority-card">
-              <span className="section-kicker">Impacto operativo</span>
+              <span className="section-kicker">Señales</span>
               <h3>Menos ruido, mejores alertas</h3>
-              <p>Si el perfil está bien armado, mejora discovery, ranking inicial y la calidad de alertas por email, WhatsApp y dashboard.</p>
+              <p>Si el perfil está bien armado, mejora discovery, ranking inicial y la calidad de alertas por dashboard, email y Telegram.</p>
             </article>
           </section>
 

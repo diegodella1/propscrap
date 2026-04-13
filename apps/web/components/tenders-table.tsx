@@ -91,16 +91,16 @@ export function TendersTable({ tenders, total }: Props) {
           <p>
             {isEmpty
               ? "No hay coincidencias con los filtros actuales."
-              : `${total} registros visibles en el top habilitado para esta empresa, con score, motivo, urgencia y salida a la fuente original.`}
+              : `${total} registros visibles con score, motivo, urgencia y salida a la fuente original.`}
           </p>
         </div>
-        <p className="muted">No está pensada para leer todo. Está pensada para decidir rápido qué merece seguimiento real.</p>
+        <p className="muted">No está pensada para leer todo. Está pensada para decidir rápido qué merece seguimiento.</p>
       </div>
 
       {!isEmpty ? (
         <div className="detail-note-card">
           <span className="section-kicker">Alcance efectivo</span>
-          <p>Lo que aparece acá depende de dos decisiones: fuentes activas a nivel plataforma y fuentes habilitadas para esta empresa.</p>
+          <p>El listado depende de las fuentes activas a nivel plataforma y de las fuentes habilitadas para esta empresa.</p>
         </div>
       ) : null}
 
@@ -142,7 +142,7 @@ export function TendersTable({ tenders, total }: Props) {
                 </div>
                 <strong>{tender.title}</strong>
                 <p>{tender.organization ?? "Sin organismo"} · cierre {formatDate(tender.deadline_date)}</p>
-                <p className="muted">Fuente {tender.source.name}{tender.external_id ? ` · expediente/proceso ${tender.external_id}` : ""}</p>
+                <p className="muted">Fuente {tender.source.name}{tender.external_id ? ` · proceso ${tender.external_id}` : ""}</p>
                 {reasonLines.length ? (
                   <div className="admin-status-list">
                     {reasonLines.map((line) => (

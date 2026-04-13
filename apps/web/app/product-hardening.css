@@ -3138,3 +3138,149 @@ textarea:focus {
     justify-items: start !important;
   }
 }
+
+/* Workspace tightening pass: less admin clutter, cleaner pipeline and filters. */
+.page-screen--saved .workspace-header h1,
+.page-screen--company-profile .workspace-header h1,
+.page-screen--account .workspace-header h1 {
+  max-width: 9ch !important;
+}
+
+.pipeline-board {
+  gap: 12px !important;
+  align-items: start !important;
+}
+
+.pipeline-column {
+  padding: 14px !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.pipeline-column-head {
+  padding-bottom: 10px !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.pipeline-column-head strong {
+  font-family: var(--font-display) !important;
+  font-size: 1.3rem !important;
+  letter-spacing: -0.05em !important;
+}
+
+.pipeline-card {
+  padding: 14px !important;
+  border-radius: 20px !important;
+  background: #fbfdff !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.pipeline-card strong {
+  font-family: var(--font-display) !important;
+  font-size: 1.05rem !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.pipeline-card-footer {
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.dashboard-filter-panel {
+  position: sticky !important;
+  top: 96px !important;
+  align-self: start !important;
+}
+
+.dashboard-filter-panel .section-heading h2 {
+  font-size: 1.5rem !important;
+}
+
+.filter-preset-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.filter-pill {
+  justify-content: center !important;
+  min-height: 38px !important;
+  background: rgba(248, 250, 252, 0.92) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  color: #475569 !important;
+}
+
+.filter-legend {
+  padding: 12px 14px !important;
+  border-radius: 18px !important;
+  background: rgba(248, 250, 252, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.filter-legend span {
+  font-family: var(--font-display) !important;
+  font-size: 1.2rem !important;
+  letter-spacing: -0.05em !important;
+}
+
+.table-panel-upgraded .results-header {
+  margin-bottom: 10px !important;
+}
+
+.opportunity-list-head {
+  margin-bottom: 4px !important;
+}
+
+.opportunity-list-main .admin-status-list {
+  gap: 8px !important;
+}
+
+.opportunity-list-main .admin-status-list article {
+  background: rgba(248, 250, 252, 0.9) !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
+}
+
+.opportunity-list-aside .button-secondary {
+  width: 100% !important;
+  justify-content: center !important;
+}
+
+.profile-workbench-grid,
+.account-summary-band,
+.profile-summary-band {
+  gap: 12px !important;
+}
+
+.ops-priority-card {
+  padding: 18px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+}
+
+.ops-priority-card h3 {
+  margin: 0 !important;
+  font-family: var(--font-display) !important;
+  font-size: 1.35rem !important;
+  letter-spacing: -0.05em !important;
+}
+
+.source-card-strong {
+  background: #0f172a !important;
+}
+
+.source-card-strong strong,
+.source-card-strong p {
+  color: #f8fafc !important;
+}
+
+@media (max-width: 960px) {
+  .dashboard-filter-panel {
+    position: static !important;
+  }
+
+  .filter-preset-row {
+    grid-template-columns: 1fr !important;
+  }
+}

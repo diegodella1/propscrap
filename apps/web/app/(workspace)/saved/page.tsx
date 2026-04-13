@@ -49,12 +49,12 @@ export default async function SavedTendersPage() {
       <section className="workspace-header">
         <div>
           <span className="eyebrow">Seguimiento comercial</span>
-          <h1>Pipeline.</h1>
-          <p>Cartera activa ordenada por etapa para no perder timing ni contexto.</p>
+          <h1>Pipeline activo.</h1>
+          <p>Cartera ordenada por etapa para sostener fechas, contexto y próxima acción.</p>
         </div>
         <div className="workspace-header-actions">
           <Link href="/dashboard" className="button-secondary">
-            Volver a oportunidades
+            Volver al top
           </Link>
         </div>
       </section>

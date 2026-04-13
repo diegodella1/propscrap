@@ -17,12 +17,12 @@ export function FilterPanel({
     <form className="panel filters dashboard-filter-panel" method="get" action="/dashboard">
       <div className="section-heading">
         <span className="section-kicker">Filtros</span>
-        <h2>Acotar resultados</h2>
+        <h2>Ajustar lectura</h2>
       </div>
 
       <div className="filter-preset-row">
         <a href="/dashboard?min_score=60" className="mini-pill filter-pill">
-          Prioridad alta
+          60+
         </a>
         <a href="/dashboard?jurisdiction=Naci%C3%B3n" className="mini-pill filter-pill">
           Nación
@@ -65,7 +65,7 @@ export function FilterPanel({
       </div>
 
       <button type="submit" className="button-primary button-block">
-        Aplicar y actualizar lista
+        Aplicar filtros
       </button>
 
       <div className="filter-legend">
@@ -74,7 +74,7 @@ export function FilterPanel({
       </div>
 
       <p className="muted filter-tip">
-        Empezá por “60+” y después acotá por fuente o jurisdicción.
+        Empezá por `60+` y después acotá por fuente o jurisdicción.
       </p>
     </form>
   );
