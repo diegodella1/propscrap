@@ -1,7 +1,6 @@
 import Link from "next/link";
 
 import { PageShell } from "../../components/layout/page-shell";
-import { WorkspaceBoardIllustration } from "../../components/landing-ornaments";
 import { SiteHeader } from "../../components/site-header";
 import { fetchSources } from "../../lib/api";
 
@@ -13,17 +12,17 @@ export default async function LandingPage() {
     <PageShell variant="marketing" className="landing-shell page-screen page-screen--home">
       <SiteHeader section="landing" audience="public" />
 
-      <section className="landing-hero landing-hero-refined landing-masterhead landing-masterhead-public">
-        <div className="hero-copy">
+      <section className="landing-minimal-hero">
+        <div className="landing-minimal-copy">
           <span className="eyebrow">Sistema operativo comercial para proveedores del Estado</span>
-          <h1>Discovery, seguimiento y alertas en una superficie que sí parece producto.</h1>
-          <p className="hero-lead">
-            EasyTaciones reemplaza portales sueltos, planillas y memoria dispersa por una operación visible: alta por CUIT, fuentes activas, scoring entendible, pipeline y alertas en el mismo lugar.
+          <h1>Un solo lugar para decidir qué licitación mirar, seguir y mover.</h1>
+          <p className="landing-minimal-lead">
+            EasyTaciones reemplaza portales, planillas y memoria suelta por una operación legible: alta por CUIT, top priorizado, pipeline y alertas en una interfaz que un cliente puede entender en minutos.
           </p>
-          <div className="landing-audience-strip">
+          <div className="landing-hero-ticks">
             <span>Alta inicial en minutos</span>
             <span>Scoring con motivo y deadline</span>
-            <span>Demo usable por 30 días</span>
+            <span>Prueba usable por 30 días</span>
           </div>
           <div className="hero-actions">
             <Link href="/contact" className="button-primary">
@@ -33,32 +32,16 @@ export default async function LandingPage() {
               Registrar empresa
             </Link>
           </div>
-          <div className="hero-inline-metrics hero-inline-splash">
-            <article>
-              <span>Alta</span>
-              <strong>Alta por CUIT</strong>
-              <p>Identidad legal y base inicial en minutos.</p>
-            </article>
-            <article>
-              <span>Discovery</span>
-              <strong>Discovery priorizado</strong>
-              <p>Una sola cola con score, motivo y cierre.</p>
-            </article>
-            <article>
-              <span>Seguimiento</span>
-              <strong>Seguimiento trazable</strong>
-              <p>Pipeline, notas y alertas sin depender de memoria humana.</p>
-            </article>
-          </div>
         </div>
-        <article className="panel landing-hero-console">
-          <div className="landing-hero-console-head">
-            <span className="section-kicker">Vista de producto</span>
-            <strong>Top de licitaciones</strong>
-            <p>La lectura principal arranca con foco, criterio y siguiente acción.</p>
-          </div>
-          <div className="landing-console-metrics">
-            <article>
+
+        <div className="landing-minimal-rail">
+          <article className="landing-stat-card landing-stat-card-strong">
+            <span>Top operativo</span>
+            <strong>Discovery, seguimiento y alertas</strong>
+            <p>La lectura principal arranca con criterio, estado y próxima acción.</p>
+          </article>
+          <div className="landing-stat-grid">
+            <article className="landing-stat-card">
               <span>Fuentes activas</span>
               <strong>{activeSources}</strong>
             </article>
@@ -71,53 +54,51 @@ export default async function LandingPage() {
               <strong>Dashboard, email, Telegram</strong>
             </article>
           </div>
-          <div className="landing-hero-console-board">
-            <WorkspaceBoardIllustration />
-          </div>
-        </article>
-
+        </div>
       </section>
 
-      <section className="landing-system-stage surface-band surface-band--alt">
-        <div className="results-header landing-system-header">
-          <div>
-            <span className="section-kicker">Sistema</span>
-            <h2>Una herramienta para pasar de búsqueda manual a seguimiento ordenado.</h2>
-          </div>
+      <section className="landing-operator-band">
+        <div className="landing-operator-copy">
+          <span className="section-kicker">Cómo se ordena</span>
+          <h2>Menos búsqueda manual. Más criterio compartido.</h2>
           <p>
-            El valor está en bajar ruido, fijar criterio y sostener la ejecución con contexto compartido.
+            La empresa entra por CUIT, el sistema consolida fuentes, ordena oportunidades por fit comercial y deja el seguimiento dentro del mismo workspace.
           </p>
         </div>
-
-        <div className="landing-system-grid landing-system-grid--wide">
-          <article className="panel landing-system-diagram landing-system-diagram--wide">
-            <div className="landing-system-diagram-copy">
-              <span className="section-kicker">Vista operativa</span>
-              <h3>Inbox, prioridades y pipeline en una misma superficie.</h3>
-              <p>
-                Cada oportunidad aparece con motivo de match, deadline, estado y siguiente acción. La lectura del equipo deja de estar repartida entre herramientas.
-              </p>
-            </div>
-            <WorkspaceBoardIllustration />
+        <div className="landing-operator-steps">
+          <article>
+            <span>01</span>
+            <strong>Alta por CUIT</strong>
+            <p>Identidad legal y base inicial sin fricción.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <strong>Inbox priorizado</strong>
+            <p>Score, motivo y cierre en una misma cola.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <strong>Pipeline trazable</strong>
+            <p>Estado, notas y alertas sin depender de memoria humana.</p>
           </article>
         </div>
       </section>
 
-      <section className="workspace-preview-grid landing-experience-grid surface-band">
-        <article className="experience-card experience-card-dark">
+      <section className="landing-proof-strip">
+        <article className="landing-proof-card landing-proof-card-dark">
           <span className="section-kicker">Para la empresa</span>
-          <h3>Discovery, pipeline y alertas en un mismo lugar.</h3>
-          <p>La empresa entra por CUIT y empieza a trabajar con una base inicial ya ordenada y accionable.</p>
+          <h3>Una operación más gobernable.</h3>
+          <p>La cuenta deja de ser un experimento y empieza a sostener una rutina real de trabajo.</p>
         </article>
-        <article className="experience-card">
+        <article className="landing-proof-card">
           <span className="section-kicker">Para el equipo</span>
-          <h3>Un criterio compartido</h3>
-          <p>Todos miran la misma oportunidad con el mismo score, el mismo estado y el mismo contexto.</p>
+          <h3>Un criterio compartido.</h3>
+          <p>Todos miran la misma oportunidad con score, estado y siguiente acción en el mismo contexto.</p>
         </article>
-        <article className="experience-card">
+        <article className="landing-proof-card">
           <span className="section-kicker">Para la gestión</span>
-          <h3>Menos fricción y menos pérdida.</h3>
-          <p>Saca a la empresa del desorden manual y la lleva a una operación más gobernable y más defendible frente a cliente interno.</p>
+          <h3>Menos pérdida por desorden.</h3>
+          <p>El proceso queda más defendible frente a cliente interno y menos atado a personas clave.</p>
         </article>
       </section>
     </PageShell>

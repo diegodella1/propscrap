@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { FilterPanel } from "../../../components/filter-panel";
-import { WorkspaceBoardIllustration } from "../../../components/landing-ornaments";
 import { PageShell } from "../../../components/layout/page-shell";
 import { SiteHeader } from "../../../components/site-header";
 import { TendersTable } from "../../../components/tenders-table";
@@ -135,19 +134,24 @@ export default async function DashboardPage({ searchParams }: Props) {
     <PageShell variant="workspace" className="workspace-shell page-screen page-screen--dashboard">
       <SiteHeader section="dashboard" currentUserName={currentUser.full_name} currentUserRole={currentUser.role} />
 
-      <section className="workspace-header dashboard-header">
-        <div>
+      <section className="workspace-header dashboard-header dashboard-header-minimal">
+        <div className="dashboard-header-copy">
           <span className="eyebrow">Workspace empresa</span>
-          <h1>Top operativo de oportunidades.</h1>
-          <p>Una cola de trabajo clara para decidir qué mirar, qué guardar y qué mover hoy.</p>
+          <h1>Qué mirar hoy.</h1>
+          <p>Top operativo para decidir rápido qué revisar, qué mandar a seguimiento y qué dejar afuera.</p>
         </div>
-        <div className="workspace-header-actions">
-          <Link href="/saved" className="button-secondary">
-            Abrir pipeline
-          </Link>
-          <Link href="/company-profile" className="button-primary">
-            Afinar scoring
-          </Link>
+        <div className="dashboard-header-side">
+          <div className="dashboard-header-actions">
+            <Link href="/saved" className="button-secondary">
+              Abrir pipeline
+            </Link>
+            <Link href="/company-profile" className="button-primary">
+              Afinar scoring
+            </Link>
+          </div>
+          <p className="dashboard-header-note">
+            {nextActivationStep.complete ? "Base operativa lista." : `Siguiente paso: ${nextActivationStep.title}.`}
+          </p>
         </div>
       </section>
 
@@ -174,80 +178,55 @@ export default async function DashboardPage({ searchParams }: Props) {
         </article>
       </section>
 
-      <section className="ops-priority-grid dashboard-activation-grid">
-        <article className="panel ops-priority-card ops-priority-card-strong">
-          <span className="section-kicker">Demo 30 días</span>
-          <h3>Objetivo: instalar una rutina operativa, no solo mostrar pantallas.</h3>
+      <section className="dashboard-command-grid">
+        <article className="panel dashboard-command-card dashboard-command-card-strong">
+          <span className="section-kicker">Prioridad del día</span>
+          <h2>{topPriority[0]?.title ?? "Todavía no hay una oportunidad dominante."}</h2>
           <p>
-            La prueba vale cuando el equipo carga criterio comercial, guarda oportunidades reales y usa el sistema para sostener fechas, responsables y decisiones.
+            {topPriority[0]?.matches[0]?.reasons_json?.summary?.[0] ??
+              "Cuando aparezcan oportunidades con fit real, esta tarjeta va a mostrar primero qué mover hoy."}
           </p>
+          {topPriority[0] ? (
+            <div className="dashboard-command-meta">
+              <span className="badge tone-calm">{deadlineLabel(topPriority[0].deadline_date)}</span>
+              <span className="badge">{topPriority[0].source.name}</span>
+              {topPriority[0].states[0] ? <span className="badge">{formatStateLabel(topPriority[0].states[0].state)}</span> : null}
+            </div>
+          ) : null}
+          {topPriority[0] ? (
+            <Link href={`/tenders/${topPriority[0].id}`} className="button-primary">
+              Abrir dossier
+            </Link>
+          ) : (
+            <Link href="/company-profile" className="button-secondary">
+              Ajustar perfil comercial
+            </Link>
+          )}
         </article>
-        <article className="panel ops-priority-card">
-          <span className="section-kicker">Progreso</span>
+        <article className="panel dashboard-command-card">
+          <span className="section-kicker">Demo 30 días</span>
           <h3>{completedActivation}/4 hitos cumplidos</h3>
-          <p>{nextActivationStep.complete ? "La base de uso ya está armada." : `Siguiente paso recomendado: ${nextActivationStep.title}.`}</p>
+          <p>La prueba vale cuando la empresa configura criterio comercial, guarda oportunidades reales y activa alertas fuera del navegador.</p>
         </article>
-        <article className="panel ops-priority-card">
+        <article className="panel dashboard-command-card">
           <span className="section-kicker">Acción siguiente</span>
           <h3>{nextActivationStep.title}</h3>
           <p>{nextActivationStep.body}</p>
-          <Link href={nextActivationStep.href} className="linkish">
+          <Link href={nextActivationStep.href} className="button-secondary">
             {nextActivationStep.cta}
           </Link>
         </article>
       </section>
 
-      <section className="panel workspace-briefing-panel">
-        <div className="results-header">
-          <div>
-            <span className="section-kicker">Plan de activación</span>
-            <h2>Qué tendría que pasar en la demo para que el producto se vuelva indispensable</h2>
-          </div>
-          <p>No hace falta usar todo el sistema el primer día. Sí hace falta que el equipo vea valor real en menos tiempo y menos desorden.</p>
-        </div>
-        <div className="decision-rows">
-          {activationSteps.map((step) => (
-            <article key={step.label} className="decision-row decision-row-dense">
-              <div className="decision-row-head">
-                <span className="source-chip">{step.label}</span>
-                <span className={`badge ${step.complete ? "tone-success" : "tone-calm"}`}>
-                  {step.complete ? "Cumplido" : "Pendiente"}
-                </span>
-              </div>
-              <strong>{step.title}</strong>
-              <p>{step.body}</p>
-              <div className="decision-row-footer">
-                <span className="muted">{step.complete ? "Ya está cubierto en esta cuenta." : "Conviene resolverlo para sostener la prueba."}</span>
-                <Link href={step.href} className="linkish">
-                  {step.cta}
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel dashboard-hero-board workspace-briefing-panel">
-        <div className="results-header">
-          <div>
-            <span className="section-kicker">Briefing</span>
-            <h2>Qué mirar hoy</h2>
-          </div>
-          <p>Usá esta vista para decidir qué entra al pipeline y qué necesita revisión inmediata.</p>
-        </div>
-        <WorkspaceBoardIllustration />
-      </section>
-
-      <section className="dashboard-focus-grid">
+      <section className="dashboard-focus-grid dashboard-focus-grid-tight">
         <article className="panel dispatch-panel">
           <div className="results-header">
             <div>
-              <span className="section-kicker">Prioridad</span>
-              <h2>Primero revisar</h2>
+              <span className="section-kicker">Primero revisar</span>
+              <h2>Top inmediato</h2>
             </div>
             <p>Ordenado por fit comercial, deadline y estado del workflow.</p>
           </div>
-
           <div className="decision-rows">
             {topPriority.length ? (
               topPriority.map((item, index) => (
@@ -310,6 +289,36 @@ export default async function DashboardPage({ searchParams }: Props) {
             </Link>
           </div>
         </article>
+      </section>
+
+      <section className="panel workspace-briefing-panel dashboard-activation-panel">
+        <div className="results-header">
+          <div>
+            <span className="section-kicker">Plan de activación</span>
+            <h2>Qué tendría que pasar para que esta cuenta deje de ser una demo</h2>
+          </div>
+          <p>No hace falta usar todo el sistema el primer día. Sí hace falta instalar una rutina visible y repetible.</p>
+        </div>
+        <div className="decision-rows">
+          {activationSteps.map((step) => (
+            <article key={step.label} className="decision-row decision-row-dense">
+              <div className="decision-row-head">
+                <span className="source-chip">{step.label}</span>
+                <span className={`badge ${step.complete ? "tone-success" : "tone-calm"}`}>
+                  {step.complete ? "Cumplido" : "Pendiente"}
+                </span>
+              </div>
+              <strong>{step.title}</strong>
+              <p>{step.body}</p>
+              <div className="decision-row-footer">
+                <span className="muted">{step.complete ? "Ya está cubierto en esta cuenta." : "Conviene resolverlo para sostener la prueba."}</span>
+                <Link href={step.href} className="linkish">
+                  {step.cta}
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="layout-grid dashboard-main-grid">
