@@ -138,15 +138,15 @@ export default async function DashboardPage({ searchParams }: Props) {
       <section className="workspace-header dashboard-header">
         <div>
           <span className="eyebrow">Workspace empresa</span>
-          <h1>Oportunidades.</h1>
-          <p>Inbox operativo con relevancia, urgencia y acceso inmediato al dossier.</p>
+          <h1>Top operativo de oportunidades.</h1>
+          <p>Una cola de trabajo clara para decidir qué mirar, qué guardar y qué mover hoy.</p>
         </div>
         <div className="workspace-header-actions">
           <Link href="/saved" className="button-secondary">
-            Ver seguimiento
+            Abrir pipeline
           </Link>
           <Link href="/company-profile" className="button-primary">
-            Ajustar perfil
+            Afinar scoring
           </Link>
         </div>
       </section>
@@ -177,9 +177,9 @@ export default async function DashboardPage({ searchParams }: Props) {
       <section className="ops-priority-grid dashboard-activation-grid">
         <article className="panel ops-priority-card ops-priority-card-strong">
           <span className="section-kicker">Demo 30 días</span>
-          <h3>Objetivo: que el equipo cambie su rutina, no solo vea una interfaz.</h3>
+          <h3>Objetivo: instalar una rutina operativa, no solo mostrar pantallas.</h3>
           <p>
-            La prueba se vuelve valiosa cuando la empresa carga su criterio comercial, guarda oportunidades reales y empieza a seguir fechas desde la plataforma.
+            La prueba vale cuando el equipo carga criterio comercial, guarda oportunidades reales y usa el sistema para sostener fechas, responsables y decisiones.
           </p>
         </article>
         <article className="panel ops-priority-card">
@@ -245,7 +245,7 @@ export default async function DashboardPage({ searchParams }: Props) {
               <span className="section-kicker">Prioridad</span>
               <h2>Primero revisar</h2>
             </div>
-            <p>Ordenado por relevancia y urgencia.</p>
+            <p>Ordenado por fit comercial, deadline y estado del workflow.</p>
           </div>
 
           <div className="decision-rows">
@@ -286,6 +286,7 @@ export default async function DashboardPage({ searchParams }: Props) {
               <span className="section-kicker">Alertas</span>
               <h2>Actividad reciente</h2>
             </div>
+            <p>Eventos para validar si algo ya necesita seguimiento o aviso externo.</p>
           </div>
           <div className="alert-stack">
             {visibleAlerts.length ? (

@@ -87,29 +87,29 @@ export function TendersTable({ tenders, total }: Props) {
       <div className="results-header">
         <div>
           <span className="section-kicker">Resultados</span>
-          <h2>Oportunidades disponibles</h2>
+          <h2>Inbox de discovery</h2>
           <p>
             {isEmpty
               ? "No hay coincidencias con los filtros actuales."
-              : `${total} registros visibles en el top de licitaciones habilitado para esta empresa, con score, urgencia y acceso a fuente original.`}
+              : `${total} registros visibles en el top habilitado para esta empresa, con score, motivo, urgencia y salida a la fuente original.`}
           </p>
         </div>
-        <p className="muted">Usá esta lista como inbox de revisión. El objetivo no es mirar todo: es guardar rápido lo que sí amerita seguimiento.</p>
+        <p className="muted">No está pensada para leer todo. Está pensada para decidir rápido qué merece seguimiento real.</p>
       </div>
 
       {!isEmpty ? (
         <div className="detail-note-card">
           <span className="section-kicker">Alcance efectivo</span>
-          <p>Lo que aparece acá depende de dos filtros: fuentes activas a nivel plataforma y fuentes habilitadas para esta empresa.</p>
+          <p>Lo que aparece acá depende de dos decisiones: fuentes activas a nivel plataforma y fuentes habilitadas para esta empresa.</p>
         </div>
       ) : null}
 
       {!isEmpty ? (
       <div className="results-ribbon">
-        <span>Score, banda y motivo</span>
-        <span>Deadline</span>
-        <span>Workflow</span>
-        <span>Fuente original</span>
+        <span>Fit y motivo</span>
+        <span>Cierre</span>
+        <span>Estado</span>
+        <span>Acción</span>
       </div>
       ) : null}
 
@@ -167,7 +167,7 @@ export function TendersTable({ tenders, total }: Props) {
                 )}
                 {state ? <span className="badge">{formatStateLabel(state.state)}</span> : null}
                 <Link href={`/tenders/${tender.id}`} className="button-secondary">
-                  Abrir dossier
+                  Ver dossier
                 </Link>
                 <a href={tender.source_url} target="_blank" rel="noreferrer" className="linkish">
                   Fuente original

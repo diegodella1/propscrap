@@ -3,21 +3,11 @@ import Link from "next/link";
 import { PageShell } from "../../components/layout/page-shell";
 import { WorkspaceBoardIllustration } from "../../components/landing-ornaments";
 import { SiteHeader } from "../../components/site-header";
-import { fetchSources, fetchTenders } from "../../lib/api";
+import { fetchSources } from "../../lib/api";
 
 export default async function LandingPage() {
-  const [sources] = await Promise.all([
-    fetchSources(),
-    fetchTenders({ min_score: "50" }),
-  ]);
-  const sourceLabels = Array.from(
-    new Set(
-      sources
-        .map((source) => source.name.trim())
-        .filter((name) => name.length > 0)
-        .filter((name) => !/(^|\b)(qa|test|demo|updated)(\b|$)/i.test(name)),
-    ),
-  ).slice(0, 4);
+  const sources = await fetchSources();
+  const activeSources = sources.filter((source) => source.is_active).length;
 
   return (
     <PageShell variant="marketing" className="landing-shell page-screen page-screen--home">
@@ -26,14 +16,14 @@ export default async function LandingPage() {
       <section className="landing-hero landing-hero-refined landing-masterhead landing-masterhead-public">
         <div className="hero-copy">
           <span className="eyebrow">Sistema operativo comercial para proveedores del Estado</span>
-          <h1>Mostrá un producto claro, serio y accionable desde la primera pantalla.</h1>
+          <h1>Discovery, seguimiento y alertas en una superficie que sí parece producto.</h1>
           <p className="hero-lead">
-            EasyTaciones convierte un proceso manual y fragmentado en una experiencia que se entiende rápido: alta por CUIT, fuentes gobernadas, discovery priorizado, seguimiento y alertas en una misma superficie.
+            EasyTaciones reemplaza portales sueltos, planillas y memoria dispersa por una operación visible: alta por CUIT, fuentes activas, scoring entendible, pipeline y alertas en el mismo lugar.
           </p>
           <div className="landing-audience-strip">
-            <span>Presentación comercial clara</span>
-            <span>Demo de 30 días usable</span>
-            <span>Sin ruido de sesión en páginas públicas</span>
+            <span>Alta inicial en minutos</span>
+            <span>Scoring con motivo y deadline</span>
+            <span>Demo usable por 30 días</span>
           </div>
           <div className="hero-actions">
             <Link href="/contact" className="button-primary">
@@ -61,6 +51,30 @@ export default async function LandingPage() {
             </article>
           </div>
         </div>
+        <article className="panel landing-hero-console">
+          <div className="landing-hero-console-head">
+            <span className="section-kicker">Vista de producto</span>
+            <strong>Top de licitaciones</strong>
+            <p>La lectura principal arranca con foco, criterio y siguiente acción.</p>
+          </div>
+          <div className="landing-console-metrics">
+            <article>
+              <span>Fuentes activas</span>
+              <strong>{activeSources}</strong>
+            </article>
+            <article>
+              <span>Gobierno</span>
+              <strong>Superadmin + empresa</strong>
+            </article>
+            <article>
+              <span>Canales</span>
+              <strong>Dashboard, email, Telegram</strong>
+            </article>
+          </div>
+          <div className="landing-hero-console-board">
+            <WorkspaceBoardIllustration />
+          </div>
+        </article>
 
       </section>
 
