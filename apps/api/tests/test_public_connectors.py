@@ -4,16 +4,21 @@ import unittest
 
 from bs4 import BeautifulSoup
 
+from app.services.connectors.base import RawTenderRecord
 from app.services.connectors.arsat import ArsatConnector
+from app.services.connectors.banco_nacion import BancoNacionConnector
 from app.services.connectors.catamarca import CatamarcaConnector
 from app.services.connectors.chaco import ChacoConnector
+from app.services.connectors.cnea import CneaConnector
 from app.services.connectors.cordoba import CordobaConnector
 from app.services.connectors.corrientes import CorrientesConnector
 from app.services.connectors.entre_rios import EntreRiosConnector
 from app.services.connectors.gcba import GcbaConnector
 from app.services.connectors.inta import IntaConnector
+from app.services.connectors.inti_public import IntiPublicConnector
 from app.services.connectors.la_rioja import LaRiojaConnector
 from app.services.connectors.mendoza import MendozaConnector
+from app.services.connectors.nasa_nucleoelectrica import NasaNucleoelectricaConnector
 from app.services.connectors.neuquen import NeuquenConnector
 from app.services.connectors.pami import PamiConnector
 from app.services.connectors.pbac import PbacConnector
@@ -27,6 +32,38 @@ from app.services.connectors.tucuman import TucumanConnector
 
 
 class PublicConnectorTests(unittest.TestCase):
+    def test_banco_nacion_extract_rows(self) -> None:
+        html = """
+        <table class="table table-bordered cotizador">
+          <thead>
+            <tr>
+              <th>Informática</th><th>Artículo</th><th>Llamado</th><th></th><th>Valor Pliego (en $)</th><th>Fecha</th><th>Hora</th><th>Costo estimado s/IVA (en $)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Software</td>
+              <td>Provisión de plataforma de observabilidad.</td>
+              <td>CDS-1290/2026</td>
+              <td><a href="/BackOffice/licitaciones/pliegos/92. Pliego Web LPU CDS 1290 2026 .pdf">Descargar</a></td>
+              <td>0,0000</td>
+              <td>26/12/2099</td>
+              <td>12:0:0</td>
+              <td>125.000.000,00</td>
+            </tr>
+          </tbody>
+        </table>
+        """
+        items = BancoNacionConnector()._extract_rows(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "CDS-1290/2026")
+        self.assertEqual(items[0].organization, "Banco Nación")
+        self.assertEqual(items[0].procedure_type, "Contratación de Servicios")
+        self.assertEqual(
+            items[0].source_url,
+            "https://www.bna.com.ar/BackOffice/licitaciones/pliegos/92. Pliego Web LPU CDS 1290 2026 .pdf",
+        )
+
     def test_mendoza_extract_rows(self) -> None:
         html = """
         <table>
@@ -223,6 +260,103 @@ class PublicConnectorTests(unittest.TestCase):
         self.assertEqual(items[0].organization, "Unidad Central")
         self.assertEqual(items[0].procedure_type, "Contratación Directa")
         self.assertIn("/#/contrataciones/5265", items[0].source_url)
+
+    def test_inti_extract_records_from_sitemap(self) -> None:
+        xml = """
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+          <url>
+            <loc>https://www.inti.gob.ar/assets/uploads/contrataciones/LP07_19.pdf</loc>
+            <lastmod>2019-06-03T18:08:46+00:00</lastmod>
+          </url>
+          <url>
+            <loc>https://www.inti.gob.ar/assets/uploads/contrataciones/Circular-LPNO-UCOFI01-18.pdf</loc>
+            <lastmod>2018-10-08T18:57:31+00:00</lastmod>
+          </url>
+        </urlset>
+        """
+        items = IntiPublicConnector()._extract_records(xml)
+        self.assertEqual(len(items), 2)
+        self.assertEqual(items[0].external_id, "LP07-19")
+        self.assertEqual(items[0].organization, "INTI")
+        self.assertEqual(items[0].procedure_type, "Licitación Pública")
+        self.assertEqual(items[1].external_id, "Circular-LPNO-UCOFI01-18")
+        self.assertEqual(items[1].procedure_type, "Licitación Pública Nacional")
+
+    def test_nasa_nucleoelectrica_extract_records_from_boletin(self) -> None:
+        html = """
+        <html>
+          <body>
+            <h2>Edición del 13 de abril de 2026</h2>
+            <a href="/detalleAviso/tercera/12345678/20260413">
+              <div class="linea-aviso">
+                <p class="item">NUCLEOELÉCTRICA ARGENTINA S.A.</p>
+                <p class="item-detalle">Licitación Pública Nacional N° 03/2026 - Servicio integral de mantenimiento</p>
+              </div>
+            </a>
+          </body>
+        </html>
+        """
+        items = NasaNucleoelectricaConnector()._extract_records(html)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0].external_id, "12345678")
+        self.assertEqual(items[0].organization, "Nucleoeléctrica Argentina S.A.")
+        self.assertEqual(items[0].procedure_type, "Licitación Pública")
+        self.assertEqual(items[0].publication_date.isoformat(), "2026-04-13")
+        self.assertEqual(
+            items[0].source_url,
+            "https://www.boletinoficial.gob.ar/detalleAviso/tercera/12345678/20260413",
+        )
+
+    def test_cnea_filters_records_from_public_portals(self) -> None:
+        connector = CneaConnector()
+        comprar_row = RawTenderRecord(
+            external_id="105-0001-LPU26",
+            title="Adquisición de insumos para laboratorio",
+            description_raw=None,
+            organization="Comisión Nacional de Energía Atómica",
+            jurisdiction="Nación",
+            procedure_type="Licitación Pública",
+            publication_date=None,
+            deadline_date=None,
+            opening_date=None,
+            estimated_amount=None,
+            currency="ARS",
+            source_url="https://comprar.gob.ar/proceso/1",
+            status_raw="Publicada",
+        )
+        contratar_row = RawTenderRecord(
+            external_id="76/2026",
+            title="Obra complementaria",
+            description_raw="Servicio Administrativo Financiero 105 | Centro Atómico Constituyentes",
+            organization="Ministerio de Economía",
+            jurisdiction="Nación",
+            procedure_type="Licitación Pública",
+            publication_date=None,
+            deadline_date=None,
+            opening_date=None,
+            estimated_amount=None,
+            currency="ARS",
+            source_url="https://contratar.gob.ar/BuscarAvanzado.aspx?numeroProceso=76/2026",
+            status_raw="Publicada",
+        )
+        unrelated_row = RawTenderRecord(
+            external_id="999",
+            title="Servicio ajeno",
+            description_raw="Ministerio de Salud",
+            organization="Ministerio de Salud",
+            jurisdiction="Nación",
+            procedure_type="Contratación Directa",
+            publication_date=None,
+            deadline_date=None,
+            opening_date=None,
+            estimated_amount=None,
+            currency="ARS",
+            source_url="https://comprar.gob.ar/proceso/999",
+            status_raw="Publicada",
+        )
+
+        items = connector._filter_records([comprar_row, contratar_row, unrelated_row])
+        self.assertEqual([item.external_id for item in items], ["105-0001-LPU26", "76/2026"])
 
     def test_catamarca_extract_rows(self) -> None:
         html = """

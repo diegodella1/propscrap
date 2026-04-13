@@ -1,4 +1,5 @@
 from app.services.connectors.arsat import ArsatConnector
+from app.services.connectors.banco_nacion import BancoNacionConnector
 from app.services.connectors.boletin import BoletinOficialConnector
 from app.services.connectors.chaco import ChacoConnector
 from app.services.connectors.catamarca import CatamarcaConnector
@@ -6,11 +7,14 @@ from app.services.connectors.cordoba import CordobaConnector
 from app.services.connectors.comprar import ComprarConnector
 from app.services.connectors.contratar import ContratarConnector
 from app.services.connectors.corrientes import CorrientesConnector
+from app.services.connectors.cnea import CneaConnector
 from app.services.connectors.entre_rios import EntreRiosConnector
 from app.services.connectors.gcba import GcbaConnector
 from app.services.connectors.inta import IntaConnector
+from app.services.connectors.inti_public import IntiPublicConnector
 from app.services.connectors.la_rioja import LaRiojaConnector
 from app.services.connectors.mendoza import MendozaConnector
+from app.services.connectors.nasa_nucleoelectrica import NasaNucleoelectricaConnector
 from app.services.connectors.neuquen import NeuquenConnector
 from app.services.connectors.pami import PamiConnector
 from app.services.connectors.pbac import PbacConnector
@@ -24,13 +28,17 @@ from app.services.connectors.tucuman import TucumanConnector
 
 CONNECTORS = {
     "arsat": ArsatConnector,
+    "banco-nacion": BancoNacionConnector,
     "comprar": ComprarConnector,
     "contratar": ContratarConnector,
+    "cnea": CneaConnector,
     "licitaciones-caba": GcbaConnector,
     "licitaciones-corrientes": CorrientesConnector,
     "licitaciones-entre-rios": EntreRiosConnector,
     "inta": IntaConnector,
+    "inti": IntiPublicConnector,
     "licitaciones-la-rioja": LaRiojaConnector,
+    "nasa-nucleoelectrica": NasaNucleoelectricaConnector,
     "boletin-oficial": BoletinOficialConnector,
     "licitaciones-catamarca": CatamarcaConnector,
     "licitaciones-chaco": ChacoConnector,

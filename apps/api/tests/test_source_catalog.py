@@ -42,6 +42,8 @@ class SourceCatalogTests(unittest.TestCase):
         self.assertEqual(catalog["licitaciones-neuquen"]["connector_slug"], "licitaciones-neuquen")
         self.assertTrue(catalog["licitaciones-tierra-del-fuego"]["is_active"])
         self.assertEqual(catalog["licitaciones-tierra-del-fuego"]["connector_slug"], "licitaciones-tierra-del-fuego")
+        self.assertTrue(catalog["banco-nacion"]["is_active"])
+        self.assertEqual(catalog["banco-nacion"]["connector_slug"], "banco-nacion")
 
     def test_entre_rios_is_profiled_with_connector_but_stays_inactive(self) -> None:
         catalog = {str(item["slug"]): item for item in SOURCE_CATALOG}
@@ -55,6 +57,27 @@ class SourceCatalogTests(unittest.TestCase):
         self.assertEqual(catalog["licitaciones-caba"]["scraping_mode"], "staged_json")
         self.assertFalse(catalog["licitaciones-caba"]["is_active"])
         self.assertTrue(catalog["licitaciones-caba"]["config_json"]["implemented"])
+
+    def test_new_enterprise_state_sources_are_profiled_honestly(self) -> None:
+        catalog = {str(item["slug"]): item for item in SOURCE_CATALOG}
+        self.assertTrue(catalog["cnea"]["is_active"])
+        self.assertEqual(catalog["cnea"]["connector_slug"], "cnea")
+        self.assertEqual(
+            catalog["cnea"]["base_url"],
+            "https://www.argentina.gob.ar/cnea/transparencia/compras-y-contrataciones",
+        )
+        self.assertEqual(catalog["cnea"]["scraping_mode"], "official_filter")
+        self.assertTrue(catalog["cnea"]["config_json"]["implemented"])
+        self.assertEqual(catalog["inti"]["base_url"], "https://www.inti.gob.ar/contrataciones/")
+        self.assertEqual(catalog["inti"]["connector_slug"], "inti")
+        self.assertEqual(catalog["inti"]["scraping_mode"], "sitemap")
+        self.assertFalse(catalog["inti"]["is_active"])
+        self.assertTrue(catalog["inti"]["config_json"]["implemented"])
+        self.assertTrue(catalog["inti"]["config_json"]["worth_pursuing"])
+        self.assertFalse(catalog["invap"]["is_active"])
+        self.assertEqual(catalog["nasa-nucleoelectrica"]["connector_slug"], "nasa-nucleoelectrica")
+        self.assertFalse(catalog["nasa-nucleoelectrica"]["is_active"])
+        self.assertTrue(catalog["nasa-nucleoelectrica"]["config_json"]["implemented"])
 
 
 if __name__ == "__main__":

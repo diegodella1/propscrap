@@ -194,6 +194,14 @@ Notas:
 - el pipeline posterior es el mismo que usa cualquier otra fuente: normalización, dedupe, persistencia y alertas
 - GCBA figura como implementada pero sigue inactiva globalmente hasta automatizar la captura en un host que no rebote a `Default.aspx`
 
+## Estado de fuentes empresa-estado
+
+- `cnea` quedó activa como fuente oficial derivada: la propia página de transparencia de CNEA remite a COMPR.AR y CONTRAT.AR para el SAF 105, y el conector filtra ambos portales para devolver sólo procesos de CNEA
+- `banco-nacion` quedó activo con fetch real desde `POST /Institucional/ComprasYContratacionesResultados`
+- `inti` quedó implementada sobre `sitemap.xml` oficial para detectar PDFs en `/assets/uploads/contrataciones/`, pero el material publicado hoy es histórico 2018-2019 y por eso sigue inactiva
+- `nasa-nucleoelectrica` quedó implementada sobre la tercera sección actual del Boletín Oficial, filtrando avisos de Nucleoeléctrica/NA-SA; sigue inactiva hasta complementar con una superficie histórica o landing propia más estable
+- `invap` sigue catalogada como pendiente por falta de una sección pública y estable de compras/licitaciones reutilizable
+
 ## Variables LLM
 
 ```bash

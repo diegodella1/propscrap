@@ -78,6 +78,8 @@ Si falla cualquiera de los dos, la licitación no debe entrar al discovery de es
 
 Fuentes ya activadas y con conector operativo:
 
+- `cnea`
+- `banco-nacion`
 - `pami`
 - `inta`
 - `licitaciones-cordoba`
@@ -86,6 +88,25 @@ Fuentes ya activadas y con conector operativo:
 - `licitaciones-rio-negro`
 - `licitaciones-tucuman`
 - `licitaciones-corrientes`
+
+Fuentes perfiladas pero todavía no activas por falta de una superficie pública suficientemente completa:
+
+- `invap`
+- `nasa-nucleoelectrica`
+  - el conector ya consume la tercera sección actual del Boletín Oficial y filtra avisos de Nucleoeléctrica/NA-SA
+  - sigue inactiva porque eso cubre avisos corrientes, pero no reemplaza una sección histórica o landing propia estable
+
+Fuente implementada técnicamente pero todavía inactiva por material histórico:
+
+- `inti`
+  - el conector consume `sitemap.xml` oficial y detecta PDFs bajo `/assets/uploads/contrataciones/`
+  - hoy sólo aparecen documentos 2018-2019, así que no entra al top hasta que vuelva a haber publicaciones recientes
+
+Fuente activa derivada de portales nacionales por referencia oficial del organismo:
+
+- `cnea`
+  - la página oficial `Compras y contrataciones` de CNEA indica expresamente que sus procesos públicos se consultan en COMPR.AR y CONTRAT.AR para el SAF 105
+  - el conector usa esa referencia oficial para validar el canal y filtrar ambos portales sin inventar una fuente privada o no documentada
 
 ## Caso especial: GCBA
 
